@@ -1,13 +1,7 @@
-using System.Data;
 using ParserFramework;
-using System.Text.Json;
+using System.Data;
 
 namespace GrammerParserTests;
-
-using Rule = ISymbol[];
-using RuleSet = ISymbol[][];
-using Grammar = Func<ISymbol, ISymbol[][]>;
-using Acceptor = Func<AcceptableState, AcceptableState?>;
 
 [TestClass]
 public class ParserFrameworkTest
