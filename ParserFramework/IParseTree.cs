@@ -6,7 +6,7 @@ public interface IParseTree
 {
     public JsonNode? PrettyPrint() => this switch
     {
-        Node(ISymbol Parent, IParseTree[] Children) => JsonSerializer.SerializeToNode(new { Parent = Parent.GetType().Name, Children = Children.Select(c => c.PrettyPrint()) }),
+        Node(ISymbol Parent, IParseTree[] Children) => JsonSerializer.SerializeToNode(new { Type = Parent.GetType().Name, Children = Children.Select(c => c.PrettyPrint()) }),
         Leaf(ISymbol Self) => JsonSerializer.SerializeToNode(new { Leaf = Self.GetType().Name }),
         _ => throw new Exception("unexpected parse tree node type")
     };

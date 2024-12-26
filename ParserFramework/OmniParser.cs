@@ -16,7 +16,7 @@ public class OmniParser
             [string head, .. string[] tail] => symbol switch
             {
                 INonTerminal nonTerm => ParseLevel(grammar, grammar(nonTerm), acceptor, state with { Progress = new Node(nonTerm, []) }),
-                ITerminal term => term.Accept(head) ? acceptor(new AcceptableState(tail, new Leaf(term))) : null,
+                ITerminal term => term.Accept(head) is not null ? acceptor(new AcceptableState(tail, new Leaf(term))) : null,
                 _ => throw new Exception("unexpected pattern match branch")
             }
         };

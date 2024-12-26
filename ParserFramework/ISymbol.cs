@@ -4,12 +4,12 @@ public interface ISymbol { }
 
 public interface ITerminal : ISymbol
 {
-    bool Accept(string token);
+    ITerminal? Accept(string token);
 }
 
 public record TerminalSymbol(string Token) : ITerminal
 {
-    public bool Accept(string token) => token.Equals(Token);
+    public ITerminal? Accept(string token) => token.Equals(Token) ? this : null;
 }
 
 public interface INonTerminal : ISymbol;
