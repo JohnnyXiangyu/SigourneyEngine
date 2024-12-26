@@ -20,18 +20,11 @@ internal class LispSynthesizer
             {
                 "." => JumpState(new FunctionPrimer(SelectOwenr()), result, token),
                 "(" => JumpState(new Invocation(SelectOwenr(), result.SkipLast(1)), result, token),
-                "," => (SelectOwenr(), result),
-                string possibleBinop => s_binops.Contains(token) ? JumpState(new BinopAppender(SelectOwenr(), possibleBinop), result, possibleBinop) : (SelectOwenr(), result.Append(token)),
+                string possibleBinop => s_binops.Contains(token) ? 
+                    JumpState(new BinopAppender(SelectOwenr(), possibleBinop), result, possibleBinop) 
+                        : (SelectOwenr(), result.Append(token)),
                 _ => (SelectOwenr(), result.Append(token))
             };
-    }
-
-    private record ExpectComma(ConstructorState Parent) : ConstructorState
-    {
-        public override (ConstructorState, IEnumerable<object>) OnNext(IEnumerable<object> result, object token)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     private record FunctionPrimer(ConstructorState Parent) : ConstructorState
@@ -61,7 +54,8 @@ internal class LispSynthesizer
             };
 
         public override IEnumerable<object> Initialize(IEnumerable<object> result, object instigator) =>
-            instigator switch
+            !result.Any() ? throw new Exception("Missing subject before open parenthesis")
+            : instigator switch
             {
                 "(" => ExpandCaller(result.Last(), []),
                 _ => throw new Exception($"Unexpected Invocation instigator: {instigator}")

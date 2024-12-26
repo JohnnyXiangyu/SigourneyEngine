@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ContextFreeGrammerParser\ContextFreeGrammerParser.csproj" />
+    <ProjectReference Include="..\ParserFramework\ParserFramework.csproj" />
   </ItemGroup>
 
   <ItemGroup>
