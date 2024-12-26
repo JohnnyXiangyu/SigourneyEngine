@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ThreadPool">
+      <UniqueIdentifier>{d23b4701-3ce0-4239-8b63-ccb333e97519}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="TaskScheduler">
+      <UniqueIdentifier>{403b941f-8ae7-43b6-b4ed-55e8a3088dc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserDefined">
+      <UniqueIdentifier>{d9e3bddf-eb4d-475c-bdd4-8cf18e840e9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserDefined\DummySystem">
+      <UniqueIdentifier>{8b045130-2ed3-4b78-a6db-35011329cabb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="generation_collector.c">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="dummy_system.sys.c">
+      <Filter>UserDefined\DummySystem</Filter>
+    </ClCompile>
+    <ClCompile Include="generation_collector.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="thread_pool.c">
+      <Filter>ThreadPool</Filter>
+    </ClCompile>
+    <ClCompile Include="thread_messaging.c">
+      <Filter>ThreadPool</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c" />
+    <ClCompile Include="task_graph.c">
+      <Filter>TaskScheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="dummy_resource_one.res.h">
+      <Filter>UserDefined\DummySystem</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dummy_system.sys.h">
+      <Filter>UserDefined\DummySystem</Filter>
+    </ClInclude>
+    <ClInclude Include="graph_resolver.h">
+      <Filter>TaskScheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_pool.h">
+      <Filter>ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_messaging.h">
+      <Filter>ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="generation_collector.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="task_graph.h">
+      <Filter>TaskScheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="dummy_resource_two.res.h">
+      <Filter>UserDefined\DummySystem</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

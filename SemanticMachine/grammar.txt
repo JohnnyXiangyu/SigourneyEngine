@@ -1,0 +1,19 @@
+LITERAL |= number, character, string, etc.
+
+NAME_TOKEN |= any name following C variable naming restriction
+VARIABLE |= NAME_TOKEN
+
+PARAMETER |= NAME_TOKEN NAME_TOKEN
+
+* no type inference for now *
+
+PARAM_LIST |= PARAMETER
+PARAM_LIST |= PARAM_LIST, PARAMETER
+
+TYPE_DEF |= typ NAME_TOKEN PARAM_LIST
+
+* TODO: EXPR has some major problems, what the fuck are they? *
+EXPR |= 
+
+LAMBDA |= PARAM_LIST => EXPR
+FUNCTION_DEFINITION |= fnkt NAME_TOKEN: (?) LAMBDA
