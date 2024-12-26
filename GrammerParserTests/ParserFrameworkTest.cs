@@ -17,18 +17,18 @@ public class ParserFrameworkTest
 
     private record Binop : INonTerminal;
     
-    private record Num : ITerminal
+    private record Num(string Value = "") : ITerminal
     {
-        public bool Accept(string token)
+        public ITerminal? Accept(string token)
         {
             try
             {
                 int.Parse(token);
-                return true;
+                return new Num(token);
             }
             catch
             {
-                return false;
+                return null;
             }
         }
     }
@@ -55,5 +55,17 @@ public class ParserFrameworkTest
         Assert.IsNotNull(tree);
 
         Console.WriteLine(tree.PrettyPrint()?.ToString());
+    }
+
+    [TestMethod]
+    public void TokenizerTest()
+    {
+        string input = "1 + 2 + 3    + \n(1*4 = 3) + 10 == 10";
+        string[] target = ["1", "+", "2", "+", "3", "+", "(", "1", "*", "4", "=", "3", ")", "+", "10", "==", "10"];
+        var lexer = new WaterfallLexer(["==", "+", "*", "(", ")", "="], [" ", "\n"]);
+        string[] result = lexer.Lex(input);
+
+        Assert.IsTrue(target.Length == result.Length);
+        Assert.IsTrue(target.Zip(result).Select(pair => pair.First.Equals(pair.Second)).All(x => x));
     }
 }
