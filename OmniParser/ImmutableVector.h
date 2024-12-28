@@ -181,7 +181,12 @@ namespace OmniParser
             if (headLength > m_length)
                 throw std::runtime_error("argument out of range: count, Immutablevector::Tail");
 
-            return ImmutableVector(*this, 1, m_length);
+            int targetBlock = FindIndexInBlocks(headLength);
+            
+            ImmutableVector newVector(*this, targetBlock, m_blocks.size());
+            newVector.m_blocks[0].startIndex += headLength;
+
+            return newVector;
         }
 
         ImmutableVector Concat(const ImmutableVector& other)
