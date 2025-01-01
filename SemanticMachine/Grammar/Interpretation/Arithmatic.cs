@@ -1,6 +1,6 @@
 ﻿namespace SemanticMachine.Grammar.Interpretation;
 
-public static class PrimitiveTypes
+public static partial class PrimitiveTypes
 {
     public const string Int32 = "int32";
     public const string Boolean = "bool";
