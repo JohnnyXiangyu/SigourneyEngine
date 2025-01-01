@@ -20,7 +20,7 @@ public record BinopChain() : INonTerminal
     private static ParseTree[] Flatten(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> context) =>
         children switch
         {
-        [ParseTree(BinopChain _, ParseTree[] chainChildren), _, _] => [.. Flatten(chainChildren, context), .. children.Skip(1)],
+            [ParseTree(BinopChain _, ParseTree[] chainChildren), _, _] => [.. Flatten(chainChildren, context), .. children.Skip(1)],
             _ => children
         };
 
@@ -41,19 +41,20 @@ public record BinopChain() : INonTerminal
         }
         };
 
-    private static (IArithmatic Tree, List<ParseTree> Suffix) TreeConstruction(List<ParseTree> rawTree, ImmutableDictionary<string, ISemanticUnit> context) => rawTree switch
-    {
-    [ParseTree(Binop(string operation), _), .. List<ParseTree> tail] => TreeConstruction(tail, context) switch
-    {
-        (IArithmatic subTreeOne, List<ParseTree> newSuffix) => TreeConstruction(newSuffix, context) switch
+    private static (IArithmatic Tree, List<ParseTree> Suffix) TreeConstruction(List<ParseTree> rawTree, ImmutableDictionary<string, ISemanticUnit> context) => 
+        rawTree switch
         {
-            (IArithmatic subTreeTwo, List<ParseTree> finalSuffix) => (new NodeArithmatic(subTreeOne, subTreeTwo, IArithmatic.DeserializeOperation(operation)), finalSuffix)
-        }
-    },
-    [ParseTree(Term _, ParseTree[] termChildren), .. List<ParseTree> tail] => (new LeafArithmatic(Term.Verify(termChildren, context)), tail),
-    [] => throw new Exception("input should not be empty, BinopChain.TreeConstruction"),
-        _ => throw new Exception("unexpected input, BinopChain.TreeConstruction")
-    };
+            [ParseTree(Binop(string operation), _), .. List<ParseTree> tail] => TreeConstruction(tail, context) switch
+            {
+                (IArithmatic subTreeOne, List<ParseTree> newSuffix) => TreeConstruction(newSuffix, context) switch
+                {
+                    (IArithmatic subTreeTwo, List<ParseTree> finalSuffix) => (new NodeArithmatic(subTreeOne, subTreeTwo, IArithmatic.DeserializeOperation(operation)), finalSuffix)
+                }
+            },
+            [ParseTree(Term _, ParseTree[] termChildren), .. List<ParseTree> tail] => (new LeafArithmatic(Term.Verify(termChildren, context)), tail),
+            [] => throw new Exception("input should not be empty, BinopChain.TreeConstruction"),
+            _ => throw new Exception("unexpected input, BinopChain.TreeConstruction")
+        };
 
     public static IArithmatic Verify(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> context) =>
         TreeConstruction(Rearrange([.. Flatten(children, context)], context, []), context).Tree;

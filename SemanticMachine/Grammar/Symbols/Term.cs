@@ -16,7 +16,7 @@ public record Term() : INonTerminal
     public static IEvaluatable Verify(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> resolutionContext) =>
         children[0].Symbol switch
         {
-            Literal literal => literal.Verify(children[0].Children, resolutionContext),
+            Literal => Literal.Verify(children[0].Children),
             NamedSymbol name => name.Verify<IEvaluatable>(resolutionContext),
             TerminalSymbol("(") => children[1] switch
             {

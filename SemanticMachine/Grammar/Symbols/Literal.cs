@@ -1,6 +1,5 @@
 ﻿using ParserFramework;
 using SemanticMachine.Grammar.Interpretation;
-using System.Collections.Immutable;
 
 namespace SemanticMachine.Grammar;
 
@@ -10,10 +9,13 @@ public record Literal() : INonTerminal
         [new BooleanLiteral()],
         [new Int32Literal()]];
 
-    public IEvaluatable Verify(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> resolutionContext)
-    {
-        throw new NotImplementedException();
-    }
+    public static IEvaluatable Verify(ParseTree[] children) =>
+        children switch
+        {
+            [ParseTree(BooleanLiteral literal, [])] => literal.Verify(),
+            [ParseTree(Int32Literal literal, [])] => literal.Verify(),
+            _ => throw new Exception("unexpected code path, Literal.Verify")
+        };
 }
 
 public record Int32Literal(int Value = 0) : ITerminal
@@ -29,6 +31,8 @@ public record Int32Literal(int Value = 0) : ITerminal
             return null;
         }
     }
+
+    public IArithmatic Verify() => new LeafArithmatic(new Int32Value(Value));
 }
 
 public record BooleanLiteral(bool Value = false) : ITerminal
@@ -39,4 +43,6 @@ public record BooleanLiteral(bool Value = false) : ITerminal
         "false" => new BooleanLiteral(false),
         _ => null
     };
+
+    public IArithmatic Verify() => new LeafArithmatic(new BooleanValue(Value));
 }

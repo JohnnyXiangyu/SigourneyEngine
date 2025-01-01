@@ -74,29 +74,27 @@ public class LeafArithmatic(IEvaluatable value) : IArithmatic
 {
     public string Type => value.Type;
     public IEvaluatable Value => value;
+
+    public string PrettyPrint() => Value.PrettyPrint();
 }
 
-public record NodeArithmatic(IArithmatic? LeftChild, IArithmatic RightChild, ArithmaticOperation Operation) : IArithmatic
+public record NodeArithmatic(IArithmatic LeftChild, IArithmatic RightChild, ArithmaticOperation Operation) : IArithmatic
 {
     public string Type => IArithmatic.OperatorReturnType(Operation);
+
+    public string PrettyPrint() => $"({Operation} {LeftChild.PrettyPrint()} {RightChild.PrettyPrint()})";
 }
 
-public class ArithmaticDump : IArithmatic
+public record Int32Value(int Value) : IEvaluatable
 {
-    public string Type => throw new NotImplementedException();
+    public string Type => PrimitiveTypes.Int32;
 
-    public ArithmaticOperation Operation { get; private set; }
+    public string PrettyPrint() => Value.ToString();
+}
 
-    public IEvaluatable Lhs { get; private set; }
-    public IEvaluatable Rhs { get; private set; }
+public record BooleanValue(bool Value) : IEvaluatable
+{
+    public string Type => PrimitiveTypes.Boolean;
 
-    public ArithmaticDump(IEvaluatable lhs, IEvaluatable rhs, string operation)
-    {
-        Operation = IArithmatic.DeserializeOperation(operation);
-        if (!IArithmatic.ValidityCheck(lhs.Type, rhs.Type, Operation))
-            throw new Exception("binary operation and operand type mismatch");
-
-        Lhs = lhs;
-        Rhs = rhs;
-    }
+    public string PrettyPrint() => Value.ToString();
 }

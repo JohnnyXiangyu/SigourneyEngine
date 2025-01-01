@@ -52,11 +52,14 @@ public class TypeMemberGetter : IEvaluatable
         Type = paramType;
         Member = member;
     }
+
+    public string PrettyPrint() => $"{Subject.PrettyPrint()}->{Member}";
 }
 
 public interface IEvaluatable : ISemanticUnit
 {
     string Type { get; }
+    string PrettyPrint();
 }
 
 public class FunctionCall : IEvaluatable
@@ -76,4 +79,6 @@ public class FunctionCall : IEvaluatable
         FunctionDefinition = function;
         Arguments = arguments;
     }
+
+    public string PrettyPrint() => $"{FunctionDefinition.Name}({string.Join(',', Arguments.Select(arg => arg.PrettyPrint()))})";
 }
