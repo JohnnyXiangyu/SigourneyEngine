@@ -31,20 +31,20 @@ public class ParserFrameworkTest
     {
         Expr => [
             [new Term(), new Binop(), new Expr()],
-                [new Term()]],
+            [new Term()]],
         Term => [
             [new Num()],
-                [new TerminalSymbol("("), new Expr(), new TerminalSymbol(")")]],
+            [new TerminalSymbol("("), new Expr(), new TerminalSymbol(")")]],
         Binop => [
             [new TerminalSymbol("+")],
-                [new TerminalSymbol("-")]],
+            [new TerminalSymbol("-")]],
         _ => throw new Exception("unexpected target symbol type in test")
     };
 
     [TestMethod]
     public void TestOnlyParse()
     {
-        IParseTree? tree = OmniParser.Parse(Grammar, new Expr(), "1+(2-1)+3+1".Select(x => x.ToString()).ToArray());
+        ParseTree? tree = OmniParser.Parse(Grammar, new Expr(), "1+(2-1)+3+1".Select(x => x.ToString()).ToArray());
 
         Assert.IsNotNull(tree);
 

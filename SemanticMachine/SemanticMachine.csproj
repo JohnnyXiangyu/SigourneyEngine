@@ -11,8 +11,4 @@
     <ProjectReference Include="..\ParserFramework\ParserFramework.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Interpret\" />
-  </ItemGroup>
-
 </Project>

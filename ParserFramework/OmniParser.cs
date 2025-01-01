@@ -5,7 +5,7 @@ using RuleSet = ISymbol[][];
 using Grammar = Func<ISymbol, ISymbol[][]>;
 using Acceptor = Func<AcceptableState, AcceptableState?>;
 
-public record AcceptableState(string[] Suffix, IParseTree Progress);
+public record AcceptableState(string[] Suffix, ParseTree Progress);
 
 public class OmniParser
 {
@@ -15,20 +15,24 @@ public class OmniParser
             [] => null,
             [string head, .. string[] tail] => symbol switch
             {
-                INonTerminal nonTerm => ParseLevel(grammar, grammar(nonTerm), acceptor, state with { Progress = new Node(nonTerm, []) }),
-                ITerminal term => term.Accept(head) is not null ? acceptor(new AcceptableState(tail, new Leaf(term))) : null,
+                INonTerminal nonTerm => ParseLevel(grammar, grammar(nonTerm), acceptor, state with { Progress = new TreeNode(nonTerm, []) }),
+                ITerminal term => term.Accept(head) switch
+                {
+                    null => null,
+                    ITerminal accepted => acceptor(new AcceptableState(tail, new TreeLeaf(accepted)))
+                },
                 _ => throw new Exception("unexpected pattern match branch")
             }
         };
 
-    public static AcceptableState? ParseAlternative(Grammar grammar, IParseTree oldProgress, Rule remainingRule, Acceptor acceptor, AcceptableState state)
+    public static AcceptableState? ParseAlternative(Grammar grammar, ParseTree oldProgress, Rule remainingRule, Acceptor acceptor, AcceptableState state)
     {
-        IParseTree newProgress = state.Progress switch
+        ParseTree newProgress = state.Progress switch
         {
-            Node(ISymbol _, []) => oldProgress,
+            TreeNode(ISymbol _, []) => oldProgress,
             _ => oldProgress switch
             {
-                Node(ISymbol parentOld, IParseTree[] childrenOld) => new Node(parentOld, [..childrenOld, state.Progress]),
+                TreeNode(ISymbol parentOld, ParseTree[] childrenOld) => new TreeNode(parentOld, [..childrenOld, state.Progress]),
                 _ => throw new Exception("this pattern is just to eliminate the error, should never be used")
             }
         };
@@ -59,6 +63,6 @@ public class OmniParser
             _ => null
         };
 
-    public static IParseTree? Parse(Grammar grammar, ISymbol rootSymbol, string[] fragment, Acceptor? initialAcceptor = null) =>
-        ParseLevel(grammar, grammar(rootSymbol), initialAcceptor ?? EmptyAcceptor, new AcceptableState(fragment, new Node(rootSymbol, [])))?.Progress;
+    public static ParseTree? Parse(Grammar grammar, ISymbol rootSymbol, string[] fragment, Acceptor? initialAcceptor = null) =>
+        ParseLevel(grammar, grammar(rootSymbol), initialAcceptor ?? EmptyAcceptor, new AcceptableState(fragment, new TreeNode(rootSymbol, [])))?.Progress;
 }
