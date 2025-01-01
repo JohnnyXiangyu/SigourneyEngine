@@ -68,6 +68,8 @@ public interface IArithmatic : IEvaluatable
         ArithmaticOperation.LogicAnd or ArithmaticOperation.LogicOr or ArithmaticOperation.Equals => PrimitiveTypes.Boolean,
         _ => throw new Exception("why the fuck is there an unexpected binary operation type?")
     };
+
+    bool SanityCheckType();
 }
 
 public class LeafArithmatic(IEvaluatable value) : IArithmatic
@@ -76,6 +78,8 @@ public class LeafArithmatic(IEvaluatable value) : IArithmatic
     public IEvaluatable Value => value;
 
     public string PrettyPrint() => Value.PrettyPrint();
+
+    public bool SanityCheckType() => true;
 }
 
 public record NodeArithmatic(IArithmatic LeftChild, IArithmatic RightChild, ArithmaticOperation Operation) : IArithmatic
@@ -83,6 +87,14 @@ public record NodeArithmatic(IArithmatic LeftChild, IArithmatic RightChild, Arit
     public string Type => IArithmatic.OperatorReturnType(Operation);
 
     public string PrettyPrint() => $"({Operation} {LeftChild.PrettyPrint()} {RightChild.PrettyPrint()})";
+
+    public bool SanityCheckType() => Operation switch
+    {
+        ArithmaticOperation.Add or ArithmaticOperation.Minus or ArithmaticOperation.Mult or ArithmaticOperation.Divide or ArithmaticOperation.BitwiseAnd or ArithmaticOperation.BitwiseOr => LeftChild.Type == PrimitiveTypes.Int32 && RightChild.Type == PrimitiveTypes.Int32,
+        ArithmaticOperation.LogicAnd or ArithmaticOperation.LogicOr => LeftChild.Type == PrimitiveTypes.Boolean && RightChild.Type == PrimitiveTypes.Boolean,
+        ArithmaticOperation.Equals => LeftChild.Type == RightChild.Type,
+        _ => false
+    };
 }
 
 public record Int32Value(int Value) : IEvaluatable

@@ -56,11 +56,26 @@ public class SemanticMachineTests
         ArithmaticParseTest("1 - 2 - 3");
 
         ArithmaticParseTest("1 + 2 = 3");
+
+        try
+        {
+            ArithmaticParseTest("1 + 2 && 3");
+            throw new Exception("false negative");
+        }
+        catch { }
+
+        ArithmaticParseTest("true && false");
+        ArithmaticParseTest("true && true || false");
     }
 
     [TestMethod]
     public void PrintGrammar()
     {
         Console.WriteLine(GrammarRules.PrintGrammar());
+    }
+
+    public void ExpressionVerificationTest()
+    {
+
     }
 }

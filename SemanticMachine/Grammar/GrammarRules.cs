@@ -5,12 +5,12 @@ namespace SemanticMachine.Grammar;
 
 public class GrammarRules
 {
-    private static readonly string[] s_Operators = ["=>", "->", "!=", .. "+-*/=&|().[]{},".Select(c => c.ToString())];
+    private static readonly string[] s_Operators = ["=>", "->", "!=", "||", "&&", .. "+-*/=&|().[]{},".Select(c => c.ToString())];
     private static readonly string[] s_Sparators = " \n\t".Select(c => c.ToString()).ToArray();
 
     public static ITokenizer GetLexer() => new WaterfallLexer(s_Operators, s_Sparators);
 
-    public static readonly IReadOnlyDictionary<Type, ISymbol[][]> s_prebuiltMapping = Assembly.GetExecutingAssembly().GetTypes()
+    public static readonly IReadOnlyDictionary<Type, ISymbol[][]> s_prebuiltMapping = (Assembly.GetAssembly(typeof(GrammarRules)) ?? throw new Exception("error at assembly discovery")).GetTypes()
         .Where(type => type.GetInterfaces().Contains(typeof(INonTerminal)))
         .Select(type => (type, (ISymbol[][]?) type.GetProperty("Rules", typeof(ISymbol[][]))?.GetValue(null))) // stole this from john lynch
         .Where(pair => pair.Item2 is not null)
