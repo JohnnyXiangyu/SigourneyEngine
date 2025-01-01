@@ -57,4 +57,10 @@ public class SemanticMachineTests
 
         ArithmaticParseTest("1 + 2 = 3");
     }
+
+    [TestMethod]
+    public void PrintGrammar()
+    {
+        Console.WriteLine(GrammarRules.PrintGrammar());
+    }
 }

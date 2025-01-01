@@ -10,9 +10,7 @@ public class GrammarRules
 
     public static ITokenizer GetLexer() => new WaterfallLexer(s_Operators, s_Sparators);
 
-
-
-    public static readonly Dictionary<Type, ISymbol[][]> s_prebuiltMapping = Assembly.GetExecutingAssembly().GetTypes()
+    public static readonly IReadOnlyDictionary<Type, ISymbol[][]> s_prebuiltMapping = Assembly.GetExecutingAssembly().GetTypes()
         .Where(type => type.GetInterfaces().Contains(typeof(INonTerminal)))
         .Select(type => (type, (ISymbol[][]?) type.GetProperty("Rules", typeof(ISymbol[][]))?.GetValue(null))) // stole this from john lynch
         .Where(pair => pair.Item2 is not null)
@@ -20,6 +18,8 @@ public class GrammarRules
         .ToDictionary();
 
     public static IEnumerable<IEnumerable<ISymbol>> GrammarFuncCoreNew(ISymbol target) => s_prebuiltMapping[target.GetType()];
+
+    public static string PrintGrammar() => string.Join('\n', s_prebuiltMapping.Select(pair => $"{pair.Key.Name} |=\n{string.Join('\n', pair.Value.Select(rule => "    " + string.Join(", ", rule.Select(x => x.GrammarPrint()))))}"));
 
     // there's a problem with C-style coding: the recursive part is on the left side of an invcation (foo.bar).
     // making it almost impossible to parse from left to right without bumping into infinite loops,
