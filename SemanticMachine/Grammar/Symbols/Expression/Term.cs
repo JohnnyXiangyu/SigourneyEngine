@@ -2,7 +2,7 @@
 using SemanticMachine.Grammar.Interpretation;
 using System.Collections.Immutable;
 
-namespace SemanticMachine.Grammar.Symbols;
+namespace SemanticMachine.Grammar.Symbols.Expression;
 
 public record Term() : INonTerminal
 {

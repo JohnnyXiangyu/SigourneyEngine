@@ -1,5 +1,5 @@
 ﻿using ParserFramework;
-using SemanticMachine.Grammar.Symbols;
+using SemanticMachine.Grammar.Symbols.Expression;
 using System.Reflection;
 
 Console.WriteLine("Hello, World!");

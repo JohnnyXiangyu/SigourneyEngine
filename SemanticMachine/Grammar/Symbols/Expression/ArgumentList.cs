@@ -1,9 +1,8 @@
 ﻿using ParserFramework;
 using SemanticMachine.Grammar.Interpretation;
-using SemanticMachine.Grammar.Symbols;
 using System.Collections.Immutable;
 
-namespace SemanticMachine.Grammar;
+namespace SemanticMachine.Grammar.Symbols.Expression;
 
 public record ArgumentList() : INonTerminal
 {
@@ -15,9 +14,9 @@ public record ArgumentList() : INonTerminal
     public static IEvaluatable[] Verify(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> resolutionContext) =>
         children switch
         {
-            [ParseTree(ArgumentList _, ParseTree[] otherChildren), _, ParseTree(Expr _, ParseTree[] exprChildren)] => [.. Verify(otherChildren, resolutionContext), Expr.Verify(exprChildren, resolutionContext)],
-            [ParseTree(Expr _, ParseTree[] expChildren)] => [Expr.Verify(expChildren, resolutionContext)],
-            [ParseTree(TerminalSymbol("_"), [])] => [],
+        [ParseTree(ArgumentList _, ParseTree[] otherChildren), _, ParseTree(Expr _, ParseTree[] exprChildren)] => [.. Verify(otherChildren, resolutionContext), Expr.Verify(exprChildren, resolutionContext)],
+        [ParseTree(Expr _, ParseTree[] expChildren)] => [Expr.Verify(expChildren, resolutionContext)],
+        [ParseTree(TerminalSymbol("_"), [])] => [],
             _ => throw new Exception("parsing error, ArgumentList")
         };
 }

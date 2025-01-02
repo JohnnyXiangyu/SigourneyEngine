@@ -1,4 +1,6 @@
-﻿namespace SemanticMachine.Grammar.Interpretation;
+﻿using System.Collections.Immutable;
+
+namespace SemanticMachine.Grammar.Interpretation;
 
 public static partial class PrimitiveTypes
 {
@@ -6,7 +8,7 @@ public static partial class PrimitiveTypes
     public const string Boolean = "bool";
 }
 
-public enum ArithmaticOperation
+public enum ArithmeticOperation
 {
     Add,
     Minus,
@@ -19,60 +21,61 @@ public enum ArithmaticOperation
     Equals
 }
 
-public interface IArithmatic : IEvaluatable
+public interface IArithmetic : IEvaluatable
 {
-    public static ArithmaticOperation DeserializeOperation(string operation) =>
-    operation switch
+    public static ImmutableDictionary<string, ISemanticUnit> LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit> prefix) =>
+        prefix.Add(PrimitiveTypes.Int32, new PrimitiveType(PrimitiveTypes.Int32)).Add(PrimitiveTypes.Boolean, new PrimitiveType(PrimitiveTypes.Boolean));
+
+    public static ArithmeticOperation DeserializeOperation(string operation) => operation switch
     {
-        "+" => ArithmaticOperation.Add,
-        "-" => ArithmaticOperation.Minus,
-        "*" => ArithmaticOperation.Mult,
-        "/" => ArithmaticOperation.Divide,
-        "&" => ArithmaticOperation.BitwiseAnd,
-        "|" => ArithmaticOperation.BitwiseOr,
-        "&&" => ArithmaticOperation.LogicAnd,
-        "||" => ArithmaticOperation.LogicOr,
-        "=" => ArithmaticOperation.Equals,
+        "+" => ArithmeticOperation.Add,
+        "-" => ArithmeticOperation.Minus,
+        "*" => ArithmeticOperation.Mult,
+        "/" => ArithmeticOperation.Divide,
+        "&" => ArithmeticOperation.BitwiseAnd,
+        "|" => ArithmeticOperation.BitwiseOr,
+        "&&" => ArithmeticOperation.LogicAnd,
+        "||" => ArithmeticOperation.LogicOr,
+        "=" => ArithmeticOperation.Equals,
         _ => throw new Exception($"unexpected binary operation token: {operation}")
     };
 
-    public static int ArithmaticOpAltitude(ArithmaticOperation op) =>
-        op switch
-        {
-            ArithmaticOperation.Add => 1,
-            ArithmaticOperation.Minus => 1,
-            ArithmaticOperation.Mult => 2,
-            ArithmaticOperation.Divide => 2,
-            ArithmaticOperation.BitwiseAnd => 3,
-            ArithmaticOperation.BitwiseOr => 3,
-            ArithmaticOperation.LogicAnd => -1,
-            ArithmaticOperation.LogicOr => -1,
-            ArithmaticOperation.Equals => 0,
-            _ => throw new Exception("unexpected arithmatic operation, IArithmatic.ArithmaticOpAltitude"),
-        };
+    public static int ArithmeticOpAltitude(ArithmeticOperation op) => op switch
+    {
+        ArithmeticOperation.Add => 1,
+        ArithmeticOperation.Minus => 1,
+        ArithmeticOperation.Mult => 2,
+        ArithmeticOperation.Divide => 2,
+        ArithmeticOperation.BitwiseAnd => 3,
+        ArithmeticOperation.BitwiseOr => 3,
+        ArithmeticOperation.LogicAnd => -1,
+        ArithmeticOperation.LogicOr => -1,
+        ArithmeticOperation.Equals => 0,
+        _ => throw new Exception("unexpected arithmetic operation, IArithmetic.ArithmeticOpAltitude"),
+    };
 
-    public static int ArithmaticOpAltitude(string op) => ArithmaticOpAltitude(DeserializeOperation(op));
+    public static int ArithmeticOpAltitude(string op) => ArithmeticOpAltitude(DeserializeOperation(op));
 
-    public static bool ValidityCheck(string ltype, string rtype, ArithmaticOperation operation) =>
+    public static bool ValidityCheck(string ltype, string rtype, ArithmeticOperation operation) =>
     operation switch
     {
-        ArithmaticOperation.Add or ArithmaticOperation.Minus or ArithmaticOperation.Mult or ArithmaticOperation.Divide or ArithmaticOperation.BitwiseAnd or ArithmaticOperation.BitwiseOr => ltype == rtype && ltype == PrimitiveTypes.Int32,
-        ArithmaticOperation.LogicAnd or ArithmaticOperation.LogicOr => ltype == rtype && ltype == PrimitiveTypes.Boolean,
-        ArithmaticOperation.Equals => ltype == rtype && (ltype == PrimitiveTypes.Boolean || ltype == PrimitiveTypes.Int32),
+        ArithmeticOperation.Add or ArithmeticOperation.Minus or ArithmeticOperation.Mult or ArithmeticOperation.Divide or ArithmeticOperation.BitwiseAnd or ArithmeticOperation.BitwiseOr => ltype == rtype && ltype == PrimitiveTypes.Int32,
+        ArithmeticOperation.LogicAnd or ArithmeticOperation.LogicOr => ltype == rtype && ltype == PrimitiveTypes.Boolean,
+        ArithmeticOperation.Equals => ltype == rtype && (ltype == PrimitiveTypes.Boolean || ltype == PrimitiveTypes.Int32),
         _ => throw new Exception("why the fuck is there an unexpected binary operation type?")
     };
 
-    protected static string OperatorReturnType(ArithmaticOperation operation) => operation switch
+    protected static string OperatorReturnType(ArithmeticOperation operation) => operation switch
     {
-        ArithmaticOperation.Add or ArithmaticOperation.Minus or ArithmaticOperation.Mult or ArithmaticOperation.Divide or ArithmaticOperation.BitwiseOr or ArithmaticOperation.BitwiseAnd => PrimitiveTypes.Int32,
-        ArithmaticOperation.LogicAnd or ArithmaticOperation.LogicOr or ArithmaticOperation.Equals => PrimitiveTypes.Boolean,
+        ArithmeticOperation.Add or ArithmeticOperation.Minus or ArithmeticOperation.Mult or ArithmeticOperation.Divide or ArithmeticOperation.BitwiseOr or ArithmeticOperation.BitwiseAnd => PrimitiveTypes.Int32,
+        ArithmeticOperation.LogicAnd or ArithmeticOperation.LogicOr or ArithmeticOperation.Equals => PrimitiveTypes.Boolean,
         _ => throw new Exception("why the fuck is there an unexpected binary operation type?")
     };
 
     bool SanityCheckType();
 }
 
-public class LeafArithmatic(IEvaluatable value) : IArithmatic
+public class LeafArithmetic(IEvaluatable value) : IArithmetic
 {
     public string Type => value.Type;
     public IEvaluatable Value => value;
@@ -82,17 +85,17 @@ public class LeafArithmatic(IEvaluatable value) : IArithmatic
     public bool SanityCheckType() => true;
 }
 
-public record NodeArithmatic(IArithmatic LeftChild, IArithmatic RightChild, ArithmaticOperation Operation) : IArithmatic
+public record NodeArithmetic(IArithmetic LeftChild, IArithmetic RightChild, ArithmeticOperation Operation) : IArithmetic
 {
-    public string Type => IArithmatic.OperatorReturnType(Operation);
+    public string Type => IArithmetic.OperatorReturnType(Operation);
 
     public string PrettyPrint() => $"({Operation} {LeftChild.PrettyPrint()} {RightChild.PrettyPrint()})";
 
     public bool SanityCheckType() => Operation switch
     {
-        ArithmaticOperation.Add or ArithmaticOperation.Minus or ArithmaticOperation.Mult or ArithmaticOperation.Divide or ArithmaticOperation.BitwiseAnd or ArithmaticOperation.BitwiseOr => LeftChild.Type == PrimitiveTypes.Int32 && RightChild.Type == PrimitiveTypes.Int32,
-        ArithmaticOperation.LogicAnd or ArithmaticOperation.LogicOr => LeftChild.Type == PrimitiveTypes.Boolean && RightChild.Type == PrimitiveTypes.Boolean,
-        ArithmaticOperation.Equals => LeftChild.Type == RightChild.Type,
+        ArithmeticOperation.Add or ArithmeticOperation.Minus or ArithmeticOperation.Mult or ArithmeticOperation.Divide or ArithmeticOperation.BitwiseAnd or ArithmeticOperation.BitwiseOr => LeftChild.Type == PrimitiveTypes.Int32 && RightChild.Type == PrimitiveTypes.Int32,
+        ArithmeticOperation.LogicAnd or ArithmeticOperation.LogicOr => LeftChild.Type == PrimitiveTypes.Boolean && RightChild.Type == PrimitiveTypes.Boolean,
+        ArithmeticOperation.Equals => LeftChild.Type == RightChild.Type,
         _ => false
     };
 }

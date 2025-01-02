@@ -19,7 +19,7 @@ public class GrammarRules
 
     public static IEnumerable<IEnumerable<ISymbol>> GrammarFuncCoreNew(ISymbol target) => s_prebuiltMapping[target.GetType()];
 
-    public static string PrintGrammar() => string.Join('\n', s_prebuiltMapping.Select(pair => $"{pair.Key.Name} |=\n{string.Join('\n', pair.Value.Select(rule => "    " + string.Join(", ", rule.Select(x => x.GrammarPrint()))))}"));
+    public static string PrintGrammar() => string.Join('\n', s_prebuiltMapping.Select(pair => $"{pair.Key.Name} |= {string.Join($"\n{new string(' ', pair.Key.Name.Length + 4)}", pair.Value.Select(rule => string.Join(", ", rule.Select(x => x.GrammarPrint()))))}\n"));
 
     // there's a problem with C-style coding: the recursive part is on the left side of an invcation (foo.bar).
     // making it almost impossible to parse from left to right without bumping into infinite loops,
@@ -27,4 +27,10 @@ public class GrammarRules
     public static ISymbol[][] GrammarFunc(ISymbol target) => GrammarFuncCoreNew(target).Select(rule => rule.Reverse().ToArray()).ToArray();
 
     public static ParseTree ReverseTreeBack(ParseTree tree) => tree with { Children = tree.Children.Select(ReverseTreeBack).Reverse().ToArray() };
+
+    public static ParseTree? Parse(string code, ISymbol root) => OmniParser.Parse(GrammarFunc, root, GetLexer().Lex(code).Reverse().ToArray()) switch
+    {
+        null => null,
+        ParseTree tree => ReverseTreeBack(tree)
+    };
 }

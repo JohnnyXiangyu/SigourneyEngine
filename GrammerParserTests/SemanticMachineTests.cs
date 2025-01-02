@@ -2,6 +2,8 @@
 using SemanticMachine.Grammar;
 using SemanticMachine.Grammar.Interpretation;
 using SemanticMachine.Grammar.Symbols;
+using SemanticMachine.Grammar.Symbols.Definition;
+using SemanticMachine.Grammar.Symbols.Expression;
 using System.Collections.Immutable;
 
 namespace GrammerParserTests;
@@ -41,7 +43,7 @@ public class SemanticMachineTests
         // reverse the tree
         ParseTree postProcessedTree = GrammarRules.ReverseTreeBack(tree);
 
-        IArithmatic arith = BinopChain.Verify(postProcessedTree.Children, ImmutableDictionary<string, ISemanticUnit>.Empty);
+        IArithmetic arith = BinopChain.Verify(postProcessedTree.Children, ImmutableDictionary<string, ISemanticUnit>.Empty);
         Console.WriteLine(arith.PrettyPrint());
     }
 
@@ -74,8 +76,17 @@ public class SemanticMachineTests
         Console.WriteLine(GrammarRules.PrintGrammar());
     }
 
-    public void ExpressionVerificationTest()
+    [TestMethod]
+    public void TypeDefinitionVerificationTest()
     {
+        string code = "type Vector2 { int32 X, int32 Y, bool Z }";
+        ParseTree? tree = GrammarRules.Parse(code, new TypeDefiner());
+        Assert.IsNotNull(tree);
 
+        TypeDefinition typeDef = TypeDefiner.Verify(tree.Children, IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty));
+        Assert.IsTrue(typeDef.Name == "Vector2");
+        Assert.IsTrue(typeDef.Parameters["X"].Name == "int32");
+        Assert.IsTrue(typeDef.Parameters["Y"].Name == "int32");
+        Assert.IsTrue(typeDef.Parameters["Z"].Name == "bool");
     }
 }

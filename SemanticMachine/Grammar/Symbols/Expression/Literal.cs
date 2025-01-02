@@ -1,7 +1,7 @@
 ﻿using ParserFramework;
 using SemanticMachine.Grammar.Interpretation;
 
-namespace SemanticMachine.Grammar;
+namespace SemanticMachine.Grammar.Symbols.Expression;
 
 public record Literal() : INonTerminal
 {
@@ -12,8 +12,8 @@ public record Literal() : INonTerminal
     public static IEvaluatable Verify(ParseTree[] children) =>
         children switch
         {
-            [ParseTree(BooleanLiteral literal, [])] => literal.Verify(),
-            [ParseTree(Int32Literal literal, [])] => literal.Verify(),
+        [ParseTree(BooleanLiteral literal, [])] => literal.Verify(),
+        [ParseTree(Int32Literal literal, [])] => literal.Verify(),
             _ => throw new Exception("unexpected code path, Literal.Verify")
         };
 }
@@ -32,7 +32,7 @@ public record Int32Literal(int Value = 0) : ITerminal
         }
     }
 
-    public IArithmatic Verify() => new LeafArithmatic(new Int32Value(Value));
+    public IArithmetic Verify() => new LeafArithmetic(new Int32Value(Value));
 }
 
 public record BooleanLiteral(bool Value = false) : ITerminal
@@ -44,5 +44,5 @@ public record BooleanLiteral(bool Value = false) : ITerminal
         _ => null
     };
 
-    public IArithmatic Verify() => new LeafArithmatic(new BooleanValue(Value));
+    public IArithmetic Verify() => new LeafArithmetic(new BooleanValue(Value));
 }
