@@ -2,7 +2,7 @@
 using SemanticMachine.Grammar.Interpretation;
 using System.Collections.Immutable;
 
-namespace SemanticMachine.Grammar.Symbols.Definition;
+namespace SemanticMachine.Grammar.Symbols.Decalaration;
 
 public class SingularMember : INonTerminal
 {

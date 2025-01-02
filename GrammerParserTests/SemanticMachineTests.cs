@@ -2,7 +2,7 @@
 using SemanticMachine.Grammar;
 using SemanticMachine.Grammar.Interpretation;
 using SemanticMachine.Grammar.Symbols;
-using SemanticMachine.Grammar.Symbols.Definition;
+using SemanticMachine.Grammar.Symbols.Decalaration;
 using SemanticMachine.Grammar.Symbols.Expression;
 using System.Collections.Immutable;
 
@@ -88,5 +88,17 @@ public class SemanticMachineTests
         Assert.IsTrue(typeDef.Parameters["X"].Name == "int32");
         Assert.IsTrue(typeDef.Parameters["Y"].Name == "int32");
         Assert.IsTrue(typeDef.Parameters["Z"].Name == "bool");
+    }
+
+    [TestMethod]
+    public void FunctionDefinitionVerificationTest()
+    {
+        string code = "int32 AddTwice(int32 lhs, int32 rhs) => { lhs + rhs + rhs }";
+        ParseTree? tree = GrammarRules.Parse(code, new FunctionDecalaration());
+        Assert.IsNotNull(tree);
+
+        FunctionDefinition declaration = FunctionDecalaration.Verify(tree.Children, IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty));
+
+        Console.WriteLine("done?");
     }
 }
