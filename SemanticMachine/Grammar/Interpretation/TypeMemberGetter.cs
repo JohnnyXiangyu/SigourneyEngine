@@ -20,5 +20,5 @@ public class TypeMemberGetter : IEvaluatable
         Member = member;
     }
 
-    public string PrettyPrint() => $"{Subject.PrettyPrint()}->{Member}";
+    public string PrettyPrint() => $"{Subject.PrettyPrint()}.{Member}";
 }

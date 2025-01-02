@@ -17,4 +17,6 @@ public interface ISemanticUnit
 
         return resolution;
     }
+
+    string PrettyPrint();
 }

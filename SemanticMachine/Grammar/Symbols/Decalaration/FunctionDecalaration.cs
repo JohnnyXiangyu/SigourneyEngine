@@ -26,16 +26,25 @@ public record FunctionDecalaration : INonTerminal
     public static ISymbol[][] Rules => [
         [new NamedSymbol(), new NamedSymbol(), new TerminalSymbol("("), new ParameterList(), new TerminalSymbol(")"), new TerminalSymbol("=>"), new TerminalSymbol("{"), new Expr(), new TerminalSymbol("}")]];
 
-    public static FunctionDefinition Verify(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> context) => children switch
+    public static FunctionPrototype ExtractHeader(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> context) => children switch
     {
         [ParseTree(NamedSymbol(string type), []), ParseTree(NamedSymbol(string functionName), []), _, ParseTree(ParameterList, ParseTree[] parametersChildren), _, _, _, ParseTree(Expr, ParseTree[] exprChildren), _] => ParameterList.Flatten(parametersChildren, context) switch
         {
-            ImmutableList<LazyEvaluatable> parameters => new Interpretation.FunctionDefinition(
+            ImmutableList<LazyEvaluatable> parameters => new FunctionPrototype(
                 functionName,
-                TypeDefinition.Resolve(type, context), 
-                parameters, 
-                Expr.Verify(exprChildren, context.AddRange(parameters.Select(param => new KeyValuePair<string, ISemanticUnit>(param.Name, param))))),
+                TypeDefinition.Resolve(type, context),
+                parameters),
             _ => throw new Exception($"parsing error, {nameof(FunctionDecalaration)}")
+        },
+        _ => throw new Exception($"parsing error, {nameof(FunctionDecalaration)}")
+    };
+
+    public static FunctionDefinition VerifyFullDefinition(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> context) => children switch
+    {
+        [_, ParseTree(NamedSymbol(string functionName), []), _, ParseTree(ParameterList, ParseTree[] parametersChildren), _, _, _, ParseTree(Expr, ParseTree[] exprChildren), _] => ISemanticUnit.ResolveSymbol(functionName, context) switch
+        {
+            FunctionPrototype prototype => new FunctionDefinition(prototype, Expr.Verify(exprChildren, context.AddRange(prototype.Params.Select(param => new KeyValuePair<string, ISemanticUnit>(param.Name, param))))),
+            ISemanticUnit unit => throw new Exception($"symbol type mismatch, expecting function prototype, got {unit.GetType().Name}")
         },
         _ => throw new Exception($"parsing error, {nameof(FunctionDecalaration)}")
     };

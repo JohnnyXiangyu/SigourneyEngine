@@ -4,7 +4,7 @@ namespace SemanticMachine.Grammar.Interpretation;
 
 public static partial class PrimitiveTypes
 {
-    public const string Int32 = "int32";
+    public const string Int32 = "int";
     public const string Boolean = "bool";
 }
 
@@ -26,19 +26,24 @@ public interface IArithmetic : IEvaluatable
     public static ImmutableDictionary<string, ISemanticUnit> LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit> prefix) =>
         prefix.Add(PrimitiveTypes.Int32, new PrimitiveType(PrimitiveTypes.Int32)).Add(PrimitiveTypes.Boolean, new PrimitiveType(PrimitiveTypes.Boolean));
 
-    public static ArithmeticOperation DeserializeOperation(string operation) => operation switch
-    {
-        "+" => ArithmeticOperation.Add,
-        "-" => ArithmeticOperation.Minus,
-        "*" => ArithmeticOperation.Mult,
-        "/" => ArithmeticOperation.Divide,
-        "&" => ArithmeticOperation.BitwiseAnd,
-        "|" => ArithmeticOperation.BitwiseOr,
-        "&&" => ArithmeticOperation.LogicAnd,
-        "||" => ArithmeticOperation.LogicOr,
-        "=" => ArithmeticOperation.Equals,
-        _ => throw new Exception($"unexpected binary operation token: {operation}")
-    };
+    private static KeyValuePair<string, ArithmeticOperation>[] s_operatorMappings = [
+        new KeyValuePair<string, ArithmeticOperation>("+" ,ArithmeticOperation.Add),
+        new KeyValuePair<string, ArithmeticOperation>("-" ,ArithmeticOperation.Minus),
+        new KeyValuePair<string, ArithmeticOperation>("*" ,ArithmeticOperation.Mult),
+        new KeyValuePair<string, ArithmeticOperation>("/" ,ArithmeticOperation.Divide),
+        new KeyValuePair<string, ArithmeticOperation>("&" ,ArithmeticOperation.BitwiseAnd),
+        new KeyValuePair<string, ArithmeticOperation>("|" ,ArithmeticOperation.BitwiseOr),
+        new KeyValuePair<string, ArithmeticOperation>("&&", ArithmeticOperation.LogicAnd),
+        new KeyValuePair<string, ArithmeticOperation>("||", ArithmeticOperation.LogicOr),
+        new KeyValuePair<string, ArithmeticOperation>("=" ,ArithmeticOperation.Equals),
+        ];
+
+    private static ImmutableDictionary<string, ArithmeticOperation> s_deserializer = ImmutableDictionary<string, ArithmeticOperation>.Empty.AddRange(s_operatorMappings);
+    private static ImmutableDictionary<ArithmeticOperation, string> s_serialzer = ImmutableDictionary<ArithmeticOperation, string>.Empty.AddRange(s_operatorMappings.Select(pair => new KeyValuePair<ArithmeticOperation, string>(pair.Value, pair.Key)));
+
+    public static ArithmeticOperation DeserializeOperation(string operation) => s_deserializer[operation];
+
+    public static string SerializeOperation(ArithmeticOperation operation) => s_serialzer[operation];
 
     public static int ArithmeticOpAltitude(ArithmeticOperation op) => op switch
     {
@@ -89,7 +94,7 @@ public record NodeArithmetic(IArithmetic LeftChild, IArithmetic RightChild, Arit
 {
     public string Type => IArithmetic.OperatorReturnType(Operation);
 
-    public string PrettyPrint() => $"({Operation} {LeftChild.PrettyPrint()} {RightChild.PrettyPrint()})";
+    public string PrettyPrint() => $"({LeftChild.PrettyPrint()} {IArithmetic.SerializeOperation(Operation)} {RightChild.PrettyPrint()})";
 
     public bool SanityCheckType() => Operation switch
     {

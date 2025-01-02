@@ -10,14 +10,15 @@ public record Invocation() : INonTerminal
         [new Term(), new TerminalSymbol("."), new NamedSymbol(), new TerminalSymbol("("), new ArgumentList(), new TerminalSymbol(")")],
         [new NamedSymbol(), new TerminalSymbol("("), new ArgumentList(), new TerminalSymbol(")")]];
 
-    private static FunctionCall VerifyCore(ImmutableDictionary<string, ISemanticUnit> context, string functionName, IEvaluatable[] arguments)
+    private static IEvaluatable VerifyCore(ImmutableDictionary<string, ISemanticUnit> context, string functionName, IEvaluatable[] arguments)
     {
         if (!context.TryGetValue(functionName, out ISemanticUnit? foundFunction))
             throw new Exception($"unresolved symbol {functionName}");
 
         return foundFunction switch
         {
-            FunctionDefinition def => new FunctionCall(def, arguments),
+            FunctionPrototype def => def.Call(arguments),
+            TypeDefinition constructor => constructor.Construct(arguments),
             _ => throw new Exception($"misuse of symbol {functionName}, expecting function, actually is {foundFunction.GetType().Name}")
         };
     }
