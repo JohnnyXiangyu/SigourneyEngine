@@ -89,30 +89,32 @@ public class SemanticMachineTests
         Assert.IsTrue(typeDef.Parameters["Z"].Name == "bool");
     }
 
-    //[TestMethod]
-    //public void FunctionDefinitionVerificationTest()
-    //{
-    //    string define = "int AddTwice(int lhs, int rhs) => { lhs + rhs + rhs }";
-    //    ParseTree? tree = GrammarRules.Parse(define, new FunctionDecalaration());
-    //    Assert.IsNotNull(tree);
+    [TestMethod]
+    public void FunctionDefinitionVerificationTest()
+    {
+        string define = "int AddTwice(int lhs, int rhs) => lhs + rhs + rhs ";
+        ParseTree? tree = GrammarRules.Parse(define, new MaybeInlineFunction());
+        Assert.IsNotNull(tree);
 
-    //    FunctionDefinition declaration = FunctionDecalaration.VerifyFullDefinition(tree.Children, IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty));
-    //    Console.WriteLine(declaration.PrettyPrint());
+        var context = IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty);
+        FunctionPrototype prototype = MaybeInlineFunction.ExtractHeader(tree.Children, context);
+        context = context.Add(prototype.Name, prototype);
 
-    //    var context = ImmutableDictionary<string, ISemanticUnit>.Empty.Add(declaration.Prototype.Name, declaration);
+        FunctionDefinition declaration = MaybeInlineFunction.VerifyFullDefinition(tree.Children, context);
+        Console.WriteLine(declaration.PrettyPrint());
 
-    //    string invocation = "AddTwice(10, AddTwice(5, 1))";
-    //    ParseTree? invocationTree = GrammarRules.Parse(invocation, new Invocation());
-    //    Assert.IsNotNull(invocationTree);
-    //    IEvaluatable call = Invocation.Verify(invocationTree.Children, context);
+        string invocation = "AddTwice(10, AddTwice(5, 1))";
+        ParseTree? invocationTree = GrammarRules.Parse(invocation, new Invocation());
+        Assert.IsNotNull(invocationTree);
+        IEvaluatable call = Invocation.Verify(invocationTree.Children, context);
 
-    //    Console.WriteLine(call.PrettyPrint());
-    //}
+        Console.WriteLine(call.PrettyPrint());
+    }
 
     [TestMethod]
     public void ScriptParsingTest()
     {
-        string code = "type Vector2 { int X, int Y, bool Z }; int AddTwice(int lhs, int rhs) => { lhs + rhs + rhs }";
+        string code = "type Vector2 {int X, int Y}; int AddTwice(int lhs, int rhs) => lhs + rhs + rhs;";
         ParseTree? tree = GrammarRules.Parse(code, new Script());
         Assert.IsNotNull(tree);
 
@@ -131,7 +133,7 @@ public class SemanticMachineTests
         // load function prototypes
         context = flattened.Aggregate(context, (oldContext, child) => child switch
         {
-            ParseTree(FunctionDecalaration, ParseTree[] decChildren) => FunctionDecalaration.ExtractHeader(decChildren, oldContext) switch
+            ParseTree(MaybeInlineFunction, ParseTree[] decChildren) => MaybeInlineFunction.ExtractHeader(decChildren, oldContext) switch
             {
                 FunctionPrototype prototype => oldContext.Add(prototype.Name, prototype)
             },
@@ -141,7 +143,7 @@ public class SemanticMachineTests
         // load actual function
         ImmutableDictionary<string, FunctionDefinition> functionDefinitions = flattened.Aggregate(ImmutableDictionary<string, FunctionDefinition>.Empty, (oldContext, child) => child switch
         {
-            ParseTree(FunctionDecalaration, ParseTree[] decChildren) => FunctionDecalaration.VerifyFullDefinition(decChildren, context) switch
+            ParseTree(MaybeInlineFunction, ParseTree[] decChildren) => MaybeInlineFunction.VerifyFullDefinition(decChildren, context) switch
             {
                 FunctionDefinition prototype => oldContext.Add(prototype.Prototype.Name, prototype)
             },

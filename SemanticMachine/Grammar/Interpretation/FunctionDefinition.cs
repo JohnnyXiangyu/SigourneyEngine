@@ -2,7 +2,7 @@
 
 namespace SemanticMachine.Grammar.Interpretation;
 
-public record FunctionPrototype(string Name, TypeDefinition ReturnType, ImmutableList<LazyEvaluatable> Params) : ISemanticUnit
+public record FunctionPrototype(string Name, bool Inline, TypeDefinition ReturnType, ImmutableList<LazyEvaluatable> Params) : ISemanticUnit
 {
     public FunctionCall Call(IEvaluatable[] arguments)
     {

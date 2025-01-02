@@ -5,8 +5,10 @@ namespace SemanticMachine.Grammar;
 
 public class GrammarRules
 {
-    private static readonly string[] s_Operators = ["=>", "->", "!=", "||", "&&", .. "+-*/=&|().[]{},".Select(c => c.ToString())];
+    private static readonly string[] s_Operators = ["=>", "->", "!=", "||", "&&", .. "+-*/=&|().[]{},;".Select(c => c.ToString())];
     private static readonly string[] s_Sparators = " \n\t".Select(c => c.ToString()).ToArray();
+
+    public static readonly HashSet<string> s_Keywords = ["type", "inline"];
 
     public static ITokenizer GetLexer() => new WaterfallLexer(s_Operators, s_Sparators);
 

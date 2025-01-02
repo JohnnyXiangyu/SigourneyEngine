@@ -10,7 +10,7 @@ public partial record NamedSymbol(string Name = "") : ITerminal
     [GeneratedRegex(@"[\w]+")]
     private static partial Regex GetPattern();
 
-    public ITerminal? Accept(string token) => GetPattern().IsMatch(token) ? new NamedSymbol(token) : null;
+    public ITerminal? Accept(string token) => !GrammarRules.s_Keywords.Contains(token) && GetPattern().IsMatch(token) ? new NamedSymbol(token) : null;
 
     public T Verify<T>(ImmutableDictionary<string, ISemanticUnit> context) where T : ISemanticUnit
     {

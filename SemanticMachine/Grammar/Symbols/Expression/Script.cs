@@ -8,15 +8,15 @@ namespace SemanticMachine.Grammar.Symbols.Expression;
 public record Script : INonTerminal
 {
     public static ISymbol[][] Rules => [
-        [new FunctionDecalaration(), new TerminalSymbol(";")],
+        [new MaybeInlineFunction(), new TerminalSymbol(";")],
         [new TypeDecalaration(), new TerminalSymbol(";")],
-        [new Script(), new FunctionDecalaration(), new TerminalSymbol(";")],
+        [new Script(), new MaybeInlineFunction(), new TerminalSymbol(";")],
         [new Script(), new TypeDecalaration(), new TerminalSymbol(";")]];
 
     public static ParseTree[] Flatten(ParseTree[] children) => ((ParseTree[])(children switch
     {
-        [ParseTree tail] => [tail],
-        [ParseTree(Script, ParseTree[] head), ParseTree tail] => [.. Flatten(head), tail],
+        [ParseTree tail, ParseTree(TerminalSymbol(";"), [])] => [tail],
+        [ParseTree(Script, ParseTree[] head), ParseTree tail, ParseTree(TerminalSymbol(";"), [])] => [.. Flatten(head), tail],
         _ => throw new Exception("parsing error, Script")
     })).Where(child => child.Symbol is not TerminalSymbol).ToArray();
 
@@ -31,7 +31,7 @@ public record Script : INonTerminal
 
     public static ImmutableDictionary<string, ISemanticUnit> LoadFunctionPrototypes(ParseTree[] flattened, ImmutableDictionary<string, ISemanticUnit> context) => flattened.Aggregate(context, (oldContext, child) => child switch
     {
-        ParseTree(FunctionDecalaration, ParseTree[] decChildren) => FunctionDecalaration.ExtractHeader(decChildren, oldContext) switch
+        ParseTree(MaybeInlineFunction, ParseTree[] decChildren) => MaybeInlineFunction.ExtractHeader(decChildren, oldContext) switch
         {
             FunctionPrototype prototype => oldContext.Add(prototype.Name, prototype)
         },
@@ -40,7 +40,7 @@ public record Script : INonTerminal
 
     public static ImmutableDictionary<string, FunctionDefinition> LoadFunctionDefinitions(ParseTree[] flattened, ImmutableDictionary<string, ISemanticUnit> context) => flattened.Aggregate(ImmutableDictionary<string, FunctionDefinition>.Empty, (oldContext, child) => child switch
     {
-        ParseTree(FunctionDecalaration, ParseTree[] decChildren) => FunctionDecalaration.VerifyFullDefinition(decChildren, context) switch
+        ParseTree(MaybeInlineFunction, ParseTree[] decChildren) => MaybeInlineFunction.VerifyFullDefinition(decChildren, context) switch
         {
             FunctionDefinition prototype => oldContext.Add(prototype.Prototype.Name, prototype)
         },
