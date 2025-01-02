@@ -4,6 +4,6 @@ namespace SemanticMachine.Grammar.Symbols.Definition;
 public class Definition : INonTerminal
 {
     public static ISymbol[][] Rules => [
-        [new FunctionDefinition()],
-        [new TypeDefiner()]];
+        [new FunctionDecalaration()],
+        [new TypeDecalaration()]];
 }

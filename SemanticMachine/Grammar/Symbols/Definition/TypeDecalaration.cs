@@ -30,7 +30,7 @@ public class MemberList : INonTerminal
     };
 }
 
-public class TypeDefiner : INonTerminal
+public class TypeDecalaration : INonTerminal
 {
     public static ISymbol[][] Rules => [
         [new TerminalSymbol("type"), new NamedSymbol(), new TerminalSymbol("{"), new MemberList(), new TerminalSymbol("}")]];

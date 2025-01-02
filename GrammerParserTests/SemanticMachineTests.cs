@@ -80,10 +80,10 @@ public class SemanticMachineTests
     public void TypeDefinitionVerificationTest()
     {
         string code = "type Vector2 { int32 X, int32 Y, bool Z }";
-        ParseTree? tree = GrammarRules.Parse(code, new TypeDefiner());
+        ParseTree? tree = GrammarRules.Parse(code, new TypeDecalaration());
         Assert.IsNotNull(tree);
 
-        TypeDefinition typeDef = TypeDefiner.Verify(tree.Children, IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty));
+        TypeDefinition typeDef = TypeDecalaration.Verify(tree.Children, IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty));
         Assert.IsTrue(typeDef.Name == "Vector2");
         Assert.IsTrue(typeDef.Parameters["X"].Name == "int32");
         Assert.IsTrue(typeDef.Parameters["Y"].Name == "int32");
