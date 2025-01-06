@@ -128,11 +128,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="allocator.cpp" />
     <ClCompile Include="dummy_resource_one.res.h" />
     <ClCompile Include="dummy_system.sys.c" />
     <ClCompile Include="generation_collector.c" />
     <ClCompile Include="main.c" />
-    <ClCompile Include="transient_allocator.cpp" />
     <ClCompile Include="task_graph.c" />
     <ClCompile Include="thread_pool.c" />
     <ClCompile Include="thread_messaging.c" />
@@ -141,14 +141,11 @@
     <ClInclude Include="allocator.h" />
     <ClInclude Include="dummy_resource_two.res.h" />
     <ClInclude Include="dummy_system.sys.h" />
-    <ClInclude Include="observerable_base.h" />
-    <ClInclude Include="transient_allocator.h" />
+    <ClInclude Include="observer_pattern.h" />
+    <ClInclude Include="observer_header.h" />
     <ClInclude Include="generation_collector.h" />
     <ClInclude Include="graph_resolver.h" />
-    <ClInclude Include="observable.h" />
-    <ClInclude Include="observer.h" />
-    <ClInclude Include="projection.h" />
-    <ClInclude Include="subscriber_splitter.h" />
+    <ClInclude Include="split_observer.h" />
     <ClInclude Include="task_graph.h" />
     <ClInclude Include="thread_pool.h" />
     <ClInclude Include="thread_messaging.h" />

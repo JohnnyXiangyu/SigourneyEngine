@@ -20,11 +20,11 @@
     <Filter Include="FunctionalLayer">
       <UniqueIdentifier>{48bca79a-db59-420c-84da-d80239990b10}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FunctionalLayer\StorageFreeEnumeration">
-      <UniqueIdentifier>{14d0f57b-ffce-43a8-91c4-205727145d36}</UniqueIdentifier>
-    </Filter>
     <Filter Include="FunctionalLayer\Memory">
       <UniqueIdentifier>{9427d29a-f66d-40df-82ff-f0d60634d37c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FunctionalLayer\Enumeration">
+      <UniqueIdentifier>{14d0f57b-ffce-43a8-91c4-205727145d36}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -50,7 +50,7 @@
     <ClCompile Include="dummy_resource_one.res.h">
       <Filter>UserDefined\DummySystem</Filter>
     </ClCompile>
-    <ClCompile Include="transient_allocator.cpp">
+    <ClCompile Include="allocator.cpp">
       <Filter>FunctionalLayer\Memory</Filter>
     </ClCompile>
   </ItemGroup>
@@ -76,26 +76,17 @@
     <ClInclude Include="dummy_resource_two.res.h">
       <Filter>UserDefined\DummySystem</Filter>
     </ClInclude>
-    <ClInclude Include="projection.h">
-      <Filter>FunctionalLayer\StorageFreeEnumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="observer.h">
-      <Filter>FunctionalLayer\StorageFreeEnumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="observable.h">
-      <Filter>FunctionalLayer\StorageFreeEnumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="subscriber_splitter.h">
-      <Filter>FunctionalLayer\StorageFreeEnumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="observerable_base.h">
-      <Filter>FunctionalLayer\StorageFreeEnumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="transient_allocator.h">
-      <Filter>FunctionalLayer\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="allocator.h">
       <Filter>FunctionalLayer\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="observer_header.h">
+      <Filter>FunctionalLayer\Enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="split_observer.h">
+      <Filter>FunctionalLayer\Enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="observer_pattern.h">
+      <Filter>FunctionalLayer\Enumeration</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

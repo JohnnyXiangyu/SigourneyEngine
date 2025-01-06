@@ -4,10 +4,16 @@ namespace SigourneyEngine {
 namespace FunctionalLayer {
 namespace Memory {
 
-class IAllocator
+struct StaticAllocator
 {
-public:
-    virtual void* AllocateCore(size_t size) = 0;
+    char* Buffer;
+    size_t CurrentUsage = 0;
+    size_t CurrentSize;
+
+    void* AllocateCore(size_t size);
+
+    StaticAllocator(size_t initialSize);
+    ~StaticAllocator();
 
     template <typename TTarget>
     TTarget* New()

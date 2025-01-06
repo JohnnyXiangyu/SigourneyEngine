@@ -21,15 +21,12 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DummyObserver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DummyObserver.h">
+    <ClInclude Include="dummy_classes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

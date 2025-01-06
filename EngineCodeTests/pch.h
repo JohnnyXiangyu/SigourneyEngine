@@ -7,14 +7,8 @@
 #ifndef PCH_H
 #define PCH_H
 
-#include "../SigourneyEngine/projection.h"
-#include "../SigourneyEngine/observable.h"
-#include "../SigourneyEngine/observer.h"
-#include "../SigourneyEngine/transient_allocator.h"
-#include "../SigourneyEngine/subscriber_splitter.h"
-#include <vector>
-#include <algorithm>
-#include <iostream>
+#include "../SigourneyEngine/allocator.h"
+#include "../SigourneyEngine/observer_pattern.h"
 // add headers that you want to pre-compile here
 
 #endif //PCH_H
