@@ -9,6 +9,7 @@
 
 #include "../SigourneyEngine/allocator.h"
 #include "../SigourneyEngine/observer_pattern.h"
+#include "../SigourneyEngine/enumerable.h"
 // add headers that you want to pre-compile here
 
 #endif //PCH_H

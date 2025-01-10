@@ -49,4 +49,43 @@ struct DummySink
     DummySink() : Observer(OnNextRoutine) {}
 };
 
+struct BaseAcceptor
+{
+    bool Accept(const double& element)
+    {
+        Microsoft::VisualStudio::CppUnitTestFramework::Logger::WriteMessage(std::to_string(element).c_str());
+        Microsoft::VisualStudio::CppUnitTestFramework::Logger::WriteMessage("\n");
+        return true;
+    }
+};
+
+struct BaseTransform
+{
+    double Transform(int element) const
+    {
+        return element * 3.1415926;
+    }
+};
+
+struct BasePredicate
+{
+    bool Allow(double element) const
+    {
+        return element > 6.18;
+    }
+};
+
+struct HeadAcceptor
+{
+    int Counter = 0;
+
+    bool Accept(const double& element)
+    {
+        Microsoft::VisualStudio::CppUnitTestFramework::Logger::WriteMessage(std::to_string(element).c_str());
+        Microsoft::VisualStudio::CppUnitTestFramework::Logger::WriteMessage("\n");
+        Counter++;
+        return Counter < 2;
+    }
+};
+
 }

@@ -141,6 +141,7 @@
     <ClInclude Include="allocator.h" />
     <ClInclude Include="dummy_resource_two.res.h" />
     <ClInclude Include="dummy_system.sys.h" />
+    <ClInclude Include="enumerable.h" />
     <ClInclude Include="observer_pattern.h" />
     <ClInclude Include="observer_header.h" />
     <ClInclude Include="generation_collector.h" />

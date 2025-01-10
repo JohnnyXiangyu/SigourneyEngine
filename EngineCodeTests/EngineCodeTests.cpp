@@ -36,5 +36,18 @@ public:
 
 		source.PipeThrough();
 	}
+
+	TEST_METHOD(EnumerableTest)
+	{
+		int source[5] = { 1, 2, 3, 4, 5 };
+		Enumeration::BaseEnumerable<int> sourceEnum = { source, 5 };
+		HeadAcceptor acceptor;
+		BaseTransform transform;
+		BasePredicate pred;
+		auto selector = Enumeration::Select(sourceEnum, transform);
+		auto where = Enumeration::Where(selector, pred);
+
+		where.Enumerate(acceptor);
+	}
 };
 }

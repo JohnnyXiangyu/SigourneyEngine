@@ -88,5 +88,8 @@
     <ClInclude Include="observer_pattern.h">
       <Filter>FunctionalLayer\Enumeration</Filter>
     </ClInclude>
+    <ClInclude Include="enumerable.h">
+      <Filter>FunctionalLayer\Enumeration</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
