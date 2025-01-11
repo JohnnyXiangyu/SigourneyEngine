@@ -26,6 +26,9 @@
     <Filter Include="FunctionalLayer\Enumeration">
       <UniqueIdentifier>{14d0f57b-ffce-43a8-91c4-205727145d36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{33da1176-6ad4-486a-a441-03931b0858e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="generation_collector.c">
@@ -50,7 +53,7 @@
     <ClCompile Include="dummy_resource_one.res.h">
       <Filter>UserDefined\DummySystem</Filter>
     </ClCompile>
-    <ClCompile Include="allocator.cpp">
+    <ClCompile Include="static_allocator.cpp">
       <Filter>FunctionalLayer\Memory</Filter>
     </ClCompile>
   </ItemGroup>
@@ -79,17 +82,23 @@
     <ClInclude Include="allocator.h">
       <Filter>FunctionalLayer\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="observer_header.h">
-      <Filter>FunctionalLayer\Enumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="split_observer.h">
-      <Filter>FunctionalLayer\Enumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="observer_pattern.h">
-      <Filter>FunctionalLayer\Enumeration</Filter>
-    </ClInclude>
     <ClInclude Include="enumerable.h">
       <Filter>FunctionalLayer\Enumeration</Filter>
     </ClInclude>
+    <ClInclude Include="static_allocator.h">
+      <Filter>FunctionalLayer\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.h">
+      <Filter>FunctionalLayer</Filter>
+    </ClInclude>
+    <ClInclude Include="array_literal.h">
+      <Filter>FunctionalLayer\Enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="non_essential_macros.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

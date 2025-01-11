@@ -1,10 +1,10 @@
-#include "allocator.h"
+#include "static_allocator.h"
 #include <memory>
 
 using namespace std;
+using namespace SigourneyEngine::FunctionalLayer;
 
-
-void* SigourneyEngine::FunctionalLayer::Memory::StaticAllocator::AllocateCore(size_t size)
+void* Memory::StaticAllocator::AllocateCore(size_t size)
 {
     if (CurrentSize - CurrentUsage < size)
     {
@@ -19,13 +19,18 @@ void* SigourneyEngine::FunctionalLayer::Memory::StaticAllocator::AllocateCore(si
     return result;
 }
 
-SigourneyEngine::FunctionalLayer::Memory::StaticAllocator::StaticAllocator(size_t initialSize)
+void Memory::StaticAllocator::DeallocateCore(void* pointer)
+{
+
+}
+
+Memory::StaticAllocator::StaticAllocator(size_t initialSize)
     : CurrentSize(initialSize), CurrentUsage(0)
 {
     Buffer = new char[initialSize];
 }
 
-SigourneyEngine::FunctionalLayer::Memory::StaticAllocator::~StaticAllocator()
+Memory::StaticAllocator::~StaticAllocator()
 {
     delete[] Buffer;
 }

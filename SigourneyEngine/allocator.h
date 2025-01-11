@@ -4,22 +4,24 @@ namespace SigourneyEngine {
 namespace FunctionalLayer {
 namespace Memory {
 
-struct StaticAllocator
+class IAllocator
 {
-    char* Buffer;
-    size_t CurrentUsage = 0;
-    size_t CurrentSize;
+protected:
+    virtual void* AllocateCore(size_t size) = 0;
+    virtual void DeallocateCore(void* pointer) = 0;
 
-    void* AllocateCore(size_t size);
-
-    StaticAllocator(size_t initialSize);
-    ~StaticAllocator();
-
+public:
     template <typename TTarget>
     TTarget* New()
     {
         void* ensuredBuffer = AllocateCore(sizeof(TTarget));
         return new (ensuredBuffer) TTarget;
+    }
+
+    template <typename TTarget>
+    void Free(TTarget* pointer)
+    {
+        DeallocateCore(pointer);
     }
 };
 

@@ -128,7 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="allocator.cpp" />
+    <ClCompile Include="static_allocator.cpp" />
     <ClCompile Include="dummy_resource_one.res.h" />
     <ClCompile Include="dummy_system.sys.c" />
     <ClCompile Include="generation_collector.c" />
@@ -142,14 +142,18 @@
     <ClInclude Include="dummy_resource_two.res.h" />
     <ClInclude Include="dummy_system.sys.h" />
     <ClInclude Include="enumerable.h" />
-    <ClInclude Include="observer_pattern.h" />
-    <ClInclude Include="observer_header.h" />
+    <ClInclude Include="array_literal.h" />
     <ClInclude Include="generation_collector.h" />
     <ClInclude Include="graph_resolver.h" />
-    <ClInclude Include="split_observer.h" />
+    <ClInclude Include="non_essential_macros.h" />
+    <ClInclude Include="runtime.h" />
+    <ClInclude Include="static_allocator.h" />
     <ClInclude Include="task_graph.h" />
     <ClInclude Include="thread_pool.h" />
     <ClInclude Include="thread_messaging.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
