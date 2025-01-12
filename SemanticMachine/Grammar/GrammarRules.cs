@@ -5,7 +5,7 @@ namespace SemanticMachine.Grammar;
 
 public class GrammarRules
 {
-    private static readonly string[] s_Operators = ["=>", "->", "!=", "||", "&&", .. "+-*/=&|().[]{},;".Select(c => c.ToString())];
+    private static readonly string[] s_Operators = ["=>", "->", "!=", "||", "&&", "[]", .. "+-*/=&|().[]{},;".Select(c => c.ToString())];
     private static readonly string[] s_Sparators = " \n\t".Select(c => c.ToString()).ToArray();
 
     public static readonly HashSet<string> s_Keywords = ["type", "inline"];
@@ -21,7 +21,7 @@ public class GrammarRules
 
     public static IEnumerable<IEnumerable<ISymbol>> GrammarFuncCoreNew(ISymbol target) => s_prebuiltMapping[target.GetType()];
 
-    public static string PrintGrammar() => string.Join('\n', s_prebuiltMapping.OrderBy(pair => pair.Key.Name).Select(pair => $"{pair.Key.Name} |= {string.Join($"\n{new string(' ', pair.Key.Name.Length + 4)}", pair.Value.Select(rule => string.Join(", ", rule.Select(x => x.GrammarPrint()))))}\n"));
+    public static string PrintGrammar() => string.Join('\n', s_prebuiltMapping.OrderBy(pair => pair.Key.Name).Select(pair => $"{pair.Key.Name} := {string.Join($"\n{new string(' ', pair.Key.Name.Length + 4)}", pair.Value.Select(rule => string.Join(", ", rule.Select(x => x.GrammarPrint()))))}\n"));
 
     // there's a problem with C-style coding: the recursive part is on the left side of an invcation (foo.bar).
     // making it almost impossible to parse from left to right without bumping into infinite loops,

@@ -2,10 +2,13 @@
 
 namespace SemanticMachine.Grammar.Interpretation;
 
+public record Int32Type() : TypeDefinition("int", ImmutableDictionary<string, TypeDefinition>.Empty, ImmutableList<string>.Empty);
+public record BooleanType() : TypeDefinition("bool", ImmutableDictionary<string, TypeDefinition>.Empty, ImmutableList<string>.Empty);
+
 public static partial class PrimitiveTypes
 {
-    public const string Int32 = "int";
-    public const string Boolean = "bool";
+    public static readonly TypeDefinition Int32 = new Int32Type();
+    public static readonly TypeDefinition Boolean = new BooleanType();
 }
 
 public enum ArithmeticOperation
@@ -24,26 +27,21 @@ public enum ArithmeticOperation
 public interface IArithmetic : IEvaluatable
 {
     public static ImmutableDictionary<string, ISemanticUnit> LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit> prefix) =>
-        prefix.Add(PrimitiveTypes.Int32, new PrimitiveType(PrimitiveTypes.Int32)).Add(PrimitiveTypes.Boolean, new PrimitiveType(PrimitiveTypes.Boolean));
+        prefix.Add(PrimitiveTypes.Int32.Name, PrimitiveTypes.Int32).Add(PrimitiveTypes.Boolean.Name, PrimitiveTypes.Boolean);
 
-    private static KeyValuePair<string, ArithmeticOperation>[] s_operatorMappings = [
-        new KeyValuePair<string, ArithmeticOperation>("+" ,ArithmeticOperation.Add),
-        new KeyValuePair<string, ArithmeticOperation>("-" ,ArithmeticOperation.Minus),
-        new KeyValuePair<string, ArithmeticOperation>("*" ,ArithmeticOperation.Mult),
-        new KeyValuePair<string, ArithmeticOperation>("/" ,ArithmeticOperation.Divide),
-        new KeyValuePair<string, ArithmeticOperation>("&" ,ArithmeticOperation.BitwiseAnd),
-        new KeyValuePair<string, ArithmeticOperation>("|" ,ArithmeticOperation.BitwiseOr),
-        new KeyValuePair<string, ArithmeticOperation>("&&", ArithmeticOperation.LogicAnd),
-        new KeyValuePair<string, ArithmeticOperation>("||", ArithmeticOperation.LogicOr),
-        new KeyValuePair<string, ArithmeticOperation>("=" ,ArithmeticOperation.Equals),
-        ];
-
-    private static ImmutableDictionary<string, ArithmeticOperation> s_deserializer = ImmutableDictionary<string, ArithmeticOperation>.Empty.AddRange(s_operatorMappings);
-    private static ImmutableDictionary<ArithmeticOperation, string> s_serialzer = ImmutableDictionary<ArithmeticOperation, string>.Empty.AddRange(s_operatorMappings.Select(pair => new KeyValuePair<ArithmeticOperation, string>(pair.Value, pair.Key)));
-
-    public static ArithmeticOperation DeserializeOperation(string operation) => s_deserializer[operation];
-
-    public static string SerializeOperation(ArithmeticOperation operation) => s_serialzer[operation];
+    public static ArithmeticOperation DeserializeOperation(string operation) => operation switch
+    {
+        "+" => ArithmeticOperation.Add,
+        "-" => ArithmeticOperation.Minus,
+        "*" => ArithmeticOperation.Mult,
+        "/" => ArithmeticOperation.Divide,
+        "&" => ArithmeticOperation.BitwiseAnd,
+        "|" => ArithmeticOperation.BitwiseOr,
+        "&&" => ArithmeticOperation.LogicAnd,
+        "||" => ArithmeticOperation.LogicOr,
+        "=" => ArithmeticOperation.Equals,
+        _ => throw new NotImplementedException()
+    };
 
     public static int ArithmeticOpAltitude(ArithmeticOperation op) => op switch
     {
@@ -61,16 +59,7 @@ public interface IArithmetic : IEvaluatable
 
     public static int ArithmeticOpAltitude(string op) => ArithmeticOpAltitude(DeserializeOperation(op));
 
-    public static bool ValidityCheck(string ltype, string rtype, ArithmeticOperation operation) =>
-    operation switch
-    {
-        ArithmeticOperation.Add or ArithmeticOperation.Minus or ArithmeticOperation.Mult or ArithmeticOperation.Divide or ArithmeticOperation.BitwiseAnd or ArithmeticOperation.BitwiseOr => ltype == rtype && ltype == PrimitiveTypes.Int32,
-        ArithmeticOperation.LogicAnd or ArithmeticOperation.LogicOr => ltype == rtype && ltype == PrimitiveTypes.Boolean,
-        ArithmeticOperation.Equals => ltype == rtype && (ltype == PrimitiveTypes.Boolean || ltype == PrimitiveTypes.Int32),
-        _ => throw new Exception("why the fuck is there an unexpected binary operation type?")
-    };
-
-    protected static string OperatorReturnType(ArithmeticOperation operation) => operation switch
+    protected static TypeDefinition OperatorReturnType(ArithmeticOperation operation) => operation switch
     {
         ArithmeticOperation.Add or ArithmeticOperation.Minus or ArithmeticOperation.Mult or ArithmeticOperation.Divide or ArithmeticOperation.BitwiseOr or ArithmeticOperation.BitwiseAnd => PrimitiveTypes.Int32,
         ArithmeticOperation.LogicAnd or ArithmeticOperation.LogicOr or ArithmeticOperation.Equals => PrimitiveTypes.Boolean,
@@ -82,19 +71,15 @@ public interface IArithmetic : IEvaluatable
 
 public class LeafArithmetic(IEvaluatable value) : IArithmetic
 {
-    public string Type => value.Type;
+    public TypeDefinition Type => value.Type;
     public IEvaluatable Value => value;
-
-    public string PrettyPrint() => Value.PrettyPrint();
 
     public bool SanityCheckType() => true;
 }
 
 public record NodeArithmetic(IArithmetic LeftChild, IArithmetic RightChild, ArithmeticOperation Operation) : IArithmetic
 {
-    public string Type => IArithmetic.OperatorReturnType(Operation);
-
-    public string PrettyPrint() => $"({LeftChild.PrettyPrint()} {IArithmetic.SerializeOperation(Operation)} {RightChild.PrettyPrint()})";
+    public TypeDefinition Type => IArithmetic.OperatorReturnType(Operation);
 
     public bool SanityCheckType() => Operation switch
     {
@@ -107,14 +92,10 @@ public record NodeArithmetic(IArithmetic LeftChild, IArithmetic RightChild, Arit
 
 public record Int32Value(int Value) : IEvaluatable
 {
-    public string Type => PrimitiveTypes.Int32;
-
-    public string PrettyPrint() => Value.ToString();
+    public TypeDefinition Type => PrimitiveTypes.Int32;
 }
 
 public record BooleanValue(bool Value) : IEvaluatable
 {
-    public string Type => PrimitiveTypes.Boolean;
-
-    public string PrettyPrint() => Value.ToString();
+    public TypeDefinition Type => PrimitiveTypes.Boolean;
 }

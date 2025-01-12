@@ -11,7 +11,8 @@ public record Term() : INonTerminal
         [new NamedSymbol()],
         [new TerminalSymbol("("), new Expr(), new TerminalSymbol(")")],
         [new Invocation()],
-        [new ValueGetter()]];
+        [new ValueGetter()],
+        [new ArrayInitializer()]];
 
     public static IEvaluatable Verify(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> resolutionContext) =>
         children[0].Symbol switch
@@ -25,6 +26,7 @@ public record Term() : INonTerminal
             },
             Invocation => Invocation.Verify(children[0].Children, resolutionContext),
             ValueGetter => ValueGetter.Verify(children[0].Children, resolutionContext),
+            ArrayInitializer => ArrayInitializer.Verify(children[0].Children, resolutionContext),
             _ => throw new Exception("parsing error, Term")
         };
 }

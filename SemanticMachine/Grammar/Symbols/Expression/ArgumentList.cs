@@ -8,8 +8,7 @@ public record ArgumentList() : INonTerminal
 {
     public static ISymbol[][] Rules => [
         [new ArgumentList(), new TerminalSymbol(","), new Expr()],
-        [new Expr()],
-        [new TerminalSymbol("_")]];
+        [new Expr()]];
 
     public static IEvaluatable[] Verify(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> resolutionContext) =>
         children switch

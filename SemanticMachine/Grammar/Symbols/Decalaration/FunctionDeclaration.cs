@@ -8,13 +8,13 @@ namespace SemanticMachine.Grammar.Symbols.Decalaration;
 public record ParameterList : INonTerminal
 {
     public static ISymbol[][] Rules => [
-        [new NamedSymbol(), new NamedSymbol()],
-        [new ParameterList(), new TerminalSymbol(","), new NamedSymbol(), new NamedSymbol()]];
+        [new TypeIdentifier(), new NamedSymbol()],
+        [new ParameterList(), new TerminalSymbol(","), new TypeIdentifier(), new NamedSymbol()]];
 
     private static ImmutableList<LazyEvaluatable> FlattenCore(ParseTree[] children, ImmutableList<LazyEvaluatable> reversedSuffix, ImmutableDictionary<string, ISemanticUnit> context) => children switch
     {
-        [ParseTree(NamedSymbol(string type), []), ParseTree(NamedSymbol(string name), [])] => reversedSuffix.Add(new LazyEvaluatable(TypeDefinition.Resolve(type, context), name)),
-        [ParseTree(ParameterList, ParseTree[] listChildren), _, ParseTree(NamedSymbol(string type), []), ParseTree(NamedSymbol(string name), [])] => FlattenCore(listChildren, reversedSuffix.Add(new LazyEvaluatable(TypeDefinition.Resolve(type, context), name)), context),
+        [ParseTree(TypeIdentifier, ParseTree[] typeChildren), ParseTree(NamedSymbol(string name), [])] => reversedSuffix.Add(new LazyEvaluatable(TypeIdentifier.Resolve(typeChildren, context), name)),
+        [ParseTree(ParameterList, ParseTree[] listChildren), _, ParseTree(TypeIdentifier, ParseTree[] typeChildren), ParseTree(NamedSymbol(string name), [])] => FlattenCore(listChildren, reversedSuffix.Add(new LazyEvaluatable(TypeIdentifier.Resolve(typeChildren, context), name)), context),
         _ => throw new Exception("parsing error, ParameterList")
     };
 
@@ -45,24 +45,24 @@ public record MaybeInlineFunction : INonTerminal
 public record FunctionDeclaration : INonTerminal
 {
     public static ISymbol[][] Rules => [
-        [new NamedSymbol(), new NamedSymbol(), new TerminalSymbol("("), new ParameterList(), new TerminalSymbol(")"), new TerminalSymbol("=>"), new Expr()],
-        [new NamedSymbol(), new NamedSymbol(), new TerminalSymbol("("), new TerminalSymbol(")"), new TerminalSymbol("=>"), new Expr()]];
+        [new TypeIdentifier(), new NamedSymbol(), new TerminalSymbol("("), new ParameterList(), new TerminalSymbol(")"), new TerminalSymbol("=>"), new Expr()],
+        [new TypeIdentifier(), new NamedSymbol(), new TerminalSymbol("("), new TerminalSymbol(")"), new TerminalSymbol("=>"), new Expr()]];
 
     public static FunctionPrototype ExtractHeader(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> context) => children switch
     {
-        [ParseTree(NamedSymbol(string type), []), ParseTree(NamedSymbol(string functionName), []), _, ParseTree(ParameterList, ParseTree[] parametersChildren), _, _, ParseTree(Expr, ParseTree[] exprChildren)] => ParameterList.Flatten(parametersChildren, context) switch
+        [ParseTree(TypeIdentifier, ParseTree[] typeChildren), ParseTree(NamedSymbol(string functionName), []), _, ParseTree(ParameterList, ParseTree[] parametersChildren), _, _, ParseTree(Expr, ParseTree[] exprChildren)] => ParameterList.Flatten(parametersChildren, context) switch
         {
             ImmutableList<LazyEvaluatable> parameters => new FunctionPrototype(
                 functionName,
                 false,
-                TypeDefinition.Resolve(type, context),
+                TypeIdentifier.Resolve(typeChildren, context),
                 parameters),
             _ => throw new Exception($"parsing error, {nameof(FunctionDeclaration)}")
         },
-        [ParseTree(NamedSymbol(string type), []), ParseTree(NamedSymbol(string functionName), []), _, _, _, ParseTree(Expr, ParseTree[] exprChildren)] => new FunctionPrototype(
+        [ParseTree(TypeIdentifier, ParseTree[] typeChildren), ParseTree(NamedSymbol(string functionName), []), _, _, _, ParseTree(Expr, ParseTree[] exprChildren)] => new FunctionPrototype(
                 functionName,
                 false,
-                TypeDefinition.Resolve(type, context),
+                TypeIdentifier.Resolve(typeChildren, context),
                 []),
         _ => throw new Exception($"parsing error, {nameof(FunctionDeclaration)}")
     };
@@ -74,7 +74,7 @@ public record FunctionDeclaration : INonTerminal
             FunctionPrototype prototype => new FunctionDefinition(prototype, Expr.Verify(exprChildren, context.AddRange(prototype.Params.Select(param => new KeyValuePair<string, ISemanticUnit>(param.Name, param))))),
             ISemanticUnit unit => throw new Exception($"symbol type mismatch, expecting function prototype, got {unit.GetType().Name}")
         },
-        [ParseTree(NamedSymbol(string type), []), ParseTree(NamedSymbol(string functionName), []), _, _, _, ParseTree(Expr, ParseTree[] exprChildren)] => ISemanticUnit.ResolveSymbol(functionName, context) switch
+        [_, ParseTree(NamedSymbol(string functionName), []), _, _, _, ParseTree(Expr, ParseTree[] exprChildren)] => ISemanticUnit.ResolveSymbol(functionName, context) switch
         {
             FunctionPrototype prototype => new FunctionDefinition(prototype, Expr.Verify(exprChildren, context)),
             ISemanticUnit unit => throw new Exception($"symbol type mismatch, expecting function prototype, got {unit.GetType().Name}")

@@ -2,12 +2,10 @@
 
 public interface IEvaluatable : ISemanticUnit
 {
-    string Type { get; }
+    TypeDefinition Type { get; }
 }
 
 public record LazyEvaluatable(TypeDefinition ParamType, string Name) : IEvaluatable
 {
-    public string Type => ParamType.Name;
-
-    public string PrettyPrint() => Name;
+    public TypeDefinition Type => ParamType;
 } 

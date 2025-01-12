@@ -12,13 +12,6 @@ public record FunctionPrototype(string Name, bool Inline, TypeDefinition ReturnT
 
         return new FunctionCall(this, arguments);
     }
-
-    public string PrettyPrint() =>
-        $"{ReturnType.Name} {Name}({string.Join(", ", Params.Select(p => $"{p.Type} {p.Name}"))});";
 }
 
-public record FunctionDefinition(FunctionPrototype Prototype, IEvaluatable Body) : ISemanticUnit
-{
-    public string PrettyPrint() =>
-        $"{Prototype.ReturnType.Name} {Prototype.Name}({string.Join(", ", Prototype.Params.Select(p => $"{p.Type} {p.Name}"))})\n{{\n    return {Body.PrettyPrint()};\n}}\n";
-}
+public record FunctionDefinition(FunctionPrototype Prototype, IEvaluatable Body) : ISemanticUnit;

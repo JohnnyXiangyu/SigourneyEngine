@@ -1,17 +1,15 @@
-﻿using System.Collections.Immutable;
-
-namespace SemanticMachine.Grammar.Interpretation;
+﻿namespace SemanticMachine.Grammar.Interpretation;
 
 public class TypeMemberGetter : IEvaluatable
 {
     public IEvaluatable Subject { get; private set; }
     public string Member { get; private set; }
     public TypeDefinition ReturnType { get; private set; }
-    public string Type => ReturnType.Name;
+    public TypeDefinition Type => ReturnType;
 
-    public TypeMemberGetter(IEvaluatable subject, string member, ImmutableDictionary<string, ISemanticUnit> context)
+    public TypeMemberGetter(IEvaluatable subject, string member)
     {
-        TypeDefinition type = TypeDefinition.Resolve(subject.Type, context);
+        TypeDefinition type = subject.Type;
         if (!type.Parameters.TryGetValue(member, out TypeDefinition? paramType))
             throw new Exception($"type {subject.Type} doesn't have mamber {member}");
 
@@ -19,6 +17,4 @@ public class TypeMemberGetter : IEvaluatable
         ReturnType = paramType;
         Member = member;
     }
-
-    public string PrettyPrint() => $"{Subject.PrettyPrint()}.{Member}";
 }

@@ -1,19 +1,55 @@
-LITERAL |= number, character, string, etc.
+// generated
 
-NAME_TOKEN |= any name following C variable naming restriction
-VARIABLE |= NAME_TOKEN
+ArgumentList := ArgumentList, T",", Expr
+                Expr
 
-PARAMETER |= NAME_TOKEN NAME_TOKEN
+ArrayContentList := Expr
+                    ArrayContentList, T",", Expr
 
-* no type inference for now *
+ArrayInitializer := T"[", ArrayContentList, T"]"
 
-PARAM_LIST |= PARAMETER
-PARAM_LIST |= PARAM_LIST, PARAMETER
+BinopChain := Term, Binop, Term
+              BinopChain, Binop, Term
 
-TYPE_DEF |= typ NAME_TOKEN PARAM_LIST
+Expr := BinopChain
+        Term
+        ValueGetter
 
-* TODO: EXPR has some major problems, what the fuck are they? *
-EXPR |= 
+FunctionDeclaration := NamedSymbol, NamedSymbol, T"(", ParameterList, T")", T"=>", Expr
+                       NamedSymbol, NamedSymbol, T"(", T")", T"=>", Expr
 
-LAMBDA |= PARAM_LIST => EXPR
-FUNCTION_DEFINITION |= fnkt NAME_TOKEN: (?) LAMBDA
+Invocation := Term, T".", NamedSymbol, T"(", ArgumentList, T")"
+              NamedSymbol, T"(", ArgumentList, T")"
+
+Literal := BooleanLiteral
+           Int32Literal
+
+MaybeInlineFunction := T"inline", FunctionDeclaration
+                       FunctionDeclaration
+
+MemberList := SingularMember
+              MemberList, T",", SingularMember
+
+ParameterList := TypeIdentifier, NamedSymbol
+                 ParameterList, T",", TypeIdentifier, NamedSymbol
+
+Script := MaybeInlineFunction, T";"
+          TypeDecalaration, T";"
+          Script, MaybeInlineFunction, T";"
+          Script, TypeDecalaration, T";"
+
+SingularMember := NamedSymbol, NamedSymbol
+
+Term := Literal
+        NamedSymbol
+        T"(", Expr, T")"
+        Invocation
+        ValueGetter
+        ArrayInitializer
+
+TypeDecalaration := T"type", NamedSymbol, T"{", MemberList, T"}"
+
+TypeIdentifier := NamedSymbol
+                  TypeIdentifier, T"[]"
+
+ValueGetter := Term, T"->", NamedSymbol

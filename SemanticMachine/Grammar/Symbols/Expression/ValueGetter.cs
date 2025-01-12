@@ -11,7 +11,7 @@ public record ValueGetter() : INonTerminal
     public static IEvaluatable Verify(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> context) =>
         children switch
         {
-        [ParseTree(Term _, ParseTree[] termChildren), _, ParseTree(NamedSymbol(string memberName), [])] => new TypeMemberGetter(Term.Verify(termChildren, context), memberName, context),
+        [ParseTree(Term _, ParseTree[] termChildren), _, ParseTree(NamedSymbol(string memberName), [])] => new TypeMemberGetter(Term.Verify(termChildren, context), memberName),
             _ => throw new Exception("parsing error, ValueGetter")
         };
 }

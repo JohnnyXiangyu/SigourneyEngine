@@ -1,4 +1,5 @@
 ﻿using ParserFramework;
+using SemanticMachine.Binding;
 using SemanticMachine.Grammar;
 using SemanticMachine.Grammar.Interpretation;
 using SemanticMachine.Grammar.Symbols.Decalaration;
@@ -10,64 +11,6 @@ namespace GrammerParserTests;
 [TestClass]
 public class SemanticMachineTests
 {
-    private static void ParseSomething(string thing)
-    {
-        string[] tokens = GrammarRules.GetLexer().Lex(thing).Reverse().ToArray();
-        ParseTree? parseTree = OmniParser.Parse(GrammarRules.GrammarFunc, new Expr(), tokens);
-
-        Assert.IsNotNull(parseTree);
-        Console.WriteLine(parseTree.PrettyPrint()?.ToString());
-    }
-
-    [TestMethod]
-    public void ParseTest()
-    {
-        // TODO: need to add back support for lambda
-        //ParseSomething("results.Select(x => { x->Name }).Where(x, y, z => { x->Length = 1 })"); // whatever this is
-        ParseSomething("a + b"); // a binop
-        ParseSomething("a + b * c * d"); // a binop
-        //ParseSomething("x => { x + y + z}"); // a simple lambda
-        //ParseSomething("x, y => { x + y + z}"); // a random lambda
-        //ParseSomething("x, _ => { x }"); // a random lambda
-    }
-
-    public static void ArithmaticParseTest(string code)
-    {
-        string[] tokens = GrammarRules.GetLexer().Lex(code).Reverse().ToArray();
-        ParseTree? tree = OmniParser.Parse(GrammarRules.GrammarFunc, new BinopChain(), tokens);
-
-        Assert.IsNotNull(tree);
-
-        // reverse the tree
-        ParseTree postProcessedTree = GrammarRules.ReverseTreeBack(tree);
-
-        IArithmetic arith = BinopChain.Verify(postProcessedTree.Children, ImmutableDictionary<string, ISemanticUnit>.Empty);
-        Console.WriteLine(arith.PrettyPrint());
-    }
-
-    [TestMethod]
-    public void ArithmaticParseTests()
-    {
-        ArithmaticParseTest("1 + 2 + 3");
-        ArithmaticParseTest("1 + 2 * 3");
-        ArithmaticParseTest("1 * 2 + 3");
-        ArithmaticParseTest("1 * 2 * 3");
-        ArithmaticParseTest("1 * 4 + 2 * 3");
-        ArithmaticParseTest("1 - 2 - 3");
-
-        ArithmaticParseTest("1 + 2 = 3");
-
-        try
-        {
-            ArithmaticParseTest("1 + 2 && 3");
-            throw new Exception("false negative");
-        }
-        catch { }
-
-        ArithmaticParseTest("true && false");
-        ArithmaticParseTest("true && true || false");
-    }
-
     [TestMethod]
     public void PrintGrammar()
     {
@@ -75,46 +18,9 @@ public class SemanticMachineTests
     }
 
     [TestMethod]
-    public void TypeDefinitionVerificationTest()
+    public void ArrayFunctionTest()
     {
-        string code = "type Vector2 { int X, int Y, bool Z }";
-        ParseTree? tree = GrammarRules.Parse(code, new TypeDecalaration());
-        Assert.IsNotNull(tree);
-
-        TypeDefinition typeDef = TypeDecalaration.Verify(tree.Children, IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty));
-        Console.WriteLine(typeDef.PrettyPrint());
-        Assert.IsTrue(typeDef.Name == "Vector2");
-        Assert.IsTrue(typeDef.Parameters["X"].Name == "int");
-        Assert.IsTrue(typeDef.Parameters["Y"].Name == "int");
-        Assert.IsTrue(typeDef.Parameters["Z"].Name == "bool");
-    }
-
-    [TestMethod]
-    public void FunctionDefinitionVerificationTest()
-    {
-        string define = "int AddTwice(int lhs, int rhs) => lhs + rhs + rhs ";
-        ParseTree? tree = GrammarRules.Parse(define, new MaybeInlineFunction());
-        Assert.IsNotNull(tree);
-
-        var context = IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty);
-        FunctionPrototype prototype = MaybeInlineFunction.ExtractHeader(tree.Children, context);
-        context = context.Add(prototype.Name, prototype);
-
-        FunctionDefinition declaration = MaybeInlineFunction.VerifyFullDefinition(tree.Children, context);
-        Console.WriteLine(declaration.PrettyPrint());
-
-        string invocation = "AddTwice(10, AddTwice(5, 1))";
-        ParseTree? invocationTree = GrammarRules.Parse(invocation, new Invocation());
-        Assert.IsNotNull(invocationTree);
-        IEvaluatable call = Invocation.Verify(invocationTree.Children, context);
-
-        Console.WriteLine(call.PrettyPrint());
-    }
-
-    [TestMethod]
-    public void ScriptParsingTest()
-    {
-        string code = "type Vector2 {int X, int Y}; int AddTwice(int lhs, int rhs) => lhs + rhs + rhs;";
+        string code = "int[][] Foobar() => [[1, 2], [3]];";
         ParseTree? tree = GrammarRules.Parse(code, new Script());
         Assert.IsNotNull(tree);
 
@@ -150,14 +56,35 @@ public class SemanticMachineTests
             _ => oldContext
         });
 
-        // print everything out
-        foreach (var pair in context)
+        CppCodeGenerator binder = new();
+
+        foreach (var functionDef in functionDefinitions.Values)
         {
-            Console.WriteLine(pair.Value.PrettyPrint());
+            binder.GenerateFunction(functionDef);
         }
-        foreach (var pair in functionDefinitions)
+
+        foreach (string functionPrototype in binder.FunctionPrototypes)
         {
-            Console.WriteLine(pair.Value.PrettyPrint());
+            Console.WriteLine(functionPrototype);
         }
+
+        foreach (string functionHeader in binder.TemplateFunctions)
+        {
+            Console.WriteLine(functionHeader);
+        }
+
+        foreach (string functionDef in binder.FunctionImplementations)
+        {
+            Console.WriteLine(functionDef);
+        }
+    }
+
+    [TestMethod]
+    public void FoobarTest()
+    {
+        int[] x = [1, 2, 3];
+        int[] y = x.Take(4).ToArray();
+
+        Console.WriteLine(y.Length);
     }
 }
