@@ -12,6 +12,8 @@ public class CppLibraryReference
     public string EnumerationSubNamespace { get; set; } = "Enumeration";
     public string MemorySubNamespace { get; set; } = "Memory";
     public string PrefixOfMethods { get; set; } = "RuntimeBase";
+    public string AllocatorGetter { get; set; } = "GetAllocator()";
+    public string MakeArrayFunction { get; set; } = "MakeArray";
 
     public (string creation, string finalVar) CreateArrayEnumerable(string type, string[] values, VarNameDistributor nameDispo)
     {
@@ -25,11 +27,11 @@ public class CppLibraryReference
             .Append(varName)
             .Append(" = ")
             .Append(PrefixOfMethods)
-            .Append("::MakeArray<")
+            .Append($"::{MakeArrayFunction}<")
             .Append(type)
             .Append(',')
             .Append(values.Length)
-            .AppendLine(">();");
+            .AppendLine($">({PrefixOfMethods}::{AllocatorGetter});");
 
         for (int i = 0; i < values.Length; i++)
         {
