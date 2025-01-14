@@ -8,9 +8,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{EA9B7392-58C5-467A-B3D6-5B13D4F78622}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{661BDB43-D91F-4D20-B909-E9596E4F95D1}"
-	ProjectSection(SolutionItems) = preProject
-		Architecture.md = Architecture.md
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemanticMachine", "SemanticMachine\SemanticMachine.csproj", "{C2F05187-76B4-4139-955F-62C435697438}"
 EndProject
@@ -21,6 +18,13 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OmniParser", "OmniParser\OmniParser.vcxproj", "{2E5EDF45-F9F1-4274-ADCC-9F9B10736513}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EngineCodeTests", "EngineCodeTests\EngineCodeTests.vcxproj", "{DB0350E6-19E9-4649-ADF9-F9C9B631E077}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Proposals", "Proposals", "{153E3BB2-2940-43A3-8ACB-D9F63405BD27}"
+	ProjectSection(SolutionItems) = preProject
+		engine_architecture.md = engine_architecture.md
+		interface_versioning.md = interface_versioning.md
+		module_parallelization.md = module_parallelization.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -119,6 +123,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{153E3BB2-2940-43A3-8ACB-D9F63405BD27} = {661BDB43-D91F-4D20-B909-E9596E4F95D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A6CC0B55-2A4F-4D41-92F9-70904C5CDCAB}
