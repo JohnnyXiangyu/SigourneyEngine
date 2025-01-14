@@ -1,13 +1,16 @@
 #pragma once
 #include "enumerable.h"
-#include "allocator.h"
+#include "high_integrity_allocator.h"
+
+// supresses the placement new warning
+#include <memory>
 
 namespace SigourneyEngine {
 namespace FunctionalLayer {
 namespace Enumeration {
 
 template <typename TElement, unsigned int TCount>
-class ArrayLiteral : IEnumerable<TElement>
+class ArrayLiteral : public IEnumerable<TElement>
 {
 private:
     struct Enumerator : IEnumerator
@@ -22,6 +25,7 @@ public:
     ArrayLiteral()
     {
         IEnumerable<TElement>::SetCountable(true);
+        IEnumerable<TElement>::SetCount(TCount);
     }
 
     /// <summary>
@@ -35,20 +39,20 @@ public:
         m_elements[index] = value;
     }
 
-    // Inherited via IEnumerable
-    size_t Count() override
+    void SetItem(size_t index, const TElement&& value)
     {
-        return TCount;
+        m_elements[index] = value;
     }
     
     // Inherited via IEnumerable
-    IEnumerator* InitializeEnumerator(Memory::IAllocator* allocator) override
+    IEnumerator* InitializeEnumerator(Memory::HighIntegrityAllocator* allocator) override
     {
-        return allocator->New<Enumerator>();
+        IEnumerator* newEnumerator = allocator->New<Enumerator>();
+        return newEnumerator;
     }
 
     // Inherited via IEnumerable
-    void FinalizeEnumerator(IEnumerator* enumerator, Memory::IAllocator* allocator) override
+    void FinalizeEnumerator(IEnumerator* enumerator, Memory::HighIntegrityAllocator* allocator) override
     {
         allocator->Free(enumerator);
     }
@@ -56,14 +60,14 @@ public:
     // Inherited via IEnumerable
     TElement Dereference(IEnumerator* enumerator) override
     {
-        Enumerator* casted = (Enumerator*)enumerator;
+        Enumerator* casted = (Enumerator*) enumerator;
         return m_elements[casted->Index];
     }
 
     // Inherited via IEnumerable
     bool IncrementEnumerator(IEnumerator* enumerator) override
     {
-        Enumerator* casted = (Enumerator*)enumerator;
+        Enumerator * casted = (Enumerator*)enumerator;;
         casted->Index++;
         return casted->Index < TCount;
     }

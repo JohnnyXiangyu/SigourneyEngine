@@ -3,16 +3,13 @@
 
 namespace SigourneyEngine {
 namespace FunctionalLayer {
+
 namespace Memory {
 
-class IAllocator;
+class HighIntegrityAllocator;
 
 }
-}
-}
 
-namespace SigourneyEngine {
-namespace FunctionalLayer {
 namespace Enumeration {
 
 /// <summary>
@@ -31,18 +28,19 @@ class IEnumerable
 {
     Property(bool, Countable)
 
-private:
-    virtual size_t Count() { return 0; }
+    Property(size_t, Count)
 
+public:
     /// <summary>
     /// Initialize an enumerator on the allocator.
+    /// Returns null if there's nothing in this enumerable.
     /// </summary>
-    virtual IEnumerator* InitializeEnumerator(Memory::IAllocator* allocator) = 0;
+    virtual IEnumerator* InitializeEnumerator(Memory::HighIntegrityAllocator* allocator) = 0;
 
     /// <summary>
     /// Finalize the enumerator.
     /// </summary>
-    virtual void FinalizeEnumerator(IEnumerator* enumerator, Memory::IAllocator* allocator)  = 0;
+    virtual void FinalizeEnumerator(IEnumerator* enumerator, Memory::HighIntegrityAllocator* allocator)  = 0;
 
     /// <summary>
     /// Dereference the value pointed to by the enumerator at its current state.

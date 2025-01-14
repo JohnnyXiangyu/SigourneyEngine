@@ -128,26 +128,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="static_allocator.cpp" />
+    <ClCompile Include="allocation_table.cpp" />
     <ClCompile Include="dummy_resource_one.res.h" />
     <ClCompile Include="dummy_system.sys.c" />
     <ClCompile Include="generation_collector.c" />
+    <ClCompile Include="high_integrity_allocator.cpp" />
     <ClCompile Include="main.c" />
     <ClCompile Include="task_graph.c" />
     <ClCompile Include="thread_pool.c" />
     <ClCompile Include="thread_messaging.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="allocator.h" />
+    <ClInclude Include="allocation_table.h" />
     <ClInclude Include="dummy_resource_two.res.h" />
     <ClInclude Include="dummy_system.sys.h" />
     <ClInclude Include="enumerable.h" />
     <ClInclude Include="array_literal.h" />
+    <ClInclude Include="filter_enumerable.h" />
     <ClInclude Include="generation_collector.h" />
     <ClInclude Include="graph_resolver.h" />
+    <ClInclude Include="high_integrity_allocator.h" />
+    <ClInclude Include="lambda.h" />
     <ClInclude Include="non_essential_macros.h" />
     <ClInclude Include="runtime.h" />
-    <ClInclude Include="static_allocator.h" />
+    <ClInclude Include="select_enumerable.h" />
     <ClInclude Include="task_graph.h" />
     <ClInclude Include="thread_pool.h" />
     <ClInclude Include="thread_messaging.h" />

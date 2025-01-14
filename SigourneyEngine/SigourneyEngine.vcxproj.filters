@@ -53,7 +53,10 @@
     <ClCompile Include="dummy_resource_one.res.h">
       <Filter>UserDefined\DummySystem</Filter>
     </ClCompile>
-    <ClCompile Include="static_allocator.cpp">
+    <ClCompile Include="high_integrity_allocator.cpp">
+      <Filter>FunctionalLayer\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="allocation_table.cpp">
       <Filter>FunctionalLayer\Memory</Filter>
     </ClCompile>
   </ItemGroup>
@@ -79,14 +82,8 @@
     <ClInclude Include="dummy_resource_two.res.h">
       <Filter>UserDefined\DummySystem</Filter>
     </ClInclude>
-    <ClInclude Include="allocator.h">
-      <Filter>FunctionalLayer\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="enumerable.h">
       <Filter>FunctionalLayer\Enumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="static_allocator.h">
-      <Filter>FunctionalLayer\Memory</Filter>
     </ClInclude>
     <ClInclude Include="runtime.h">
       <Filter>FunctionalLayer</Filter>
@@ -96,6 +93,21 @@
     </ClInclude>
     <ClInclude Include="non_essential_macros.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="select_enumerable.h">
+      <Filter>FunctionalLayer\Enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="lambda.h">
+      <Filter>FunctionalLayer</Filter>
+    </ClInclude>
+    <ClInclude Include="filter_enumerable.h">
+      <Filter>FunctionalLayer\Enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="high_integrity_allocator.h">
+      <Filter>FunctionalLayer\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="allocation_table.h">
+      <Filter>FunctionalLayer\Memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

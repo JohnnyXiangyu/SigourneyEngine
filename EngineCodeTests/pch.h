@@ -7,10 +7,10 @@
 #ifndef PCH_H
 #define PCH_H
 
-#include "../SigourneyEngine/allocator.h"
+#include "../SigourneyEngine/high_integrity_allocator.h"
 #include "../SigourneyEngine/runtime.h"
 #include "../SigourneyEngine/enumerable.h"
-#include "../SigourneyEngine/static_allocator.h"
+#include "../SigourneyEngine/lambda.h"
 // add headers that you want to pre-compile here
 
 #endif //PCH_H

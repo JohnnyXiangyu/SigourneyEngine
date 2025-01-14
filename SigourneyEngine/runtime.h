@@ -1,8 +1,11 @@
 #pragma once
-#include "allocator.h"
+#include "high_integrity_allocator.h"
 #include "enumerable.h"
 #include "array_literal.h"
+#include "select_enumerable.h"
+#include "lambda.h"
 #include "non_essential_macros.h"
+#include "filter_enumerable.h"
 
 namespace SigourneyEngine {
 namespace FunctionalLayer {
@@ -14,7 +17,7 @@ namespace FunctionalLayer {
 /// </summary>
 class RuntimeBase
 {
-    Property(Memory::IAllocator*, Allocator)
+    Property(Memory::HighIntegrityAllocator*, Allocator)
 
 public:
     /// <summary>
@@ -29,8 +32,32 @@ public:
         return GetAllocator()->New<Enumeration::ArrayLiteral<TElement, TCount>>();
     }
 
+    template <typename TSource, typename TResult, typename TLambda>
+    Enumeration::SelectEnumerable<TSource, TResult>* Select(Enumeration::IEnumerable<TSource>* source, const TLambda& lambda)
+    {
+        ILambda<TResult, TSource>* func = GetAllocator()->New<TLambda>(lambda);
+        Enumeration::SelectEnumerable<TSource, TResult>* selector = GetAllocator()->New<Enumeration::SelectEnumerable<TSource, TResult>>(source, func);
+        return selector;
+    }
+
+    template <typename TSource, typename TResult, typename TLambda>
+    Enumeration::SelectEnumerable<TSource, TResult>* Select(Enumeration::IEnumerable<TSource>* source, const TLambda&& lambda)
+    {
+        ILambda<TResult, TSource>* func = GetAllocator()->New<TLambda>(lambda);
+        Enumeration::SelectEnumerable<TSource, TResult>* tik = GetAllocator()->New<Enumeration::SelectEnumerable<TSource, TResult>>(source, func);
+        return tik;
+    }
+
+    template <typename TElement, typename TLambda>
+    Enumeration::FilterEnumerable<TElement>* Where(Enumeration::IEnumerable<TElement>* source, TLambda& lambda)
+    {
+        ILambda<bool, TElement>* func = GetAllocator()->New<TLambda>(lambda);
+        Enumeration::FilterEnumerable<TElement>* whereClause = GetAllocator()->New<Enumeration::FilterEnumerable<TElement>>(source, func);
+        return whereClause;
+    }
+
 public:
-    RuntimeBase(Memory::IAllocator* inAllocator) : m_Allocator(inAllocator) {}
+    RuntimeBase(Memory::HighIntegrityAllocator* inAllocator) : m_Allocator(inAllocator) {}
 };
 
 }
