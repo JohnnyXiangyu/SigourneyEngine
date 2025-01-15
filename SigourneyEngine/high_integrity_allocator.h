@@ -1,12 +1,10 @@
 #pragma once
 
-#include "allocation_table.h"
-
 namespace SigourneyEngine {
 namespace FunctionalLayer {
 namespace Memory {
 
-class BufferChainSegment;
+class BufferChain;
 
 /// <summary>
 /// Implements IAllocator interface; uses an allocation design that eliminates memory fragmentation;
@@ -15,24 +13,21 @@ class BufferChainSegment;
 class HighIntegrityAllocator
 {
 private:
-    // the class descriptor is translated to size descriptor so we have fewer table entry numbers hanging around in shared memory
     template <unsigned int T>
-    struct SizeDescriptor
+    struct SizeEquivalentClass
     {
         static unsigned int TableEntry;
     };
 
-    // use the template instantiation in C++ to help us automatically gather information about all the client tyeps using H.I.A
-    template <typename T>
-    struct ClassDescriptor
-    {
-        static unsigned int GetTableEntry() { return SizeDescriptor<sizeof(T)>::TableEntry; }
-    };
-
     unsigned int m_initialBufferItemCount;
-    BufferChainSegment** m_bufferTable;
+    BufferChain* m_bufferTable;
 
-    void* AllocateCore(unsigned int tableEntry, size_t payloadSize);
+    void* AllocateCore(unsigned int tableEntry);
+
+    static unsigned int GetTableEntryCore(unsigned int size);
+
+    template <typename T>
+    unsigned int GetTableEntry() { return SizeEquivalentClass<sizeof(T)>::TableEntry; }
 
 public:
     HighIntegrityAllocator(unsigned int initialCount);
@@ -40,18 +35,17 @@ public:
     ~HighIntegrityAllocator();
 
     /// <summary>
-    /// Allocates a buffer to hold one instance of T, then run a placement-new on that buffer;
-    /// Please use the typedef to label which type this ticket points to.
+    /// Finds a new buffer for at least size T and initialize it.
     /// </summary>
     /// <typeparam name="T">target type</typeparam>
     /// <typeparam name="...TArgs">variable length argument list forwarded to new() constructor</typeparam>
     /// <param name="...args">variable length argument list forwarded to new() constructor</param>
-    /// <returns>Returns a ticket that can be translated to a member address of that newly allocated T object.</returns>
+    /// <returns>Pointer of a buffer with available size at least sizeof(T).</returns>
     template <typename T, typename ...TArgs>
     T* New(TArgs... args)
     {
-        unsigned int tableEntry = ClassDescriptor<T>::GetTableEntry();
-        void* newPayload = AllocateCore(tableEntry, sizeof(T));
+        unsigned int tableEntry = GetTableEntry<T>();
+        void* newPayload = AllocateCore(tableEntry);
         return new (newPayload) T(args...);
     }
 
@@ -63,7 +57,7 @@ public:
 };
 
 template <unsigned int T>
-unsigned int HighIntegrityAllocator::SizeDescriptor<T>::TableEntry = AllocationTable::GetSingleton()->RegisterType(T);
+unsigned int HighIntegrityAllocator::SizeEquivalentClass<T>::TableEntry = HighIntegrityAllocator::GetTableEntryCore(T);
 
 }
 }

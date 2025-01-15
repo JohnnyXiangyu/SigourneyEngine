@@ -56,9 +56,6 @@
     <ClCompile Include="high_integrity_allocator.cpp">
       <Filter>FunctionalLayer\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="allocation_table.cpp">
-      <Filter>FunctionalLayer\Memory</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dummy_system.sys.h">
@@ -104,9 +101,6 @@
       <Filter>FunctionalLayer\Enumeration</Filter>
     </ClInclude>
     <ClInclude Include="high_integrity_allocator.h">
-      <Filter>FunctionalLayer\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="allocation_table.h">
       <Filter>FunctionalLayer\Memory</Filter>
     </ClInclude>
   </ItemGroup>

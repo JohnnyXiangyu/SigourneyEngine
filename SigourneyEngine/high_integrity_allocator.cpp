@@ -1,11 +1,96 @@
 #include "high_integrity_allocator.h"
-#include "allocation_table.h"
 #include <memory>
 
 // define pure internal data structures
 namespace SigourneyEngine {
 namespace FunctionalLayer {
 namespace Memory {
+
+/// <summary>
+/// Allocation table stores metadata of all existing instantiation of the New<> method of H.I.A.
+/// </summary>
+class AllocationTable
+{
+private:
+    // RTTI and statically collected information:
+    struct Entry
+    {
+        Entry* Next;
+        size_t Size;
+        unsigned int Index;
+
+        void Destroy()
+        {
+            if (Next != nullptr)
+            {
+                Next->Destroy();
+            }
+
+            delete Next;
+        }
+    };
+
+    unsigned int Length = 0;
+    Entry* Head = nullptr;
+
+    Entry* Seek(size_t size)
+    {
+        if (Head == nullptr)
+        {
+            Head = new Entry{ nullptr, size, 0 };
+            Length++;
+            return Head;
+        }
+
+        if (Head->Size == size)
+            return Head;
+
+        Entry* currentNode = Head;
+        while (currentNode->Next != nullptr)
+        {
+            if (currentNode->Next->Size == size)
+                return currentNode->Next;
+
+            currentNode = currentNode->Next;
+        }
+
+        currentNode->Next = new Entry{ nullptr, size, currentNode->Index + 1 };
+        Length++;
+        return currentNode->Next;
+    }
+
+public:
+    ~AllocationTable()
+    {
+        if (Head == nullptr)
+            return;
+
+        Head->Destroy();
+        delete Head;
+    }
+
+    inline unsigned int RegisterSize(size_t size)
+    {
+        Entry* metaNode = Seek(size);
+        return metaNode->Index;
+    }
+
+    inline unsigned int GetTableLength() const
+    {
+        return Length;
+    }
+
+    template <typename TCallback>
+    void Foreach(TCallback&& callback)
+    {
+        for (Entry* tableEntry = Head; tableEntry != nullptr; tableEntry = tableEntry->Next)
+        {
+            callback(tableEntry->Index, tableEntry->Size);
+        }
+    }
+};
+
+static AllocationTable SingletonAllocationTable;
 
 class BufferChainSegment;
 
@@ -15,7 +100,7 @@ class BufferChainSegment;
 struct BufferNodeHeader
 {
     BufferNodeHeader* NextFree = nullptr;
-    BufferChainSegment* Owner = nullptr;
+    BufferChain* Owner = nullptr;
 
     // get the pointer to a payload
     void* GetPayload() { return ((char*)this) + sizeof(BufferNodeHeader); }
@@ -24,104 +109,143 @@ struct BufferNodeHeader
 /// <summary>
 /// A segment of a chain of buffers.
 /// </summary>
-class BufferChainSegment
+struct BufferChainSegment
+{
+    BufferChainSegment* NextSegment = nullptr;
+    unsigned int Count = 0;
+};
+
+// single-linked list of free buffers
+class BufferChain
 {
 private:
-    char* Buffer = nullptr;
-    BufferNodeHeader* Head = nullptr;
-    BufferChainSegment* NextSegment = nullptr;
-
-    unsigned int Count;
-    size_t PayloadSize;
-
-    // TODO: when adding a segment, put the segment directly in the beginning of a new buffer
-    BufferChainSegment* AddSegment()
+    template <typename THeader>
+    struct PaddedNode
     {
-        if (NextSegment != nullptr)
-            return NextSegment->AddSegment();
-        
-        NextSegment = CreateNew(Count * 2, PayloadSize);
-        return NextSegment;
+        THeader Header;
+        char Buffer;
+    };
+
+    static BufferNodeHeader* GetFirstHeaderFromSegment(BufferChainSegment* segment)
+    {
+        return (BufferNodeHeader*)&((PaddedNode<BufferChainSegment>*) segment)->Buffer;
     }
 
-    inline size_t CalculateBufferSize() const
+    static char* GetBufferFromHeader(BufferNodeHeader* header)
     {
-        return (PayloadSize + sizeof(BufferNodeHeader)) * Count;
+        return &((PaddedNode<BufferNodeHeader>*) header)->Buffer;
     }
 
-    BufferChainSegment(unsigned int count, size_t payloadSize, char* buffer)
-        : Count(count), PayloadSize(payloadSize), Buffer(buffer)
+    // creates a chain segment data structure, and a buffer immediately after it
+    BufferChainSegment* CreateNewSegment(unsigned int count, size_t payloadSize)
     {
-        Reset();
+        // create a buffer whose size is the required amount of nodes PLUS a segment header
+        size_t nodeSize = payloadSize + sizeof(BufferNodeHeader);
+        size_t chainSize = nodeSize * count;
+        size_t totalSize = chainSize + sizeof(BufferChainSegment);
+        char* newBuffer = new char[totalSize];
+
+        // initialize the first address into a header
+        BufferChainSegment* newSegment = new (newBuffer) BufferChainSegment;
+        newSegment->Count = count;
+
+        ResetSegment(newSegment);
+
+        // header is at the beginning of the new memory range
+        return newSegment;
+    }
+
+    // state starts here:
+
+    BufferChainSegment* HeadSegment = nullptr;
+    BufferChainSegment* TailSegment = nullptr;
+
+    BufferNodeHeader* HeadNode = nullptr;
+
+    unsigned int PayloadSize = 0;
+    unsigned int Count = 0;
+
+    // it does change internal state, not a const function
+    void ResetSegment(BufferChainSegment* newSegment)
+    {
+        char* newBuffer = (char*)newSegment;
+        size_t nodeSize = PayloadSize + sizeof(BufferNodeHeader);
+
+        // initialize first n-1 nodes
+        char* nodesBegin = newBuffer + sizeof(BufferChainSegment);
+        for (int i = 0; i < newSegment->Count - 1; i++)
+        {
+            BufferNodeHeader* currentNode = (BufferNodeHeader*)(nodesBegin + nodeSize * i);
+            BufferNodeHeader* nextNode = (BufferNodeHeader*)(nodesBegin + nodeSize * i + nodeSize);
+            currentNode->NextFree = nextNode;
+            currentNode->Owner = this;
+        }
+
+        // initialize the last node (idk, it's good to avoid having lots of if-statements?)
+        BufferNodeHeader* lastNode = (BufferNodeHeader*)(nodesBegin + nodeSize * newSegment->Count - nodeSize);
+        lastNode->NextFree = nullptr;
+        lastNode->Owner = this;
     }
 
 public:
-    // creates a chain segment data structure, and a buffer immediately after it
-    static BufferChainSegment* CreateNew(unsigned int count, size_t payloadSize)
-    {
-        size_t bufferSize = (payloadSize + sizeof(BufferNodeHeader)) * count;
-        char* newBuffer = new char[bufferSize + sizeof(BufferChainSegment)];
-        return new ((void*)newBuffer) BufferChainSegment(count, payloadSize, newBuffer + sizeof(BufferChainSegment));
-    }
+    BufferChain(unsigned int payloadSize, unsigned int initialCount) : PayloadSize(payloadSize), Count(initialCount) {}
 
     void* Take()
     {
-        if (Head != nullptr)
+        // initialize the first segment
+        if (HeadSegment == nullptr)
         {
-            void* result = Head->GetPayload();
-            Head = Head->NextFree;
-            return result;
+            // allocate a new segment and initialize the chain on top level
+            HeadSegment = CreateNewSegment(Count, PayloadSize);
+            TailSegment = HeadSegment;
+
+            // the new segment always supplies its first free node at the beginning of its buffer
+            HeadNode = GetFirstHeaderFromSegment(HeadSegment);
         }
-        else
+
+        // extend the list
+        if (HeadNode == nullptr)
         {
-            BufferChainSegment* newSegment = AddSegment();
-            void* result = newSegment->Head->GetPayload();
-            Head = newSegment->Head->NextFree;
-            return result;
+            Count *= 2;
+            BufferChainSegment* newSegment = CreateNewSegment(Count, PayloadSize);
+            TailSegment->NextSegment = newSegment;
+            TailSegment = newSegment;
+            HeadNode = GetFirstHeaderFromSegment(TailSegment);
         }
+
+        // increment head and return the previous head
+        void* result = HeadNode->GetPayload();
+        HeadNode = HeadNode->NextFree;
+        return result;
     }
 
     void Put(BufferNodeHeader* header)
     {
-        header->NextFree = Head;
-        Head = header;
+        header->NextFree = HeadNode;
+        HeadNode = header;
     }
 
     void Reset()
     {
-        if (NextSegment != nullptr)
+        for (BufferChainSegment* segment = HeadSegment; segment != nullptr; segment = segment->NextSegment)
         {
-            NextSegment->Reset();
+            ResetSegment(segment);
         }
 
-        size_t nodeSize = sizeof(BufferNodeHeader) + PayloadSize;
-        size_t initialSize = Count * nodeSize;
-
-        Head = (BufferNodeHeader*)Buffer;
-
-        // initialize nodes
-        for (unsigned int i = 0; i < Count - 1; i++)
-        {
-            BufferNodeHeader* currentHeader = (BufferNodeHeader*)(Buffer + i * nodeSize);
-            BufferNodeHeader* nextHeader = (BufferNodeHeader*)(Buffer + i * nodeSize + nodeSize);
-
-            currentHeader->NextFree = nextHeader;
-            currentHeader->Owner = this;
-        }
-
-        // last node either points to nullptr (this is the last segment) or to the head of the next segment
-        BufferNodeHeader* lastNode = (BufferNodeHeader*)(Buffer + Count * nodeSize - nodeSize);
-        lastNode->NextFree = (NextSegment == nullptr) ? nullptr : NextSegment->Head;
-        lastNode->Owner = this;
+        HeadNode = GetFirstHeaderFromSegment(HeadSegment);
     }
 
     void Destroy()
     {
-        if (NextSegment == nullptr)
-            return;
-
-        NextSegment->Destroy();
-        delete[] (char*)NextSegment;
+        // increment to the next segment then delete the current
+        // delete is called on the BufferChainSegment* 
+        BufferChainSegment* nextSeg = HeadSegment;
+        while (nextSeg != nullptr)
+        {
+            BufferChainSegment* currentSeg = nextSeg;
+            nextSeg = nextSeg->NextSegment;
+            delete[] currentSeg;
+        }
     }
 };
 
@@ -133,32 +257,33 @@ using namespace SigourneyEngine::FunctionalLayer::Memory;
 
 // implement H.I.A data structure
 
-void* SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::AllocateCore(unsigned int tableEntry, size_t payloadSize)
+void* SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::AllocateCore(unsigned int tableEntry)
 {
-    if (m_bufferTable[tableEntry] == nullptr)
-    {
-        m_bufferTable[tableEntry] = BufferChainSegment::CreateNew(m_initialBufferItemCount, payloadSize);
-    }
+    return m_bufferTable[tableEntry].Take();
+}
 
-    return m_bufferTable[tableEntry]->Take();
+unsigned int SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::GetTableEntryCore(unsigned int size)
+{
+    return SingletonAllocationTable.RegisterSize(size);
 }
 
 SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::HighIntegrityAllocator(unsigned int initialSize)
     : m_initialBufferItemCount(initialSize)
 {
-    m_bufferTable = new BufferChainSegment * [AllocationTable::GetSingleton()->GetTableLength()] { nullptr };
+    // create a table on heap for all registered buffer chains
+    unsigned int tableLength = SingletonAllocationTable.GetTableLength();
+    m_bufferTable = (BufferChain*)new char[sizeof(BufferChain) * tableLength];
+    
+    // initialize the buffer table by iterating through static RTTI and placement new the buffers accordingly
+    SingletonAllocationTable.Foreach([this](unsigned int index, size_t size) { new (m_bufferTable + index) BufferChain(size, m_initialBufferItemCount); });
 }
 
 SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::~HighIntegrityAllocator()
 {
-    unsigned int count = AllocationTable::GetSingleton()->GetTableLength();
-    for (unsigned int i = 0; i < count; i++)
+    unsigned int tableLength = SingletonAllocationTable.GetTableLength();
+    for (unsigned int i = 0; i < tableLength; i++)
     {
-        if (m_bufferTable[i] != nullptr)
-        {
-            m_bufferTable[i]->Destroy();
-            delete[](char*)m_bufferTable[i];
-        }
+        m_bufferTable[i].Destroy();
     }
 
     delete[] m_bufferTable;

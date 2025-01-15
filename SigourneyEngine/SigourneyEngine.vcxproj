@@ -128,7 +128,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="allocation_table.cpp" />
     <ClCompile Include="dummy_resource_one.res.h" />
     <ClCompile Include="dummy_system.sys.c" />
     <ClCompile Include="generation_collector.c" />
@@ -139,7 +138,6 @@
     <ClCompile Include="thread_messaging.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="allocation_table.h" />
     <ClInclude Include="dummy_resource_two.res.h" />
     <ClInclude Include="dummy_system.sys.h" />
     <ClInclude Include="enumerable.h" />
