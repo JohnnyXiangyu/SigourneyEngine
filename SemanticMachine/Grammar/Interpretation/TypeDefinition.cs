@@ -29,8 +29,8 @@ public record TypeDefinition(string Name, ImmutableDictionary<string, TypeDefini
 public record StructuredData(TypeDefinition Prototype, IEvaluatable[] PositionalArguments) : IEvaluatable
 {
     public TypeDefinition Type => Prototype;
-}
 
-//public record PrimitiveType(string Name) : TypeDefinition(Name, ImmutableDictionary<string, TypeDefinition>.Empty, []);
+    public IEnumerable<string> ParamReferences => PositionalArguments.SelectMany(param => param.ParamReferences);
+}
 
 public record ArrayType(TypeDefinition ElementType) : TypeDefinition(ElementType.Name + "[]", ImmutableDictionary<string, TypeDefinition>.Empty, []);

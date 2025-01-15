@@ -7,6 +7,8 @@ public class TypeMemberGetter : IEvaluatable
     public TypeDefinition ReturnType { get; private set; }
     public TypeDefinition Type => ReturnType;
 
+    public IEnumerable<string> ParamReferences => Subject.ParamReferences;
+
     public TypeMemberGetter(IEvaluatable subject, string member)
     {
         TypeDefinition type = subject.Type;

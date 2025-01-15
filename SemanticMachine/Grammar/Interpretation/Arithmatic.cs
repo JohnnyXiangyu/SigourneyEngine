@@ -74,12 +74,16 @@ public class LeafArithmetic(IEvaluatable value) : IArithmetic
     public TypeDefinition Type => value.Type;
     public IEvaluatable Value => value;
 
+    public IEnumerable<string> ParamReferences => value.ParamReferences;
+
     public bool SanityCheckType() => true;
 }
 
 public record NodeArithmetic(IArithmetic LeftChild, IArithmetic RightChild, ArithmeticOperation Operation) : IArithmetic
 {
     public TypeDefinition Type => IArithmetic.OperatorReturnType(Operation);
+
+    public IEnumerable<string> ParamReferences => [.. LeftChild.ParamReferences, .. RightChild.ParamReferences];
 
     public bool SanityCheckType() => Operation switch
     {
@@ -93,9 +97,13 @@ public record NodeArithmetic(IArithmetic LeftChild, IArithmetic RightChild, Arit
 public record Int32Value(int Value) : IEvaluatable
 {
     public TypeDefinition Type => PrimitiveTypes.Int32;
+
+    public IEnumerable<string> ParamReferences => [];
 }
 
 public record BooleanValue(bool Value) : IEvaluatable
 {
     public TypeDefinition Type => PrimitiveTypes.Boolean;
+
+    public IEnumerable<string> ParamReferences => [];
 }
