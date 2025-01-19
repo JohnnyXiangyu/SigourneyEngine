@@ -5,6 +5,7 @@ using SemanticMachine.Grammar.Interpretation;
 using SemanticMachine.Grammar.Symbols.Decalaration;
 using SemanticMachine.Grammar.Symbols.Expression;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace GrammerParserTests;
 
@@ -17,24 +18,29 @@ public class SemanticMachineTests
         Console.WriteLine(GrammarRules.PrintGrammar());
     }
 
-    [TestMethod]
-    public void ArrayFunctionTest()
+    private static void PrintFunctionCode(ParseTree tree)
     {
-        string code = "int[][] Foobar() => [[1, 2], [3]];";
-        ParseTree? tree = GrammarRules.Parse(code, new Script());
-        Assert.IsNotNull(tree);
+        CppCodeGenerator binder = new();
 
         // load types
         ImmutableDictionary<string, ISemanticUnit> context = IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty);
         var flattened = Script.Flatten(tree.Children);
-        context = flattened.Aggregate(context, (oldContext, child) => child switch
+
+        var pair = flattened.Aggregate((context, ImmutableList<TypeDefinition>.Empty), (oldContext, child) => child switch
         {
-            ParseTree(TypeDecalaration, ParseTree[] decChildren) => TypeDecalaration.Verify(decChildren, oldContext) switch
+            ParseTree(TypeDecalaration, ParseTree[] decChildren) => TypeDecalaration.Verify(decChildren, oldContext.context) switch
             {
-                TypeDefinition verifiedDef => oldContext.Add(verifiedDef.Name, verifiedDef)
+                TypeDefinition verifiedDef => (oldContext.context.Add(verifiedDef.Name, verifiedDef), oldContext.Empty.Add(verifiedDef))
             },
             _ => oldContext
         });
+
+        context = pair.context;
+
+        foreach (TypeDefinition def in pair.Empty)
+        {
+            binder.GenerateTypeDef(def);
+        }
 
         // load function prototypes
         context = flattened.Aggregate(context, (oldContext, child) => child switch
@@ -56,7 +62,10 @@ public class SemanticMachineTests
             _ => oldContext
         });
 
-        CppCodeGenerator binder = new();
+        foreach (var typeDef in binder.TypeDefintions)
+        {
+            Console.WriteLine(typeDef);
+        }
 
         foreach (var functionDef in functionDefinitions.Values)
         {
@@ -80,11 +89,69 @@ public class SemanticMachineTests
     }
 
     [TestMethod]
-    public void FoobarTest()
+    public void ArrayFunctionTest()
     {
-        int[] x = [1, 2, 3];
-        int[] y = x.Take(4).ToArray();
+        string code = "int[][] Foobar() => [[1, 2], [3]];";
+        ParseTree? tree = GrammarRules.Parse(code, new Script());
+        Assert.IsNotNull(tree);
 
-        Console.WriteLine(y.Length);
+        PrintFunctionCode(tree);
+    }
+
+    [TestMethod]
+    public void AutomaticCaptuerTest()
+    {
+        string code = "int foobar(int a, int b) => a  + 3 * 10";
+        ParseTree? tree = GrammarRules.Parse(code, new FunctionDeclaration());
+        Assert.IsNotNull(tree);
+
+        ImmutableDictionary<string, ISemanticUnit> context =
+            IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty);
+        context = context.Add("foobar", FunctionDeclaration.ExtractHeader(tree.Children, context));
+        FunctionDefinition expression = FunctionDeclaration.VerifyFullDefinition(tree.Children, context);
+        foreach (var capture in expression.Body.ArgumentCaptures)
+        {
+            Console.WriteLine($"{capture.Name} : {capture.Type.Name}");
+        }
+    }
+
+    [TestMethod]
+    public void LambdaCreationTest()
+    {
+        string code = "func<int, int> Plus(int a) => (int b) => (a + b);";
+        ParseTree? tree = GrammarRules.Parse(code, new Script());
+        Assert.IsNotNull(tree);
+
+        PrintFunctionCode(tree);
+    }
+
+    [TestMethod]
+    public void FunctionWithLambdaTest()
+    {
+        string code = "int Foobar(func<int> curry) => curry(10);";
+        ParseTree? tree = GrammarRules.Parse(code, new Script());
+        Assert.IsNotNull(tree);
+
+        PrintFunctionCode(tree);
+    }
+
+    [TestMethod]
+    public void ValueGetterTest()
+    {
+        string code = "type Vector { int X, int Y }; int Foobar(Vector vector) => vector->X + vector->Y;";
+        ParseTree? tree = GrammarRules.Parse(code, new Script());
+        Assert.IsNotNull(tree);
+
+        PrintFunctionCode(tree);
+    }
+
+    [TestMethod]
+    public void CurryFunctionTest()
+    {
+        string code = "func<func<int>, int> Foobar(int a) => (int b) => ((int c) => (a + b + c));";
+        ParseTree? tree = GrammarRules.Parse(code, new Script());
+        Assert.IsNotNull(tree);
+
+        PrintFunctionCode(tree);
     }
 }

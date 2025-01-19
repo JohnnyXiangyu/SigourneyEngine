@@ -5,5 +5,5 @@ public record ArrayLiteral(TypeDefinition ElementType, IEvaluatable[] Elements) 
 {
     public TypeDefinition Type => new ArrayType(ElementType);
 
-    public IEnumerable<string> ParamReferences => Elements.SelectMany(e => e.ParamReferences);
+    public IEnumerable<LazyEvaluatable> ArgumentCaptures => Elements.SelectMany(e => e.ArgumentCaptures);
 }

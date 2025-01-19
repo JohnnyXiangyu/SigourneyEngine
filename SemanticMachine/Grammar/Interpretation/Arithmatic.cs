@@ -74,7 +74,7 @@ public class LeafArithmetic(IEvaluatable value) : IArithmetic
     public TypeDefinition Type => value.Type;
     public IEvaluatable Value => value;
 
-    public IEnumerable<string> ParamReferences => value.ParamReferences;
+    public IEnumerable<LazyEvaluatable> ArgumentCaptures => value.ArgumentCaptures;
 
     public bool SanityCheckType() => true;
 }
@@ -83,7 +83,7 @@ public record NodeArithmetic(IArithmetic LeftChild, IArithmetic RightChild, Arit
 {
     public TypeDefinition Type => IArithmetic.OperatorReturnType(Operation);
 
-    public IEnumerable<string> ParamReferences => [.. LeftChild.ParamReferences, .. RightChild.ParamReferences];
+    public IEnumerable<LazyEvaluatable> ArgumentCaptures => [.. LeftChild.ArgumentCaptures, .. RightChild.ArgumentCaptures];
 
     public bool SanityCheckType() => Operation switch
     {
@@ -98,12 +98,12 @@ public record Int32Value(int Value) : IEvaluatable
 {
     public TypeDefinition Type => PrimitiveTypes.Int32;
 
-    public IEnumerable<string> ParamReferences => [];
+    public IEnumerable<LazyEvaluatable> ArgumentCaptures => [];
 }
 
 public record BooleanValue(bool Value) : IEvaluatable
 {
     public TypeDefinition Type => PrimitiveTypes.Boolean;
 
-    public IEnumerable<string> ParamReferences => [];
+    public IEnumerable<LazyEvaluatable> ArgumentCaptures => [];
 }

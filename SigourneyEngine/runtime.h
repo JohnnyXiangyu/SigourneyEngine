@@ -56,6 +56,14 @@ public:
         return whereClause;
     }
 
+    template <typename TElement, typename TLambda>
+    Enumeration::FilterEnumerable<TElement>* Where(Enumeration::IEnumerable<TElement>* source, TLambda&& lambda)
+    {
+        ILambda<bool, TElement>* func = GetAllocator()->New<TLambda>(lambda);
+        Enumeration::FilterEnumerable<TElement>* whereClause = GetAllocator()->New<Enumeration::FilterEnumerable<TElement>>(source, func);
+        return whereClause;
+    }
+
 public:
     RuntimeBase(Memory::HighIntegrityAllocator* inAllocator) : m_Allocator(inAllocator) {}
 };

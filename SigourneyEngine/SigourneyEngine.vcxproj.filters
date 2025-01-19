@@ -29,6 +29,12 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{33da1176-6ad4-486a-a441-03931b0858e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EntityComponentSystem">
+      <UniqueIdentifier>{b92c6c7e-29a3-4953-a65e-7d4f1fb00db9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{7485e607-39c4-499a-9587-d15c9f2c17ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="generation_collector.c">
@@ -55,6 +61,9 @@
     </ClCompile>
     <ClCompile Include="high_integrity_allocator.cpp">
       <Filter>FunctionalLayer\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="homogeneous_storage.cpp">
+      <Filter>Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -102,6 +111,15 @@
     </ClInclude>
     <ClInclude Include="high_integrity_allocator.h">
       <Filter>FunctionalLayer\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="component_store.h">
+      <Filter>EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="homogeneous_storage.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="shorthand_functions.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

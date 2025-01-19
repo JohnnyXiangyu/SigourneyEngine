@@ -18,6 +18,11 @@ public record Invocation() : INonTerminal
         return foundFunction switch
         {
             FunctionPrototype def => def.Call(arguments),
+            LazyEvaluatable lazy => lazy.Type switch
+            {
+                CallableType lambdaParam => lambdaParam.Call(lazy.Name, arguments),
+                _ => throw new Exception($"misuse of symbol {functionName}, expecting function, actually is {foundFunction.GetType().Name}")
+            },
             TypeDefinition constructor => constructor.Construct(arguments),
             _ => throw new Exception($"misuse of symbol {functionName}, expecting function, actually is {foundFunction.GetType().Name}")
         };

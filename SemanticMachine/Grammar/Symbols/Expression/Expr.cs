@@ -8,13 +8,15 @@ public class Expr() : INonTerminal
     public static ISymbol[][] Rules => [
         [new BinopChain()],
         [new Term()],
-        [new ValueGetter()]];
+        [new ValueGetter()],
+        [new Lambda()]];
 
     public static IEvaluatable Verify(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> context) => children switch
     {
         [ParseTree(BinopChain, ParseTree[] binopChildren)] => BinopChain.Verify(binopChildren, context),
         [ParseTree(Term _, ParseTree[] termChildren)] => Term.Verify(termChildren, context),
-        [ParseTree(ValueGetter, ParseTree[] lambdaChildren)] => ValueGetter.Verify(lambdaChildren, context),
+        [ParseTree(ValueGetter, ParseTree[] getterChildren)] => ValueGetter.Verify(getterChildren, context),
+        [ParseTree(Lambda, ParseTree[] lambdaChildren)] => Lambda.Verify(lambdaChildren, context),
         _ => throw new Exception("parser error, Expr")
     };
 }

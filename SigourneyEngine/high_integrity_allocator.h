@@ -1,10 +1,15 @@
 #pragma once
 
 namespace SigourneyEngine {
-namespace FunctionalLayer {
+
 namespace Memory {
 
-class BufferChain;
+class HomogeneousStorage;
+
+}
+
+namespace FunctionalLayer {
+namespace Memory {
 
 /// <summary>
 /// Implements IAllocator interface; uses an allocation design that eliminates memory fragmentation;
@@ -20,7 +25,7 @@ private:
     };
 
     unsigned int m_initialBufferItemCount;
-    BufferChain* m_bufferTable;
+    SigourneyEngine::Memory::HomogeneousStorage* m_bufferTable;
 
     void* AllocateCore(unsigned int tableEntry);
 

@@ -11,6 +11,8 @@
 #include "../SigourneyEngine/runtime.h"
 #include "../SigourneyEngine/enumerable.h"
 #include "../SigourneyEngine/lambda.h"
+#include "../SigourneyEngine/shorthand_functions.h"
+
 // add headers that you want to pre-compile here
 
 #endif //PCH_H

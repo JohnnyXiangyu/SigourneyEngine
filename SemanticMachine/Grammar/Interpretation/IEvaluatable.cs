@@ -4,12 +4,12 @@ public interface IEvaluatable : ISemanticUnit
 {
     TypeDefinition Type { get; }
 
-    public IEnumerable<string> ParamReferences { get; }
+    public IEnumerable<LazyEvaluatable> ArgumentCaptures { get; }
 }
 
 public record LazyEvaluatable(TypeDefinition ParamType, string Name) : IEvaluatable
 {
     public TypeDefinition Type => ParamType;
 
-    public IEnumerable<string> ParamReferences => [Name];
+    public IEnumerable<LazyEvaluatable> ArgumentCaptures => [this];
 } 

@@ -7,12 +7,12 @@ public class TypeMemberGetter : IEvaluatable
     public TypeDefinition ReturnType { get; private set; }
     public TypeDefinition Type => ReturnType;
 
-    public IEnumerable<string> ParamReferences => Subject.ParamReferences;
+    public IEnumerable<LazyEvaluatable> ArgumentCaptures => Subject.ArgumentCaptures;
 
     public TypeMemberGetter(IEvaluatable subject, string member)
     {
         TypeDefinition type = subject.Type;
-        if (!type.Parameters.TryGetValue(member, out TypeDefinition? paramType))
+        if (!type.Members.TryGetValue(member, out TypeDefinition? paramType))
             throw new Exception($"type {subject.Type} doesn't have mamber {member}");
 
         Subject = subject;

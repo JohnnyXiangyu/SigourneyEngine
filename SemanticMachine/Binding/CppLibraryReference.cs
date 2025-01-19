@@ -49,6 +49,7 @@ public class CppLibraryReference
     public string PrintType(TypeDefinition type) => type switch
     {
         ArrayType arrType => $"{EnumerationSubNamespace}::IEnumerable<{PrintType(arrType.ElementType)}>*",
+        CallableType callType => $"ILambda<{string.Join(", ", [PrintType(callType.ReturnType), .. callType.Params.Select(param => PrintType(param.Type))])}>*",
         _ => type.Name
     };
 }

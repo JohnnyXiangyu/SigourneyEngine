@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Proposals", "Proposals", "{
 	ProjectSection(SolutionItems) = preProject
 		engine_architecture.md = engine_architecture.md
 		functional_scripting.md = functional_scripting.md
+		indexed_component.md = indexed_component.md
 		interface_versioning.md = interface_versioning.md
 		module_parallelization.md = module_parallelization.md
 	EndProjectSection
