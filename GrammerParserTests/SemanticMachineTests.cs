@@ -20,6 +20,9 @@ public class SemanticMachineTests
 
     private static void PrintFunctionCode(ParseTree tree)
     {
+        using StreamWriter headerWriter = new(new MemoryStream());
+        using StreamWriter implWriter = new(new MemoryStream());
+
         CppCodeGenerator binder = new();
 
         // load types
@@ -39,7 +42,7 @@ public class SemanticMachineTests
 
         foreach (TypeDefinition def in pair.Empty)
         {
-            binder.GenerateTypeDef(def);
+            CppCodeGenerator.GenerateTypeDef(def, headerWriter);
         }
 
         // load function prototypes
@@ -62,30 +65,12 @@ public class SemanticMachineTests
             _ => oldContext
         });
 
-        foreach (var typeDef in binder.TypeDefintions)
-        {
-            Console.WriteLine(typeDef);
-        }
-
         foreach (var functionDef in functionDefinitions.Values)
         {
-            binder.GenerateFunction(functionDef);
+            binder.GenerateFunction(functionDef, headerWriter, implWriter);
         }
 
-        foreach (string functionPrototype in binder.FunctionPrototypes)
-        {
-            Console.WriteLine(functionPrototype);
-        }
-
-        foreach (string functionHeader in binder.TemplateFunctions)
-        {
-            Console.WriteLine(functionHeader);
-        }
-
-        foreach (string functionDef in binder.FunctionImplementations)
-        {
-            Console.WriteLine(functionDef);
-        }
+        // TODO: print
     }
 
     [TestMethod]
@@ -153,5 +138,38 @@ public class SemanticMachineTests
         Assert.IsNotNull(tree);
 
         PrintFunctionCode(tree);
+    }
+
+    [TestMethod]
+    public void CompilationTest()
+    {
+        string code = "func<int, int> Foobar(int a) => (int b) =>( a + b);";
+        ParseTree? tree = GrammarRules.Parse(code, new Script());
+        Assert.IsNotNull(tree);
+
+        string headerPath = Path.GetTempFileName();
+        string implPath = Path.GetTempFileName();
+
+        {
+            using StreamWriter headerFile = new(headerPath);
+            using StreamWriter implFile = new(implPath);
+
+            CppCodeGenerator binder = new();
+            binder.CompileCpp(tree, headerFile, implFile);
+        }
+
+        {
+            using StreamReader headerReader = new(headerPath);
+            using StreamReader implReader = new(implPath);
+
+            Console.WriteLine("header file:");
+            Console.WriteLine(headerReader.ReadToEnd());
+            Console.WriteLine();
+            Console.WriteLine("impl file:");
+            Console.WriteLine(implReader.ReadToEnd());
+        }
+
+        File.Delete(headerPath);
+        File.Delete(implPath);
     }
 }

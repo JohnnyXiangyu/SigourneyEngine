@@ -32,36 +32,25 @@ public:
         return GetAllocator()->New<Enumeration::ArrayLiteral<TElement, TCount>>();
     }
 
-    template <typename TSource, typename TResult, typename TLambda>
-    Enumeration::SelectEnumerable<TSource, TResult>* Select(Enumeration::IEnumerable<TSource>* source, const TLambda& lambda)
+    template <typename TSource, typename TResult>
+    Enumeration::SelectEnumerable<TSource, TResult>* Select(Enumeration::IEnumerable<TSource>* source, ILambda<TResult, TSource>* func)
     {
-        ILambda<TResult, TSource>* func = GetAllocator()->New<TLambda>(lambda);
-        Enumeration::SelectEnumerable<TSource, TResult>* selector = GetAllocator()->New<Enumeration::SelectEnumerable<TSource, TResult>>(source, func);
-        return selector;
-    }
-
-    template <typename TSource, typename TResult, typename TLambda>
-    Enumeration::SelectEnumerable<TSource, TResult>* Select(Enumeration::IEnumerable<TSource>* source, const TLambda&& lambda)
-    {
-        ILambda<TResult, TSource>* func = GetAllocator()->New<TLambda>(lambda);
         Enumeration::SelectEnumerable<TSource, TResult>* tik = GetAllocator()->New<Enumeration::SelectEnumerable<TSource, TResult>>(source, func);
         return tik;
     }
 
-    template <typename TElement, typename TLambda>
-    Enumeration::FilterEnumerable<TElement>* Where(Enumeration::IEnumerable<TElement>* source, TLambda& lambda)
+    template <typename TElement>
+    Enumeration::FilterEnumerable<TElement>* Where(Enumeration::IEnumerable<TElement>* source, ILambda<bool, TElement>* lambda)
     {
-        ILambda<bool, TElement>* func = GetAllocator()->New<TLambda>(lambda);
-        Enumeration::FilterEnumerable<TElement>* whereClause = GetAllocator()->New<Enumeration::FilterEnumerable<TElement>>(source, func);
+        Enumeration::FilterEnumerable<TElement>* whereClause = GetAllocator()->New<Enumeration::FilterEnumerable<TElement>>(source, lambda);
         return whereClause;
     }
 
-    template <typename TElement, typename TLambda>
-    Enumeration::FilterEnumerable<TElement>* Where(Enumeration::IEnumerable<TElement>* source, TLambda&& lambda)
+    template <typename TLambda>
+    TLambda* CreateLambda()
     {
-        ILambda<bool, TElement>* func = GetAllocator()->New<TLambda>(lambda);
-        Enumeration::FilterEnumerable<TElement>* whereClause = GetAllocator()->New<Enumeration::FilterEnumerable<TElement>>(source, func);
-        return whereClause;
+        TLambda* func = GetAllocator()->New<TLambda>();
+        return func;
     }
 
 public:

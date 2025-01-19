@@ -35,6 +35,9 @@
     <Filter Include="Memory">
       <UniqueIdentifier>{7485e607-39c4-499a-9587-d15c9f2c17ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Generated\Functional">
+      <UniqueIdentifier>{4b7460b9-2419-4b58-b551-2ae47aa37e3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="generation_collector.c">
@@ -64,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="homogeneous_storage.cpp">
       <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="update_loop.cpp">
+      <Filter>Generated\Functional</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +126,9 @@
     </ClInclude>
     <ClInclude Include="shorthand_functions.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="update_loop.h">
+      <Filter>Generated\Functional</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
