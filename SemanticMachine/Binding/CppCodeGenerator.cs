@@ -12,6 +12,12 @@ public class CppCodeGenerator
 {
     public CppLibraryReference LibReference { get; private set; } = new();
 
+    public enum RuntimeRefMode
+    {
+        This,
+        Argument
+    }
+
     public static string SerializeOperation(ArithmeticOperation operation) => operation switch
     {
         ArithmeticOperation.Add => "+",
@@ -28,11 +34,12 @@ public class CppCodeGenerator
 
     public void CompileCpp(ParseTree tree, TextWriter headerFile, TextWriter cppFile)
     {
-        // load types
+        // load built-in types
         ImmutableDictionary<string, ISemanticUnit> context = IArithmetic.LoadArithmeticPrimitives(ImmutableDictionary<string, ISemanticUnit>.Empty);
-        var flattened = Script.Flatten(tree.Children);
+        ParseTree[] flattened = Script.Flatten(tree.Children);
 
-        var pair = flattened.Aggregate((context, ImmutableList<TypeDefinition>.Empty), (oldContext, child) => child switch
+        // load user types
+        (ImmutableDictionary<string, ISemanticUnit> newContext, ImmutableList<TypeDefinition> userDefinedTypes) = flattened.Aggregate((context, ImmutableList<TypeDefinition>.Empty), (oldContext, child) => child switch
         {
             ParseTree(TypeDecalaration, ParseTree[] decChildren) => TypeDecalaration.Verify(decChildren, oldContext.context) switch
             {
@@ -41,12 +48,7 @@ public class CppCodeGenerator
             _ => oldContext
         });
 
-        context = pair.context;
-
-        foreach (TypeDefinition def in pair.Empty)
-        {
-            GenerateTypeDef(def, headerFile);
-        }
+        context = newContext;
 
         // load function prototypes
         context = flattened.Aggregate(context, (oldContext, child) => child switch
@@ -72,6 +74,11 @@ public class CppCodeGenerator
         using IDisposable headerDisposable = LibReference.BeginHeaderFile(headerFile);
         using IDisposable cppDisposable = LibReference.BeginCppFile(cppFile);
 
+        foreach (TypeDefinition def in userDefinedTypes)
+        {
+            GenerateTypeDef(def, headerFile);
+        }
+
         foreach (var functionDef in functionDefinitions.Values)
         {
             GenerateFunction(functionDef, headerFile, cppFile);
@@ -93,56 +100,56 @@ public class CppCodeGenerator
             .AppendLine($"{LibReference.PrintType(definition.Prototype.ReturnType)} {definition.Prototype.Name}({string.Join(", ", definition.Prototype.Params.Select(p => $"{LibReference.PrintType(p.Type)} {p.Name}"))})")
             .AppendLine("{");
 
-        string value = ProcessEvals(definition.Body, dispo, impl);
+        string value = ProcessEvals(definition.Body, dispo, impl, RuntimeRefMode.This);
 
         impl.WriteLine($"return {value};");
     }
 
-    public static void GenerateTypeDef(TypeDefinition typeDef, TextWriter writer)
+    public void GenerateTypeDef(TypeDefinition typeDef, TextWriter writer)
     {
         using IDisposable disposable = ConstructTypeDef(typeDef.Name, writer);
 
         foreach (string paramName in typeDef.PositionalParameters)
         {
-            writer.WriteLine($"{typeDef.Members[paramName]} {paramName};");
+            writer.WriteLine($"{LibReference.PrintType(typeDef.Members[paramName])} {paramName};");
         }
     }
 
-    private string ExpandNodeArithmetic(NodeArithmetic node, VarNameDistributor nameDispo, TextWriter writer)
+    private string ExpandNodeArithmetic(NodeArithmetic node, VarNameDistributor nameDispo, TextWriter writer, RuntimeRefMode mode)
     {
-        string valueL = ProcessEvals(node.LeftChild, nameDispo, writer);
-        string valueR = ProcessEvals(node.RightChild, nameDispo, writer);
+        string valueL = ProcessEvals(node.LeftChild, nameDispo, writer, mode);
+        string valueR = ProcessEvals(node.RightChild, nameDispo, writer, mode);
 
         return $"{valueL} {SerializeOperation(node.Operation)} {valueR}";
     }
 
-    private string ExpandFunctionCall(StaticInvocation call, VarNameDistributor nameDispo, TextWriter writer)
+    private string ExpandFunctionCall(StaticInvocation call, VarNameDistributor nameDispo, TextWriter writer, RuntimeRefMode mode)
     {
         List<string> parameters = [];
         foreach (IEvaluatable parameter in call.Arguments)
         {
-            parameters.Add(ProcessEvals(parameter, nameDispo, writer));
+            parameters.Add(ProcessEvals(parameter, nameDispo, writer, mode));
         }
 
         return $"{call.Function.Name}({string.Join(", ", parameters)})";
     }
 
-    private string ExpandArrayCreation(ArrayLiteral initializer, VarNameDistributor nameDispo, TextWriter writer)
+    private string ExpandArrayCreation(ArrayLiteral initializer, VarNameDistributor nameDispo, TextWriter writer, RuntimeRefMode mode)
     {
         List<string> elements = [];
         foreach (IEvaluatable element in initializer.Elements)
         {
-            elements.Add(ProcessEvals(element, nameDispo, writer));
+            elements.Add(ProcessEvals(element, nameDispo, writer, mode));
         }
 
-        return LibReference.CreateArrayEnumerable(LibReference.PrintType(initializer.ElementType), [.. elements], nameDispo, writer);
+        return LibReference.CreateArrayEnumerable(LibReference.PrintType(initializer.ElementType), [.. elements], nameDispo, writer, mode switch { RuntimeRefMode.Argument => "runtime", _ => null });
     }
 
-    private string ExpandLambda(LambdaWithCaptures lambda, VarNameDistributor nameDispo, TextWriter writer)
+    private string ExpandLambda(LambdaWithCaptures lambda, VarNameDistributor nameDispo, TextWriter writer, RuntimeRefMode mode)
     {
         // create a custom struct just for this lambda
         string lambdaClassName = nameDispo.GetName();
-        writer.WriteLine($"struct {lambdaClassName} : public ILambda<{LibReference.PrintType(lambda.Body.Type)}, {string.Join(", ", lambda.ArgumentCaptures.Select(cap => LibReference.PrintType(cap.Type)))}>");
+        writer.WriteLine($"struct {lambdaClassName} : public ILambda<{LibReference.PrintType(lambda.Body.Type)}, {string.Join(", ", lambda.Params.Select(cap => LibReference.PrintType(cap.Type)))}>");
         writer.WriteLine("{");
 
         // print out the captured types
@@ -152,17 +159,18 @@ public class CppCodeGenerator
         }
 
         // print out the function
-        writer.WriteLine($"{LibReference.PrintType(lambda.Body.Type)} Run({string.Join(", ", lambda.Params.Select(param => $"{LibReference.PrintType(param.Type)} {param.Name}"))}) override");
+        writer.WriteLine($"{LibReference.PrintType(lambda.Body.Type)} Run({string.Join(", ", lambda.Params.Select(param => $"{LibReference.PrintType(param.Type)} {param.Name}").Prepend(LibReference.RuntimeReferenceAsParameter("runtime")))}) override");
         writer.WriteLine("{");
 
-        string value = ProcessEvals(lambda.Body, nameDispo, writer);
+        // the body needs to be generated using a runtime reference instead of 
+        string value = ProcessEvals(lambda.Body, nameDispo, writer, RuntimeRefMode.Argument);
         writer.WriteLine($"return {value};");
         writer.WriteLine("}");
         writer.WriteLine("};");
 
         // create the lambda instance
         string varName = nameDispo.GetName();
-        LibReference.CreateLambdaInstance(lambdaClassName, varName, writer);
+        LibReference.CreateLambdaInstance(lambdaClassName, varName, writer, mode switch { RuntimeRefMode.Argument => "runtime", _ => null});
 
         // load lambda captures
         foreach (LazyEvaluatable capture in lambda.ArgumentCaptures)
@@ -173,48 +181,62 @@ public class CppCodeGenerator
         return varName;
     }
 
-    private string ExpandLambdaCall(DynamicInvocation invocation, VarNameDistributor nameDispo, TextWriter writer)
+    private string ExpandLambdaCall(DynamicInvocation invocation, VarNameDistributor nameDispo, TextWriter writer, RuntimeRefMode mode)
     {
         List<string> arguments = [];
         foreach (IEvaluatable arg in invocation.Arguments)
         {
-            arguments.Add(ProcessEvals(arg, nameDispo, writer));
+            arguments.Add(ProcessEvals(arg, nameDispo, writer, mode));
         }
 
-        return $"{invocation.Prototype.Name}->Run({string.Join(", ", arguments)});";
+        return $"{invocation.Prototype.Name}->Run({string.Join(", ", arguments.Prepend(mode switch { RuntimeRefMode.This => "this", RuntimeRefMode.Argument => "runtime", _ => throw new Exception("unexpected runtime reference mode") }))})";
     }
 
-    private string ExpandValueGetter(TypeMemberGetter getter, VarNameDistributor nameDispo, TextWriter writer)
+    private string ExpandValueGetter(TypeMemberGetter getter, VarNameDistributor nameDispo, TextWriter writer, RuntimeRefMode mode)
     {
-        string subject = ProcessEvals(getter.Subject, nameDispo, writer);
+        string subject = ProcessEvals(getter.Subject, nameDispo, writer, mode);
         return $"{subject}.{getter.Member}";
     }
 
-    private string ProcessEvals(IEvaluatable evaluatable, VarNameDistributor nameDispo, TextWriter implWriter) => evaluatable switch
+    private string ExpandStructConstruction(StructuredData data, VarNameDistributor nameDispo, TextWriter writer, RuntimeRefMode mode)
     {
-        LeafArithmetic leafArithmetic => ProcessEvals(leafArithmetic.Value, nameDispo, implWriter),
+        List<string> members = [];
+        foreach (IEvaluatable member in data.PositionalArguments)
+        {
+            members.Add(ProcessEvals(member, nameDispo, writer, mode));
+        }
 
-        NodeArithmetic nodeArithmetic => ExpandNodeArithmetic(nodeArithmetic, nameDispo, implWriter),
+        string varname = nameDispo.GetName();
+        writer.WriteLine($"{LibReference.PrintType(data.Type)} {varname} {{ {string.Join(", ", members)} }};");
+
+        return varname;
+    }
+
+    private string ProcessEvals(IEvaluatable evaluatable, VarNameDistributor nameDispo, TextWriter implWriter, RuntimeRefMode mode) => evaluatable switch
+    {
+        LeafArithmetic leafArithmetic => ProcessEvals(leafArithmetic.Value, nameDispo, implWriter, mode),
+
+        NodeArithmetic nodeArithmetic => ExpandNodeArithmetic(nodeArithmetic, nameDispo, implWriter, mode),
 
         Int32Value int32Value => int32Value.Value.ToString(),
 
         BooleanValue booleanValue => booleanValue.Value.ToString(),
 
-        StaticInvocation call => ExpandFunctionCall(call, nameDispo, implWriter),
+        StaticInvocation call => ExpandFunctionCall(call, nameDispo, implWriter, mode),
 
-        DynamicInvocation lambdaCall => ExpandLambdaCall(lambdaCall, nameDispo, implWriter),
+        DynamicInvocation lambdaCall => ExpandLambdaCall(lambdaCall, nameDispo, implWriter, mode),
 
         LazyEvaluatable lazy => lazy.Name,
 
-        ArrayLiteral arrLiteral => ExpandArrayCreation(arrLiteral, nameDispo, implWriter),
+        ArrayLiteral arrLiteral => ExpandArrayCreation(arrLiteral, nameDispo, implWriter, mode),
 
-        LambdaWithCaptures lambda => ExpandLambda(lambda, nameDispo, implWriter),
+        LambdaWithCaptures lambda => ExpandLambda(lambda, nameDispo, implWriter, mode),
 
         //TypeDefinition typeDef => $"struct {typeDef.Name} \n{{\n{string.Join("\n", typeDef.PositionalParameters.Select(name => $"    {typeDef.Parameters[name].Name} {name};"))}\n}};",
 
-        //StructuredData structData => $"{structData.Type}({string.Join(", ", structData.PositionalArguments.Select(ProduceCppCode))})",
+        StructuredData structData => ExpandStructConstruction(structData, nameDispo, implWriter, mode),
 
-        TypeMemberGetter getter => ExpandValueGetter(getter, nameDispo, implWriter),
+        TypeMemberGetter getter => ExpandValueGetter(getter, nameDispo, implWriter, mode),
 
         _ => throw new NotImplementedException($"the input semantic type is not supported for cpp code gen: {evaluatable.GetType().Name}")
     };

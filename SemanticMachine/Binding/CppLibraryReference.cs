@@ -1,7 +1,6 @@
 ﻿using SemanticMachine.Grammar.Interpretation;
 using System.Text;
 using Nito.Disposables;
-using SemanticMachine.Grammar.Symbols.Expression;
 
 namespace SemanticMachine.Binding;
 
@@ -22,7 +21,7 @@ public class CppLibraryReference
     public string AllocatorGetter { get; set; } = "GetAllocator()";
     public string MakeArrayFunction { get; set; } = "MakeArray";
 
-    public string CreateArrayEnumerable(string type, string[] values, VarNameDistributor nameDispo, TextWriter writer)
+    public string CreateArrayEnumerable(string type, string[] values, VarNameDistributor nameDispo, TextWriter writer, string? dynamicRuntimeRef = null)
     {
         StringBuilder prepBuilder = new();
 
@@ -33,12 +32,14 @@ public class CppLibraryReference
             .Append(' ')
             .Append(varName)
             .Append(" = ")
-            .Append(BaseClassName)
-            .Append($"::{MakeArrayFunction}<")
+            .Append(dynamicRuntimeRef == null ? $"{BaseClassName}::" : $"{dynamicRuntimeRef}->")
+            .Append($"{MakeArrayFunction}<")
             .Append(type)
             .Append(',')
             .Append(values.Length)
-            .AppendLine($">({BaseClassName}::{AllocatorGetter});");
+            .Append('>')
+            .Append(dynamicRuntimeRef == null ? $"{BaseClassName}::" : $"{dynamicRuntimeRef}->")
+            .AppendLine($"{AllocatorGetter});");
 
         writer.WriteLine(prepBuilder.ToString());
 
@@ -95,8 +96,12 @@ public class CppLibraryReference
         return Disposable.Create(null);
     }
 
-    public void CreateLambdaInstance(string lambdaType, string lambdaName, TextWriter writer)
+    public void CreateLambdaInstance(string lambdaType, string lambdaName, TextWriter writer, string? dynamicRuntimeRef = null)
     {
-        writer.WriteLine($"{lambdaType}* {lambdaName} = {BaseClassName}::CreateLambda<{lambdaType}>();");
-    } 
+        writer.Write($"{lambdaType}* {lambdaName} = ");
+        writer.Write(dynamicRuntimeRef == null ? $"{BaseClassName}::" : $"{dynamicRuntimeRef}->");
+        writer.WriteLine($"CreateLambda<{lambdaType}>();");
+    }
+
+    public string RuntimeReferenceAsParameter(string name) => $"{MainNamespace}::{BaseClassName}* {name}";
 }

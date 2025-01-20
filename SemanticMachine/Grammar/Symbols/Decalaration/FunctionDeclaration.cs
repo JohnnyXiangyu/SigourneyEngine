@@ -67,16 +67,24 @@ public record FunctionDeclaration : INonTerminal
         _ => throw new Exception($"parsing error, {nameof(FunctionDeclaration)}")
     };
 
+    private static FunctionDefinition ConfirmTypeConsistent(FunctionPrototype prototype, IEvaluatable body)
+    {
+        if (prototype.ReturnType.Name != body.Type.Name)
+            throw new Exception("function definition doesn't match declaration, FunctionDeclaration.ConfirmTypeConssitent");
+
+        return new FunctionDefinition(prototype, body);
+    }
+
     public static FunctionDefinition VerifyFullDefinition(ParseTree[] children, ImmutableDictionary<string, ISemanticUnit> context) => children switch
     {
         [_, ParseTree(NamedSymbol(string functionName), []), _, ParseTree(ParameterList, ParseTree[] parametersChildren), _, _, ParseTree(Expr, ParseTree[] exprChildren)] => ISemanticUnit.ResolveSymbol(functionName, context) switch
         {
-            FunctionPrototype prototype => new FunctionDefinition(prototype, Expr.Verify(exprChildren, context.AddRange(prototype.Params.Select(param => new KeyValuePair<string, ISemanticUnit>(param.Name, param))))),
+            FunctionPrototype prototype => ConfirmTypeConsistent(prototype, Expr.Verify(exprChildren, context.AddRange(prototype.Params.Select(param => new KeyValuePair<string, ISemanticUnit>(param.Name, param))))),
             ISemanticUnit unit => throw new Exception($"symbol type mismatch, expecting function prototype, got {unit.GetType().Name}")
         },
         [_, ParseTree(NamedSymbol(string functionName), []), _, _, _, ParseTree(Expr, ParseTree[] exprChildren)] => ISemanticUnit.ResolveSymbol(functionName, context) switch
         {
-            FunctionPrototype prototype => new FunctionDefinition(prototype, Expr.Verify(exprChildren, context)),
+            FunctionPrototype prototype => ConfirmTypeConsistent(prototype, Expr.Verify(exprChildren, context)),
             ISemanticUnit unit => throw new Exception($"symbol type mismatch, expecting function prototype, got {unit.GetType().Name}")
         },
         _ => throw new Exception($"parsing error, {nameof(FunctionDeclaration)}")

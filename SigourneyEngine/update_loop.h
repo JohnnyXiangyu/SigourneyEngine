@@ -1,3 +1,4 @@
+//// header file:
 #pragma once
 #include"runtime.h"
 namespace SigourneyEngine {
@@ -7,7 +8,7 @@ namespace Functional {
 class UpdateLoop : public SigourneyEngine::FunctionalLayer::RuntimeBase
 {
 public:
-    SigourneyEngine::FunctionalLayer::ILambda<int, int>* Foobar(int a);
+    int Foobar(SigourneyEngine::FunctionalLayer::ILambda<int, int>* lambda, int arg);
 };
 
 }

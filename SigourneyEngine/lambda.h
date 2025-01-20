@@ -3,6 +3,8 @@
 namespace SigourneyEngine {
 namespace FunctionalLayer {
 
+class RuntimeBase;
+
 /// <summary>
 /// Backend for a lambda in semantic machine with its captures.
 /// Compiler will generate concrete classes that implement this interface for each individual lambda.
@@ -12,7 +14,7 @@ namespace FunctionalLayer {
 template <typename TRet, typename ...TArgs>
 struct ILambda
 {
-    virtual TRet Run(TArgs... values) = 0;
+    virtual TRet Run(RuntimeBase* runtime, TArgs... values) = 0;
 };
 
 }

@@ -5,7 +5,6 @@ using SemanticMachine.Grammar.Interpretation;
 using SemanticMachine.Grammar.Symbols.Decalaration;
 using SemanticMachine.Grammar.Symbols.Expression;
 using System.Collections.Immutable;
-using System.Linq;
 
 namespace GrammerParserTests;
 
@@ -42,7 +41,7 @@ public class SemanticMachineTests
 
         foreach (TypeDefinition def in pair.Empty)
         {
-            CppCodeGenerator.GenerateTypeDef(def, headerWriter);
+            binder.GenerateTypeDef(def, headerWriter);
         }
 
         // load function prototypes
@@ -140,13 +139,8 @@ public class SemanticMachineTests
         PrintFunctionCode(tree);
     }
 
-    [TestMethod]
-    public void CompilationTest()
+    private static void PrintCode(ParseTree tree)
     {
-        string code = "func<int, int> Foobar(int a) => (int b) =>( a + b);";
-        ParseTree? tree = GrammarRules.Parse(code, new Script());
-        Assert.IsNotNull(tree);
-
         string headerPath = Path.GetTempFileName();
         string implPath = Path.GetTempFileName();
 
@@ -162,14 +156,54 @@ public class SemanticMachineTests
             using StreamReader headerReader = new(headerPath);
             using StreamReader implReader = new(implPath);
 
-            Console.WriteLine("header file:");
+            Console.WriteLine("//// header file:");
             Console.WriteLine(headerReader.ReadToEnd());
             Console.WriteLine();
-            Console.WriteLine("impl file:");
+            Console.WriteLine("//// impl file:");
             Console.WriteLine(implReader.ReadToEnd());
         }
 
         File.Delete(headerPath);
         File.Delete(implPath);
+    }
+
+    [TestMethod]
+    public void CompilationTest()
+    {
+        string code = "func<int, int> Foobar(int a) => (int b) =>(a + b);";
+        ParseTree? tree = GrammarRules.Parse(code, new Script());
+        Assert.IsNotNull(tree);
+
+        PrintCode(tree);
+    }
+
+    [TestMethod]
+    public void CurryFunctionCompilationTest()
+    {
+        string code = "func<func<int, int>, int> Foobar(int a) => (int b) => ((int c) => (a + b + c));";
+        ParseTree? tree = GrammarRules.Parse(code, new Script());
+        Assert.IsNotNull(tree);
+
+        PrintCode(tree);
+    }
+
+    [TestMethod]
+    public void ValueGetterCompilationTest()
+    {
+        string code = "type Vector { int X, int Y }; int Foobar(Vector vector) => vector->X + vector->Y;";
+        ParseTree? tree = GrammarRules.Parse(code, new Script());
+        Assert.IsNotNull(tree);
+
+        PrintCode(tree);
+    }
+
+    [TestMethod]
+    public void LambdaInvocationTest()
+    {
+        string code = "int Foobar(func<int, int> lambda, int arg) => lambda(lambda(arg));";
+        ParseTree? tree = GrammarRules.Parse(code, new Script());
+        Assert.IsNotNull(tree);
+
+        PrintCode(tree);
     }
 }

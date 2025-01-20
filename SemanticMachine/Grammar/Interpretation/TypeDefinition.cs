@@ -37,7 +37,7 @@ public record StructuredData(TypeDefinition Prototype, IEvaluatable[] Positional
 
 public record ArrayType(TypeDefinition ElementType) : TypeDefinition(ElementType.Name + "[]", ImmutableDictionary<string, TypeDefinition>.Empty, []);
 
-public record CallableType(TypeDefinition ReturnType, ImmutableList<LazyEvaluatable> Params) : TypeDefinition($"callable({ReturnType.Name}<{string.Join(',', Params.Select(x => x.Name))}>)", ImmutableDictionary<string, TypeDefinition>.Empty, [])
+public record CallableType(TypeDefinition ReturnType, ImmutableList<LazyEvaluatable> Params) : TypeDefinition($"callable({ReturnType.Name}<{string.Join(',', Params.Select(x => x.Type.Name))}>)", ImmutableDictionary<string, TypeDefinition>.Empty, [])
 {
     private FunctionPrototype ToPrototype(string name) => new(name, false, ReturnType, Params);
 
