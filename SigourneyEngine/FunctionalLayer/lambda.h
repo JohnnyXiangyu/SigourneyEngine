@@ -14,7 +14,7 @@ class RuntimeBase;
 template <typename TRet, typename ...TArgs>
 struct ILambda
 {
-    virtual TRet Run(RuntimeBase* runtime, TArgs... values) = 0;
+    virtual TRet Run(TArgs... values) = 0;
 };
 
 }

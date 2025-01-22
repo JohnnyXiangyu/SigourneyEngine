@@ -1,12 +1,11 @@
 #pragma once
 #include "enumerable.h"
-#include "high_integrity_allocator.h"
+#include "../Memory/high_integrity_allocator.h"
 
 // supresses the placement new warning
 #include <memory>
 
 namespace SigourneyEngine {
-namespace FunctionalLayer {
 namespace Enumeration {
 
 template <typename TElement, unsigned int TCount>
@@ -19,7 +18,7 @@ private:
     };
 
 private:
-    TElement m_elements[TCount];
+    TElement m_Elements[TCount];
 
 public:
     ArrayLiteral()
@@ -36,12 +35,12 @@ public:
     /// <param name="value"></param>
     void SetItem(size_t index, const TElement& value)
     {
-        m_elements[index] = value;
+        m_Elements[index] = value;
     }
 
     void SetItem(size_t index, const TElement&& value)
     {
-        m_elements[index] = value;
+        m_Elements[index] = value;
     }
     
     // Inherited via IEnumerable
@@ -61,18 +60,17 @@ public:
     TElement Dereference(IEnumerator* enumerator) override
     {
         Enumerator* casted = (Enumerator*) enumerator;
-        return m_elements[casted->Index];
+        return m_Elements[casted->Index];
     }
 
     // Inherited via IEnumerable
     bool IncrementEnumerator(IEnumerator* enumerator) override
     {
-        Enumerator * casted = (Enumerator*)enumerator;;
+        Enumerator * casted = (Enumerator*)enumerator;
         casted->Index++;
         return casted->Index < TCount;
     }
 };
 
-}
 }
 }

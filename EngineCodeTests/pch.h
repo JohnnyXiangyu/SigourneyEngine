@@ -7,11 +7,11 @@
 #ifndef PCH_H
 #define PCH_H
 
-#include "../SigourneyEngine/high_integrity_allocator.h"
-#include "../SigourneyEngine/runtime.h"
-#include "../SigourneyEngine/enumerable.h"
-#include "../SigourneyEngine/lambda.h"
-#include "../SigourneyEngine/shorthand_functions.h"
+#include "../SigourneyEngine/Memory/high_integrity_allocator.h"
+#include "../SigourneyEngine/FunctionalLayer/runtime.h"
+#include "../SigourneyEngine/Enumeration/enumerable.h"
+#include "../SigourneyEngine/FunctionalLayer/lambda.h"
+#include "../SigourneyEngine/Utils/shorthand_functions.h"
 
 // add headers that you want to pre-compile here
 

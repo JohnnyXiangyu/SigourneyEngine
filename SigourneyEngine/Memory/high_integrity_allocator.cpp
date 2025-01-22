@@ -1,11 +1,10 @@
 #include "high_integrity_allocator.h"
 #include "homogeneous_storage.h"
-#include "shorthand_functions.h"
+#include "../Utils/shorthand_functions.h"
 #include <memory>
 
 // define pure internal data structures
 namespace SigourneyEngine {
-namespace FunctionalLayer {
 namespace Memory {
 
 /// <summary>
@@ -96,9 +95,7 @@ static AllocationTable SingletonAllocationTable;
 
 }
 }
-}
 
-using namespace SigourneyEngine::FunctionalLayer::Memory;
 using namespace SigourneyEngine::Memory;
 using namespace SigourneyEngine::Utils;
 
@@ -109,7 +106,7 @@ struct OwnerPrependedPayload
     HomogeneousStorage* Owner;
 };
 
-void* SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::AllocateCore(unsigned int tableEntry)
+void* SigourneyEngine::Memory::HighIntegrityAllocator::AllocateCore(unsigned int tableEntry)
 {
     void* payload = m_bufferTable[tableEntry].Take();
     OwnerPrependedPayload* paddedResult = (OwnerPrependedPayload*) m_bufferTable[tableEntry].Take();
@@ -117,12 +114,12 @@ void* SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::Allocate
     return Utils::SkipHeader<OwnerPrependedPayload>(paddedResult);
 }
 
-unsigned int SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::GetTableEntryCore(unsigned int size)
+unsigned int SigourneyEngine::Memory::HighIntegrityAllocator::GetTableEntryCore(unsigned int size)
 {
     return SingletonAllocationTable.RegisterSize(size);
 }
 
-SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::HighIntegrityAllocator(unsigned int initialSize)
+SigourneyEngine::Memory::HighIntegrityAllocator::HighIntegrityAllocator(unsigned int initialSize)
     : m_initialBufferItemCount(initialSize)
 {
     // create a table on heap for all registered buffer chains
@@ -133,7 +130,7 @@ SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::HighIntegrityA
     SingletonAllocationTable.Foreach([this](unsigned int index, size_t size) { new (m_bufferTable + index) HomogeneousStorage(size + sizeof(void*), m_initialBufferItemCount); });
 }
 
-SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::~HighIntegrityAllocator()
+SigourneyEngine::Memory::HighIntegrityAllocator::~HighIntegrityAllocator()
 {
     unsigned int tableLength = SingletonAllocationTable.GetTableLength();
     for (unsigned int i = 0; i < tableLength; i++)
@@ -144,7 +141,7 @@ SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::~HighIntegrity
     delete[] m_bufferTable;
 }
 
-void SigourneyEngine::FunctionalLayer::Memory::HighIntegrityAllocator::Free(void* pointer)
+void SigourneyEngine::Memory::HighIntegrityAllocator::Free(void* pointer)
 {
     OwnerPrependedPayload* header = GetHeader<OwnerPrependedPayload>(pointer);
     header->Owner->Put(header);

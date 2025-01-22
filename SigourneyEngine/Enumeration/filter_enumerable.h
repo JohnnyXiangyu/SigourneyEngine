@@ -1,11 +1,10 @@
 #pragma once
 
 #include "enumerable.h"
-#include "lambda.h"
-#include "high_integrity_allocator.h"
+#include "../FunctionalLayer/lambda.h"
+#include "../Memory/high_integrity_allocator.h"
 
 namespace SigourneyEngine {
-namespace FunctionalLayer {
 namespace Enumeration {
 
 template <typename T>
@@ -13,7 +12,7 @@ class FilterEnumerable : public IEnumerable<T>
 {
 private:
     IEnumerable<T>* m_source;
-    ILambda<bool, T>* m_lambda;
+    FunctionalLayer::ILambda<bool, T>* m_lambda;
 
     struct Enumerator : IEnumerator
     {
@@ -24,7 +23,7 @@ private:
     };
 
 public:
-    FilterEnumerable(IEnumerable<T>* inSource, ILambda<bool, T>* inLambda) : m_source(inSource), m_lambda(inLambda)
+    FilterEnumerable(IEnumerable<T>* inSource, FunctionalLayer::ILambda<bool, T>* inLambda) : m_source(inSource), m_lambda(inLambda)
     {
         IEnumerable<T>::SetCountable(false);
     }
@@ -79,6 +78,5 @@ public:
     }
 };
 
-}
 }
 }

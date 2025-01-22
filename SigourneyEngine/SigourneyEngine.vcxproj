@@ -128,37 +128,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="dummy_resource_one.res.h" />
-    <ClCompile Include="dummy_system.sys.c" />
-    <ClCompile Include="generation_collector.c" />
-    <ClCompile Include="high_integrity_allocator.cpp" />
-    <ClCompile Include="homogeneous_storage.cpp" />
-    <ClCompile Include="main.c" />
-    <ClCompile Include="task_graph.c" />
-    <ClCompile Include="thread_pool.c" />
-    <ClCompile Include="thread_messaging.c" />
-    <ClCompile Include="update_loop.cpp" />
+    <ClCompile Include="EntityComponentSystem\component_controller.cpp" />
+    <ClCompile Include="Generated\update_loop.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Memory\high_integrity_allocator.cpp" />
+    <ClCompile Include="Memory\homogeneous_storage.cpp" />
+    <ClCompile Include="Threading\thread_messaging.c" />
+    <ClCompile Include="Threading\thread_pool.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="component_store.h" />
-    <ClInclude Include="dummy_resource_two.res.h" />
-    <ClInclude Include="dummy_system.sys.h" />
-    <ClInclude Include="enumerable.h" />
-    <ClInclude Include="array_literal.h" />
-    <ClInclude Include="filter_enumerable.h" />
-    <ClInclude Include="generation_collector.h" />
-    <ClInclude Include="graph_resolver.h" />
-    <ClInclude Include="high_integrity_allocator.h" />
-    <ClInclude Include="homogeneous_storage.h" />
-    <ClInclude Include="lambda.h" />
-    <ClInclude Include="non_essential_macros.h" />
-    <ClInclude Include="runtime.h" />
-    <ClInclude Include="select_enumerable.h" />
-    <ClInclude Include="shorthand_functions.h" />
-    <ClInclude Include="task_graph.h" />
-    <ClInclude Include="update_loop.h" />
-    <ClInclude Include="thread_pool.h" />
-    <ClInclude Include="thread_messaging.h" />
+    <ClInclude Include="EntityComponentSystem\component_controller.h" />
+    <ClInclude Include="EntityComponentSystem\component_store.h" />
+    <ClInclude Include="Enumeration\array_literal.h" />
+    <ClInclude Include="Enumeration\enumerable.h" />
+    <ClInclude Include="Enumeration\filter_enumerable.h" />
+    <ClInclude Include="Enumeration\select_enumerable.h" />
+    <ClInclude Include="FunctionalLayer\lambda.h" />
+    <ClInclude Include="FunctionalLayer\runtime.h" />
+    <ClInclude Include="Generated\update_loop.h" />
+    <ClInclude Include="Memory\high_integrity_allocator.h" />
+    <ClInclude Include="Memory\homogeneous_storage.h" />
+    <ClInclude Include="Threading\thread_messaging.h" />
+    <ClInclude Include="Threading\thread_pool.h" />
+    <ClInclude Include="Utils\non_essential_macros.h" />
+    <ClInclude Include="Utils\shorthand_functions.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

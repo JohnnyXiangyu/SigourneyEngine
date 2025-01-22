@@ -68,8 +68,6 @@ public class SemanticMachineTests
         {
             binder.GenerateFunction(functionDef, headerWriter, implWriter);
         }
-
-        // TODO: print
     }
 
     [TestMethod]

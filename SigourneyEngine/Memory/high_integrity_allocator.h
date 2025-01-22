@@ -1,15 +1,9 @@
 #pragma once
 
 namespace SigourneyEngine {
-
 namespace Memory {
 
 class HomogeneousStorage;
-
-}
-
-namespace FunctionalLayer {
-namespace Memory {
 
 /// <summary>
 /// Implements IAllocator interface; uses an allocation design that eliminates memory fragmentation;
@@ -64,6 +58,5 @@ public:
 template <unsigned int T>
 unsigned int HighIntegrityAllocator::SizeEquivalentClass<T>::TableEntry = HighIntegrityAllocator::GetTableEntryCore(T);
 
-}
 }
 }

@@ -1,8 +1,7 @@
 #pragma once
-#include "non_essential_macros.h"
+#include "../Utils/non_essential_macros.h"
 
 namespace SigourneyEngine {
-namespace FunctionalLayer {
 
 namespace Memory {
 
@@ -55,6 +54,5 @@ public:
     virtual bool IncrementEnumerator(IEnumerator* enumerator) = 0;
 };
 
-}
 }
 }

@@ -7,6 +7,8 @@ using namespace EngineCodeTests;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace SigourneyEngine::FunctionalLayer;
 using namespace SigourneyEngine::Utils;
+using namespace SigourneyEngine::Memory;
+using namespace SigourneyEngine::Enumeration;
 
 namespace EngineCodeTests
 {
@@ -16,9 +18,9 @@ TEST_CLASS(FunctionalLayerTests)
 public:
 	TEST_METHOD(BasicEnumerableTest)
 	{
-		Memory::HighIntegrityAllocator allocator(1);
-		RuntimeBase runtime(&allocator);
-		Enumeration::ArrayLiteral<double, 10>* arr = runtime.MakeArray<double, 10>();
+		HighIntegrityAllocator allocator(1);
+		RuntimeBase runtime(&allocator, nullptr);
+		ArrayLiteral<double, 10>* arr = runtime.MakeArray<double, 10>();
 
 		Logger::WriteMessage(std::to_string(arr->GetCount()).c_str());
 		Logger::WriteMessage("\n");
@@ -56,9 +58,9 @@ public:
 
 	TEST_METHOD(SelectEnumerableTest)
 	{
-		Memory::HighIntegrityAllocator allocator(1);
-		RuntimeBase runtime(&allocator);
-		Enumeration::ArrayLiteral<int, 10>* arr = runtime.MakeArray<int, 10>();
+		HighIntegrityAllocator allocator(1);
+		RuntimeBase runtime(&allocator, nullptr);
+		ArrayLiteral<int, 10>* arr = runtime.MakeArray<int, 10>();
 
 		Assert::IsTrue(arr->GetCount() == 10);
 
@@ -67,8 +69,10 @@ public:
 			arr->SetItem(i, i * 3);
 		}
 
-		Enumeration::SelectEnumerable<int, bool>* selector = runtime.Select<int, bool>(arr, TestLambda{});
-		Enumeration::IEnumerator* enumerator = selector->InitializeEnumerator(&allocator);
+		TestLambda testSelectLambda{};
+
+		SelectEnumerable<int, bool>* selector = runtime.Select<int, bool>(arr, &testSelectLambda);
+		IEnumerator* enumerator = selector->InitializeEnumerator(&allocator);
 		while (true)
 		{
 			int nextValue = selector->Dereference(enumerator);
@@ -85,9 +89,9 @@ public:
 
 	TEST_METHOD(FilterEnumerableTest)
 	{
-		Memory::HighIntegrityAllocator allocator(1);
-		RuntimeBase runtime(&allocator);
-		Enumeration::ArrayLiteral<int, 10>* arr = runtime.MakeArray<int, 10>();
+		HighIntegrityAllocator allocator(1);
+		RuntimeBase runtime(&allocator, nullptr);
+		ArrayLiteral<int, 10>* arr = runtime.MakeArray<int, 10>();
 
 		Assert::IsTrue(arr->GetCount() == 10);
 
@@ -96,8 +100,10 @@ public:
 			arr->SetItem(i, i);
 		}
 
-		Enumeration::FilterEnumerable<int>* selector = runtime.Where<int>(arr, TestLambda{});
-		Enumeration::IEnumerator* enumerator = selector->InitializeEnumerator(&allocator);
+		TestLambda testLambda{};
+
+		FilterEnumerable<int>* selector = runtime.Where<int>(arr, &testLambda);
+		IEnumerator* enumerator = selector->InitializeEnumerator(&allocator);
 		while (true)
 		{
 			int nextValue = selector->Dereference(enumerator);

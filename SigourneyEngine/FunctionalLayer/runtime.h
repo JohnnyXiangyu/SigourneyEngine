@@ -1,11 +1,12 @@
 #pragma once
-#include "high_integrity_allocator.h"
-#include "enumerable.h"
-#include "array_literal.h"
-#include "select_enumerable.h"
+#include "../Memory/high_integrity_allocator.h"
+#include "../Enumeration/enumerable.h"
+#include "../Enumeration/array_literal.h"
+#include "../Enumeration/select_enumerable.h"
 #include "lambda.h"
-#include "non_essential_macros.h"
-#include "filter_enumerable.h"
+#include "../Utils/non_essential_macros.h"
+#include "../Enumeration/filter_enumerable.h"
+#include "../EntityComponentSystem/component_controller.h"
 
 namespace SigourneyEngine {
 namespace FunctionalLayer {
@@ -18,6 +19,7 @@ namespace FunctionalLayer {
 class RuntimeBase
 {
     Property(Memory::HighIntegrityAllocator*, Allocator)
+    Property(EntityComponentSystem::ComponentController*, ComponentController)
 
 public:
     /// <summary>
@@ -54,7 +56,8 @@ public:
     }
 
 public:
-    RuntimeBase(Memory::HighIntegrityAllocator* inAllocator) : m_Allocator(inAllocator) {}
+    RuntimeBase(Memory::HighIntegrityAllocator* inAllocator, EntityComponentSystem::ComponentController* inController) 
+        : m_Allocator(inAllocator), m_ComponentController(inController) {}
 };
 
 }

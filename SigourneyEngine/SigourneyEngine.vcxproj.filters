@@ -1,30 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ThreadPool">
-      <UniqueIdentifier>{d23b4701-3ce0-4239-8b63-ccb333e97519}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Generated">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="TaskScheduler">
-      <UniqueIdentifier>{403b941f-8ae7-43b6-b4ed-55e8a3088dc8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UserDefined">
-      <UniqueIdentifier>{d9e3bddf-eb4d-475c-bdd4-8cf18e840e9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UserDefined\DummySystem">
-      <UniqueIdentifier>{8b045130-2ed3-4b78-a6db-35011329cabb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="FunctionalLayer">
       <UniqueIdentifier>{48bca79a-db59-420c-84da-d80239990b10}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FunctionalLayer\Memory">
-      <UniqueIdentifier>{9427d29a-f66d-40df-82ff-f0d60634d37c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FunctionalLayer\Enumeration">
-      <UniqueIdentifier>{14d0f57b-ffce-43a8-91c4-205727145d36}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{33da1176-6ad4-486a-a441-03931b0858e0}</UniqueIdentifier>
@@ -35,100 +17,82 @@
     <Filter Include="Memory">
       <UniqueIdentifier>{7485e607-39c4-499a-9587-d15c9f2c17ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Generated\Functional">
-      <UniqueIdentifier>{4b7460b9-2419-4b58-b551-2ae47aa37e3a}</UniqueIdentifier>
+    <Filter Include="Enumeration">
+      <UniqueIdentifier>{14d0f57b-ffce-43a8-91c4-205727145d36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Threading">
+      <UniqueIdentifier>{d23b4701-3ce0-4239-8b63-ccb333e97519}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="generation_collector.c">
-      <Filter>Generated</Filter>
-    </ClCompile>
-    <ClCompile Include="dummy_system.sys.c">
-      <Filter>UserDefined\DummySystem</Filter>
-    </ClCompile>
-    <ClCompile Include="generation_collector.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="thread_pool.c">
-      <Filter>ThreadPool</Filter>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="EntityComponentSystem\component_controller.cpp">
+      <Filter>EntityComponentSystem</Filter>
     </ClCompile>
-    <ClCompile Include="thread_messaging.c">
-      <Filter>ThreadPool</Filter>
+    <ClCompile Include="Generated\update_loop.cpp">
+      <Filter>Generated</Filter>
     </ClCompile>
-    <ClCompile Include="main.c" />
-    <ClCompile Include="task_graph.c">
-      <Filter>TaskScheduler</Filter>
-    </ClCompile>
-    <ClCompile Include="dummy_resource_one.res.h">
-      <Filter>UserDefined\DummySystem</Filter>
-    </ClCompile>
-    <ClCompile Include="high_integrity_allocator.cpp">
-      <Filter>FunctionalLayer\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="homogeneous_storage.cpp">
+    <ClCompile Include="Memory\high_integrity_allocator.cpp">
       <Filter>Memory</Filter>
     </ClCompile>
-    <ClCompile Include="update_loop.cpp">
-      <Filter>Generated\Functional</Filter>
+    <ClCompile Include="Memory\homogeneous_storage.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Threading\thread_messaging.c">
+      <Filter>Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="Threading\thread_pool.c">
+      <Filter>Threading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dummy_system.sys.h">
-      <Filter>UserDefined\DummySystem</Filter>
-    </ClInclude>
-    <ClInclude Include="graph_resolver.h">
-      <Filter>TaskScheduler</Filter>
-    </ClInclude>
-    <ClInclude Include="thread_pool.h">
-      <Filter>ThreadPool</Filter>
-    </ClInclude>
-    <ClInclude Include="thread_messaging.h">
-      <Filter>ThreadPool</Filter>
-    </ClInclude>
-    <ClInclude Include="generation_collector.h">
-      <Filter>Generated</Filter>
-    </ClInclude>
-    <ClInclude Include="task_graph.h">
-      <Filter>TaskScheduler</Filter>
-    </ClInclude>
-    <ClInclude Include="dummy_resource_two.res.h">
-      <Filter>UserDefined\DummySystem</Filter>
-    </ClInclude>
-    <ClInclude Include="enumerable.h">
-      <Filter>FunctionalLayer\Enumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime.h">
-      <Filter>FunctionalLayer</Filter>
-    </ClInclude>
-    <ClInclude Include="array_literal.h">
-      <Filter>FunctionalLayer\Enumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="non_essential_macros.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="select_enumerable.h">
-      <Filter>FunctionalLayer\Enumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="lambda.h">
-      <Filter>FunctionalLayer</Filter>
-    </ClInclude>
-    <ClInclude Include="filter_enumerable.h">
-      <Filter>FunctionalLayer\Enumeration</Filter>
-    </ClInclude>
-    <ClInclude Include="high_integrity_allocator.h">
-      <Filter>FunctionalLayer\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="component_store.h">
+    <ClInclude Include="EntityComponentSystem\component_controller.h">
       <Filter>EntityComponentSystem</Filter>
     </ClInclude>
-    <ClInclude Include="homogeneous_storage.h">
+    <ClInclude Include="EntityComponentSystem\component_store.h">
+      <Filter>EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumeration\array_literal.h">
+      <Filter>Enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumeration\enumerable.h">
+      <Filter>Enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumeration\filter_enumerable.h">
+      <Filter>Enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumeration\select_enumerable.h">
+      <Filter>Enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalLayer\lambda.h">
+      <Filter>FunctionalLayer</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalLayer\runtime.h">
+      <Filter>FunctionalLayer</Filter>
+    </ClInclude>
+    <ClInclude Include="Generated\update_loop.h">
+      <Filter>Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\high_integrity_allocator.h">
       <Filter>Memory</Filter>
     </ClInclude>
-    <ClInclude Include="shorthand_functions.h">
+    <ClInclude Include="Memory\homogeneous_storage.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Threading\thread_messaging.h">
+      <Filter>Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="Threading\thread_pool.h">
+      <Filter>Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\non_essential_macros.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="update_loop.h">
-      <Filter>Generated\Functional</Filter>
+    <ClInclude Include="Utils\shorthand_functions.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

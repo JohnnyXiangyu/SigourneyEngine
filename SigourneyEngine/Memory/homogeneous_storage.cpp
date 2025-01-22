@@ -71,6 +71,13 @@ void* HomogeneousStorage::Take()
     return result;
 }
 
+void SigourneyEngine::Memory::HomogeneousStorage::Put(void* pointer)
+{
+    Node* header = SigourneyEngine::Utils::GetHeader<Node>(pointer);
+    header->NextFree = m_headNode;
+    m_headNode = header;
+}
+
 void HomogeneousStorage::Reset()
 {
     for (Segment* segment = m_headSegment; segment != nullptr; segment = segment->NextSegment)

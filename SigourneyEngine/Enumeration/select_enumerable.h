@@ -1,10 +1,9 @@
 #pragma once
 #include "enumerable.h"
-#include "high_integrity_allocator.h"
-#include "lambda.h"
+#include "../Memory/high_integrity_allocator.h"
+#include "../FunctionalLayer/lambda.h"
 
 namespace SigourneyEngine {
-namespace FunctionalLayer {
 namespace Enumeration {
 
 template <typename TSource, typename TResult>
@@ -14,11 +13,11 @@ private:
     IEnumerable<TSource>* m_source;
 
     // lambda is stored in the enumerable for convenience
-    ILambda<TResult, TSource>* m_lambda;
+    FunctionalLayer::ILambda<TResult, TSource>* m_lambda;
 
 public:
     // support rvalues
-    SelectEnumerable(IEnumerable<TSource>* inSource, ILambda<TResult, TSource>* inLambda) : m_source(inSource), m_lambda(inLambda)
+    SelectEnumerable(IEnumerable<TSource>* inSource, FunctionalLayer::ILambda<TResult, TSource>* inLambda) : m_source(inSource), m_lambda(inLambda)
     {
         IEnumerable<TResult>::SetCountable(inSource->GetCountable());
         IEnumerable<TResult>::SetCount(inSource->GetCount());
@@ -51,6 +50,5 @@ public:
     }
 };
 
-}
 }
 }

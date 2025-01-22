@@ -1,5 +1,5 @@
 #pragma once
-#include "shorthand_functions.h"
+#include "../Utils/shorthand_functions.h"
 #include <memory>
 
 namespace SigourneyEngine {
@@ -60,12 +60,7 @@ public:
 
     void* Take();
 
-    void Put(void* pointer)
-    {
-        Node* header = SigourneyEngine::Utils::GetHeader<Node>(pointer);
-        header->NextFree = m_headNode;
-        m_headNode = header;
-    }
+    void Put(void* pointer);
 
     void Reset();
 
