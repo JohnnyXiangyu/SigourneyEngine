@@ -48,13 +48,6 @@ public:
         return whereClause;
     }
 
-    template <typename TLambda>
-    TLambda* CreateLambda()
-    {
-        TLambda* func = GetAllocator()->New<TLambda>();
-        return func;
-    }
-
 public:
     RuntimeBase(Memory::HighIntegrityAllocator* inAllocator, EntityComponentSystem::ComponentController* inController) 
         : m_Allocator(inAllocator), m_ComponentController(inController) {}

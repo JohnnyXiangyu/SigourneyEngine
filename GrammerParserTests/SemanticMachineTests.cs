@@ -130,7 +130,7 @@ public class SemanticMachineTests
     [TestMethod]
     public void CurryFunctionTest()
     {
-        string code = "func<func<int>, int> Foobar(int a) => (int b) => ((int c) => (a + b + c));";
+        string code = "func<func<int, int>, int> Foobar(int a) => (int b) => ((int c) => (a + b + c));";
         ParseTree? tree = GrammarRules.Parse(code, new Script());
         Assert.IsNotNull(tree);
 

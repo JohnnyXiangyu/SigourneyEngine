@@ -1,6 +1,6 @@
-﻿using SemanticMachine.Grammar.Interpretation;
+﻿using Nito.Disposables;
+using SemanticMachine.Grammar.Interpretation;
 using System.Text;
-using Nito.Disposables;
 
 namespace SemanticMachine.Binding;
 
@@ -14,7 +14,8 @@ public class CppLibraryReference
     public string OutputHeader { get; set; } = "update_loop.h";
     public string OutputCpp { get; set; } = "update_loop.cpp";
 
-    public string MainNamespace { get; set; } = "SigourneyEngine::FunctionalLayer";
+    public string MainNamespace { get; set; } = "SigourneyEngine";
+    public string FunctionalNamespace { get; set; } = "FunctionalLayer";
     public string EnumerationSubNamespace { get; set; } = "Enumeration";
     public string MemorySubNamespace { get; set; } = "Memory";
     public string BaseClassName { get; set; } = "RuntimeBase";
@@ -54,7 +55,7 @@ public class CppLibraryReference
     public string PrintType(TypeDefinition type) => type switch
     {
         ArrayType arrType => $"{EnumerationSubNamespace}::IEnumerable<{PrintType(arrType.ElementType)}>*",
-        CallableType callType => $"{MainNamespace}::ILambda<{string.Join(", ", [PrintType(callType.ReturnType), .. callType.Params.Select(param => PrintType(param.Type))])}>*",
+        CallableType callType => $"{MainNamespace}::{FunctionalNamespace}::ILambda<{string.Join(", ", [PrintType(callType.ReturnType), .. callType.Params.Select(param => PrintType(param.Type))])}>*",
         _ => type.Name
     };
 
@@ -69,7 +70,7 @@ public class CppLibraryReference
         }
         writer.WriteLine();
 
-        writer.WriteLine($"class {OutputClass} : public {MainNamespace}::{BaseClassName}");
+        writer.WriteLine($"class {OutputClass} : public {MainNamespace}::{FunctionalNamespace}::{BaseClassName}");
         writer.WriteLine($"{{");
         writer.WriteLine($"public:");
 
@@ -89,18 +90,9 @@ public class CppLibraryReference
     {
         writer.WriteLine($"#include \"{OutputHeader}\"");
         writer.WriteLine($"using namespace {MainNamespace};");
-        writer.WriteLine($"using namespace {MainNamespace}::{EnumerationSubNamespace};");
-        writer.WriteLine($"using namespace {MainNamespace}::{MemorySubNamespace};");
         writer.WriteLine($"using namespace {OutputNamespace};");
 
         return Disposable.Create(null);
-    }
-
-    public void CreateLambdaInstance(string lambdaType, string lambdaName, TextWriter writer, string? dynamicRuntimeRef = null)
-    {
-        writer.Write($"{lambdaType}* {lambdaName} = ");
-        writer.Write(dynamicRuntimeRef == null ? $"{BaseClassName}::" : $"{dynamicRuntimeRef}->");
-        writer.WriteLine($"CreateLambda<{lambdaType}>();");
     }
 
     public string RuntimeReferenceAsParameter(string name) => $"{MainNamespace}::{BaseClassName}* {name}";

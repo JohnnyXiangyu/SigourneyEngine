@@ -5,9 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="FunctionalLayer">
-      <UniqueIdentifier>{48bca79a-db59-420c-84da-d80239990b10}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{33da1176-6ad4-486a-a441-03931b0858e0}</UniqueIdentifier>
     </Filter>
@@ -23,11 +20,14 @@
     <Filter Include="Threading">
       <UniqueIdentifier>{d23b4701-3ce0-4239-8b63-ccb333e97519}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FunctionalLayer">
+      <UniqueIdentifier>{48bca79a-db59-420c-84da-d80239990b10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modularization">
+      <UniqueIdentifier>{a53f1802-77ed-4237-979c-60f5f2f31272}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="generation_collector.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="EntityComponentSystem\component_controller.cpp">
       <Filter>EntityComponentSystem</Filter>
@@ -93,6 +93,9 @@
     </ClInclude>
     <ClInclude Include="Utils\shorthand_functions.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Modularization\module_loader.h">
+      <Filter>Modularization</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

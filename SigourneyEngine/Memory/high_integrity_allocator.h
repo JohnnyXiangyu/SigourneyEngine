@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 namespace SigourneyEngine {
 namespace Memory {
 
@@ -45,7 +47,7 @@ public:
     {
         unsigned int tableEntry = GetTableEntry<T>();
         void* newPayload = AllocateCore(tableEntry);
-        return new (newPayload) T(args...);
+        return new (newPayload) T(std::forward<TArgs>(args)...);
     }
 
     /// <summary>

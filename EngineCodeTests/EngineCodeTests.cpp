@@ -117,6 +117,33 @@ public:
 
 		selector->FinalizeEnumerator(enumerator, &allocator);
 	}
+
+	template <typename TRet, typename ...TArgs>
+	struct LambdaConstructor
+	{
+		template <typename TLambda>
+		static ILambda<TRet, TArgs...>* Construct(HighIntegrityAllocator* allocator, const TLambda&& lambda)
+		{
+			return (ILambda<TRet, TArgs ...>*) allocator->New<LambdaClosure<TLambda, TRet, TArgs...>>(lambda);
+		}
+	};
+
+	TEST_METHOD(ClosureForward)
+	{
+		int a = 10;
+		int b = 20;
+		int c = 30;
+		double d = 1.5;
+
+		HighIntegrityAllocator allocator(1);
+		auto* lambda = LambdaConstructor<double, double>::Construct(&allocator, [a, b, c, d](double e)
+			{
+				double result = a * b * c * d;
+				return result + e;
+			});
+		double value = lambda->Run(10);
+		Logger::WriteMessage(std::to_string(value).c_str());
+	}
 };
 
 }
