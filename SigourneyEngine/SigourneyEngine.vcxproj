@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\CppDependencies\SDL2-2.30.11\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\CppDependencies\SDL2-2.30.11\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\CppDependencies\SDL2-2.30.11\include;..\CppDependencies\SDL2_image-2.8.4\include\;$(IncludePath)</IncludePath>
+    <LibraryPath>..\CppDependencies\SDL2-2.30.11\lib\x64;..\CppDependencies\SDL2_image-2.8.4\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -114,7 +114,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_Image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -134,31 +134,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EntityComponentSystem\component_controller.cpp" />
-    <ClCompile Include="Generated\update_loop.cpp" />
+    <ClCompile Include="Core\EntityComponentSystem\component_controller.cpp" />
+    <ClCompile Include="Core\Generated\update_loop.cpp" />
+    <ClCompile Include="Core\Memory\high_integrity_allocator.cpp" />
+    <ClCompile Include="Core\Memory\homogeneous_storage.cpp" />
+    <ClCompile Include="Core\Rendering\renderer_service.cpp" />
+    <ClCompile Include="Core\Threading\thread_messaging.c" />
+    <ClCompile Include="Core\Threading\thread_pool.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Memory\high_integrity_allocator.cpp" />
-    <ClCompile Include="Memory\homogeneous_storage.cpp" />
-    <ClCompile Include="Threading\thread_messaging.c" />
-    <ClCompile Include="Threading\thread_pool.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EntityComponentSystem\component_controller.h" />
-    <ClInclude Include="EntityComponentSystem\component_store.h" />
-    <ClInclude Include="Enumeration\array_literal.h" />
-    <ClInclude Include="Enumeration\enumerable.h" />
-    <ClInclude Include="Enumeration\filter_enumerable.h" />
-    <ClInclude Include="Enumeration\select_enumerable.h" />
-    <ClInclude Include="FunctionalLayer\lambda.h" />
-    <ClInclude Include="FunctionalLayer\runtime.h" />
-    <ClInclude Include="Generated\update_loop.h" />
-    <ClInclude Include="Memory\high_integrity_allocator.h" />
-    <ClInclude Include="Memory\homogeneous_storage.h" />
-    <ClInclude Include="Modularization\module_loader.h" />
-    <ClInclude Include="Threading\thread_messaging.h" />
-    <ClInclude Include="Threading\thread_pool.h" />
-    <ClInclude Include="Utils\non_essential_macros.h" />
-    <ClInclude Include="Utils\shorthand_functions.h" />
+    <ClInclude Include="Core\EntityComponentSystem\component_controller.h" />
+    <ClInclude Include="Core\EntityComponentSystem\component_store.h" />
+    <ClInclude Include="Core\Enumeration\array_literal.h" />
+    <ClInclude Include="Core\Enumeration\enumerable.h" />
+    <ClInclude Include="Core\Enumeration\filter_enumerable.h" />
+    <ClInclude Include="Core\Enumeration\select_enumerable.h" />
+    <ClInclude Include="Core\FunctionalLayer\lambda.h" />
+    <ClInclude Include="Core\FunctionalLayer\runtime.h" />
+    <ClInclude Include="Core\Generated\update_loop.h" />
+    <ClInclude Include="Core\Memory\high_integrity_allocator.h" />
+    <ClInclude Include="Core\Memory\homogeneous_storage.h" />
+    <ClInclude Include="Core\Modularization\module_loader.h" />
+    <ClInclude Include="Core\Rendering\renderer_service.h" />
+    <ClInclude Include="Core\Threading\thread_messaging.h" />
+    <ClInclude Include="Core\Threading\thread_pool.h" />
+    <ClInclude Include="Core\Utils\non_essential_macros.h" />
+    <ClInclude Include="Core\Utils\shorthand_functions.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
