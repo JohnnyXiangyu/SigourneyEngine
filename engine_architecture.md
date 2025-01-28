@@ -49,6 +49,13 @@ A built-in module would be something like physics system, or the rendering syste
 Modules can and often need to contain scripts, since this allows a module to hook into system events without having the user manually setting everything up, especially necessary for code distribution.
 Lastly, a script is a plain text file that contains code written under the functional language, the compiler will collect all existing scripts and translate them into c++ code to compile with the rest of the engine.
 
+ *Edit:* After some painful re-sketching, I've made some changes and further extensions of the existing modularization plan.
+ The engine core will be compiled into a static library, which contains *services and shared data structures*.
+ Each module is to be compiled into a separated static library, which contains code that *registers the module* and *registers all of its components, events and signals*
+ There will be *two* other static library projects: 
+ 1. a project with the *main routine*, this is what eventually links the game runtime
+ 2. a project that doesn't have the runtime main routine, but a set of tools that can be used to access the game's reflection information; this library (or executable) is the bridge between the game and any tool that's designed for or bridged with the engine.
+
 ### Encapsulation
 
 There's strictly no information sharing between modules; all that a module should share are definitions of events, signals, and components that are specific to this module.

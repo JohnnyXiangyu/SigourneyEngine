@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\DependencyInjection">
+      <UniqueIdentifier>{b5b02626-4469-4219-93a0-b0b73e06637a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityComponentSystem">
+      <UniqueIdentifier>{5cbbaefd-5fd9-4bc2-a505-18bc4ed8eb69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Logging">
+      <UniqueIdentifier>{b6d8e37e-a6a1-4616-aa0b-ba1b19312b2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Memory">
+      <UniqueIdentifier>{1809cd0f-8dc2-4ff0-8012-ca5c4581bb07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Modularization">
+      <UniqueIdentifier>{bc712d8c-09d2-45de-9a56-98f84d0555f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Rendering">
+      <UniqueIdentifier>{aa7d163b-e0a8-4160-88aa-bb390a235739}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{913a996b-11ab-43cb-aa3b-429ee988f3bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{0d9d881f-089e-4035-ae2d-9a063309e8e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Math">
+      <UniqueIdentifier>{4d0500d5-775a-4982-b008-5e0f2cab75fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Algorithmics">
+      <UniqueIdentifier>{fd6168b6-3625-4ad3-9a86-ef8bb9040613}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DependencyInjection\service_provider.h">
+      <Filter>Header Files\DependencyInjection</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityComponentSystem\component_base.h">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityComponentSystem\component_controller.h">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityComponentSystem\component_store.h">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Logging\logger.h">
+      <Filter>Header Files\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Logging\logger_service.h">
+      <Filter>Header Files\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\high_integrity_allocator.h">
+      <Filter>Header Files\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\homogeneous_storage.h">
+      <Filter>Header Files\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Modularization\module_manager.h">
+      <Filter>Header Files\Modularization</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\renderer_service.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\non_essential_macros.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\shorthand_functions.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\transform2d.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\vector_2d.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithmics\b_plus_tree.h">
+      <Filter>Header Files\Algorithmics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DependencyInjection\service_provider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityComponentSystem\component_base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityComponentSystem\component_controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Logging\logger_service.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Logging\logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\homogeneous_storage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\high_integrity_allocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\renderer_service.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Modularization\module_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
