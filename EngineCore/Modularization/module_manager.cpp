@@ -1,40 +1,55 @@
 #include "module_manager.h"
-#include "../Logging/logger.h"
-#include "../Utils/non_essential_macros.h"
+#include "Utils/non_essential_macros.h"
 
 using namespace SigourneyEngine::Core;
 
-struct Modularization::ModuleManager::SinkModuleInstance
-{
-	SinkModuleDescriptor* Descriptor;
-	void* Instance;
-};
-
 void Modularization::ModuleManager::InitializeModules(DependencyInjection::ServiceProvider* services)
 {
-	m_Instances = new SinkModuleInstance[s_SinkModuleCount];
 
-	for (unsigned int i = 0; i < s_SinkModuleCount; i++)
+	// sink modules
+
+	size_t sinkModuleCount = m_SinkModuleDescriptors.size();
+	m_SinkModules = new void* [sinkModuleCount];
+	for (size_t i = 0; i < sinkModuleCount; i++)
 	{
-		m_Instances[i].Descriptor = &s_SinkModuleDescriptors[i];
-		m_Instances[i].Instance = s_SinkModuleDescriptors[i].Create(services);
+		m_SinkModules[i] = m_SinkModuleDescriptors[i].Create(services);
 	}
 }
 
 void SigourneyEngine::Core::Modularization::ModuleManager::Update(DependencyInjection::ServiceProvider* services)
 {
-	for (unsigned int i = 0; i < s_SinkModuleCount; i++)
+	// condition check
+	if (!IsInitialized())
 	{
-		m_Instances[i].Descriptor->Update(m_Instances->Instance, services);
+		services->GetLoggerService()->Error("ModuleManager", "Module update before initialization!");
+		return;
+	}
+
+	// sink modules
+
+	size_t sinkModuleCount = m_SinkModuleDescriptors.size();
+	for (size_t i = 0; i < sinkModuleCount; i++)
+	{
+		m_SinkModuleDescriptors[i].Update(m_SinkModules[i], services);
 	}
 }
 
 void Modularization::ModuleManager::Finalize(DependencyInjection::ServiceProvider* services)
 {
-	for (unsigned int i = 0; i < s_SinkModuleCount; i ++)
+	// condition check
+	if (!IsInitialized())
 	{
-		m_Instances[i].Descriptor->Finalize(m_Instances->Instance, services);
+		services->GetLoggerService()->Error("ModuleManager", "Module finalization before initialization!");
+		return;
 	}
 
-	delete m_Instances;
+	// sink modules
+
+	size_t sinkModuleCount = m_SinkModuleDescriptors.size();
+	for (size_t i = 0; i < sinkModuleCount; i++)
+	{
+		m_SinkModuleDescriptors[i].Finalize(m_SinkModules[i], services);
+	}
+
+	delete[] m_SinkModules;
 }

@@ -43,6 +43,21 @@ void HomogeneousStorage::ResetSegment(Segment* newSegment)
     lastNode->NextFree = nullptr;
 }
 
+
+HomogeneousStorage::~HomogeneousStorage()
+{
+    // increment to the next segment then delete the current
+    // delete is called on the BufferChainSegment* 
+    Segment* nextSeg = m_headSegment;
+    while (nextSeg != nullptr)
+    {
+        Segment* currentSeg = nextSeg;
+        nextSeg = nextSeg->NextSegment;
+        delete[] currentSeg;
+    }
+}
+
+
 void* HomogeneousStorage::Take()
 {
     // initialize the first segment
@@ -71,12 +86,14 @@ void* HomogeneousStorage::Take()
     return result;
 }
 
+
 void SigourneyEngine::Core::Memory::HomogeneousStorage::Put(void* pointer)
 {
     Node* header = SigourneyEngine::Core::Utils::GetHeader<Node>(pointer);
     header->NextFree = m_headNode;
     m_headNode = header;
 }
+
 
 void HomogeneousStorage::Reset()
 {
@@ -86,17 +103,4 @@ void HomogeneousStorage::Reset()
     }
 
     m_headNode = GetFirstHeaderFromSegment(m_headSegment);
-}
-
-void HomogeneousStorage::Destroy()
-{
-    // increment to the next segment then delete the current
-    // delete is called on the BufferChainSegment* 
-    Segment* nextSeg = m_headSegment;
-    while (nextSeg != nullptr)
-    {
-        Segment* currentSeg = nextSeg;
-        nextSeg = nextSeg->NextSegment;
-        delete[] currentSeg;
-    }
 }

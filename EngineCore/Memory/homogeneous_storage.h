@@ -1,13 +1,10 @@
 #pragma once
-#include "../Utils/shorthand_functions.h"
+#include "Utils/shorthand_functions.h"
 #include <memory>
 
-namespace SigourneyEngine
-{
-namespace Core
-{
-namespace Memory
-{
+namespace SigourneyEngine {
+namespace Core {
+namespace Memory {
 
 // single-linked list of free buffers
 class HomogeneousStorage
@@ -61,14 +58,13 @@ private:
 
 public:
     HomogeneousStorage(size_t payloadSize, unsigned int initialCount) : m_payloadSize(payloadSize), m_initialCount(initialCount) {}
+    ~HomogeneousStorage();
 
     void* Take();
 
     void Put(void* pointer);
 
     void Reset();
-
-    void Destroy();
 };
 
 }

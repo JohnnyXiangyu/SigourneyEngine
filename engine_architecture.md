@@ -5,16 +5,35 @@
 Starting with a very brief point, Sigourney Engine uses ECS, sometimes called data-oriented programming, as its programming model.
 More detail can be found on the internet trivially, so I omit the explanation of what and why ECS is.
 
+### Entity-based Scene Structure
+
+Taking inspiration from Godot engine, Sigourney Engine treats scenes as a tree of entities.
+This means each serialized entity, by itself, is a loadable scene.
+Linking entities together in the loaded scene is the chain of transforms, which are NOT treated like a regular component; they receive special treatment due to the need to constantly pointer-traverse them.
+
+### Asset Management
+
+Assets are treated as individual units of bytestreams with a beginning and an end.
+This abstraction allows the engine to switch between using different forms of data source: file streams, compressed byte streams, or even network streams if the game so needs.
+To be a valid asset type, user needs to define such asset with a name and a set of static behaviors, named appropriately, in code.
+ECS components can carry value-based asset references, which includes enough information to instruct the asset manager how to deserialize the referenced data blob.
+
+### Scene Loader
+
+Upon loading an Entity as a scene, the engine first inspects the scene to determine the entire set of assets it needs to load, and load them without duplication in memory first; a light weight reflection system will be used to provide type information on each referenced asset, and the engine doesn't allow wildcard asset reference.
+Then it constructs the tree of entities by creating the compoennts and supplying them with the loaded references.
+
 ## The Update Loop
 
 An update loop is composed of functional script, module code, and sinks.
 In the following text module code and sinks are sometimes collectively referred to as engine low-level.
 
-### Functional Scripting Language
+### Functional Layer
 
-The majority of the game's behavior is composed of scripts using linq-over-cpp (definitely need to change the name later). 
-While they are written and presented as a functional language, it's translated into C++ code and compiled with the runtime; in a way, it's more like a way to safeguard the use of a limited set of native C++ features provided by the engine's runtime.
+The majority of the game's behavior is composed of code written in a non-mutative fashion.
 Upon each cycle of update, a user-defined total order of top-level functions will execute: the input are enumerations of events and components, while the output are enumerations of signals, which will then trigger engine behaviors implemented on a lower level.
+This roughly corresponds to the gameplay logic retail engines allows to be attached to scene objects.
+It's not meant to replace all data-driven logic.
 
 ### Event vs. Signal
 

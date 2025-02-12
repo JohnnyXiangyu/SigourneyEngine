@@ -1,6 +1,9 @@
 #pragma once
 
-#include "../DependencyInjection/service_provider.h"
+#include "DependencyInjection/service_provider.h"
+
+#include <vector>
+#include <string>
 
 namespace SigourneyEngine
 {
@@ -9,33 +12,41 @@ namespace Core
 namespace Modularization
 {
 
-struct SinkModuleDescriptor
-{
-	void* (*Create)(DependencyInjection::ServiceProvider* services) = nullptr;
-	void (*Update)(void* moduleInstance, DependencyInjection::ServiceProvider* services) = nullptr;
-	void (*Finalize)(void* moduleInstance, DependencyInjection::ServiceProvider* services) = nullptr;
-};
-
-template <typename TSinkModule>
-SinkModuleDescriptor RegisterSink()
-{
-	return SinkModuleDescriptor{ TSinkModule::Create, TSinkModule::Update, TSinkModule::Finalize };
-}
-
 class ModuleManager
 {
 private:
-	static SinkModuleDescriptor* s_SinkModuleDescriptors;
-	static unsigned int s_SinkModuleCount;
+	struct SinkModuleDescriptor
+	{
+		void* (*Create)(DependencyInjection::ServiceProvider* services) = nullptr;
+		void (*Update)(void* moduleInstance, DependencyInjection::ServiceProvider* services) = nullptr;
+		void (*Finalize)(void* moduleInstance, DependencyInjection::ServiceProvider* services) = nullptr;
+		std::string Name;
+	};
 
+	// configure time
 private:
-	struct SinkModuleInstance;
-	SinkModuleInstance* m_Instances = nullptr;
+	std::vector<SinkModuleDescriptor> m_SinkModuleDescriptors;
+	
+	// run time
+private:
+	void** m_SinkModules = nullptr;
+	inline bool IsInitialized() const { return m_SinkModules != nullptr; }
 
 public:
 	void InitializeModules(DependencyInjection::ServiceProvider* services);
 	void Update(DependencyInjection::ServiceProvider* services);
 	void Finalize(DependencyInjection::ServiceProvider* services);
+
+public:
+	void AddSink(const SinkModuleDescriptor& newSinkModuleDescriptor)
+	{
+		m_SinkModuleDescriptors.push_back(newSinkModuleDescriptor);
+	}
+
+	void AddSink(const SinkModuleDescriptor&& newSinkModuleDescriptor)
+	{
+		m_SinkModuleDescriptors.push_back(newSinkModuleDescriptor);
+	}
 };
 
 }

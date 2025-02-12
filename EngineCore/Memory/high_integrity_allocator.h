@@ -1,42 +1,25 @@
 #pragma once
 
 #include <utility>
+#include <unordered_map>
 
-namespace SigourneyEngine
-{
-namespace Core
-{
-namespace Memory
-{
+namespace SigourneyEngine {
+namespace Core {
+namespace Memory {
 
 class HomogeneousStorage;
 
-/// <summary>
-/// Implements IAllocator interface; uses an allocation design that eliminates memory fragmentation;
-/// may be refered to as H.I.A or HIA in other parts of engine code
-/// </summary>
 class HighIntegrityAllocator
 {
 private:
-    template <unsigned int T>
-    struct SizeEquivalentClass
-    {
-        static unsigned int TableEntry;
-    };
+    unsigned int m_InitialBufferItemCount;
+    std::unordered_map<size_t, HomogeneousStorage*> m_BufferTable;
 
-    unsigned int m_initialBufferItemCount;
-    SigourneyEngine::Core::Memory::HomogeneousStorage* m_bufferTable;
+    void* AllocateCore(size_t size);
 
-    void* AllocateCore(unsigned int tableEntry);
-
-    static unsigned int GetTableEntryCore(unsigned int size);
-
-    template <typename T>
-    unsigned int GetTableEntry() { return SizeEquivalentClass<sizeof(T)>::TableEntry; }
 
 public:
     HighIntegrityAllocator(unsigned int initialCount);
-
     ~HighIntegrityAllocator();
 
     /// <summary>
@@ -49,8 +32,7 @@ public:
     template <typename T, typename ...TArgs>
     T* New(TArgs... args)
     {
-        unsigned int tableEntry = GetTableEntry<T>();
-        void* newPayload = AllocateCore(tableEntry);
+        void* newPayload = AllocateCore(sizeof(T));
         return new (newPayload) T(std::forward<TArgs>(args)...);
     }
 
@@ -60,9 +42,6 @@ public:
     /// <param name="pointer">the ticket of the returned object</param>
     void Free(void* pointer);
 };
-
-template <unsigned int T>
-unsigned int HighIntegrityAllocator::SizeEquivalentClass<T>::TableEntry = HighIntegrityAllocator::GetTableEntryCore(T);
 
 }
 }

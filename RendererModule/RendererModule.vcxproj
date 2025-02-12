@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f05ef057-e8c8-4270-a874-53d34734a634}</ProjectGuid>
-    <RootNamespace>EngineCore</RootNamespace>
+    <ProjectGuid>{9bc24d12-2877-426f-b468-7677c9b0820c}</ProjectGuid>
+    <RootNamespace>RendererModule</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -70,11 +70,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>..\CppDependencies\SDL2-2.30.11\include;..\CppDependencies\glm;..\CppDependencies\glew-2.1.0\include;$(SolutionDir)EngineCore;$(IncludePath)</IncludePath>
-    <LibraryPath>..\CppDependencies\glew-2.1.0\lib\Release\x64\;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -113,11 +108,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -145,42 +139,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AssetManagement\byte_stream.h" />
-    <ClInclude Include="DependencyInjection\configuration_provider.h" />
-    <ClInclude Include="DependencyInjection\service_provider.h" />
-    <ClInclude Include="Hosting\engine_host.h" />
-    <ClInclude Include="EntityComponentSystem\component_base.h" />
-    <ClInclude Include="EntityComponentSystem\component_controller.h" />
-    <ClInclude Include="EntityComponentSystem\component_store.h" />
-    <ClInclude Include="Logging\logger_service.h" />
-    <ClInclude Include="Math\vector_2d.h" />
-    <ClInclude Include="Memory\high_integrity_allocator.h" />
-    <ClInclude Include="Memory\homogeneous_storage.h" />
-    <ClInclude Include="Modularization\module_manager.h" />
-    <ClInclude Include="Platform\platform_access.h" />
-    <ClInclude Include="Reflection\component_descriptor.h" />
-    <ClInclude Include="Reflection\component_table.h" />
-    <ClInclude Include="Reflection\primitive_types.h" />
-    <ClInclude Include="Rendering\index_buffer.h" />
-    <ClInclude Include="Rendering\renderer_service.h" />
-    <ClInclude Include="Rendering\shader.h" />
-    <ClInclude Include="Rendering\vertex_buffer.h" />
-    <ClInclude Include="AssetManagement\asset_manager.h" />
-    <ClInclude Include="Utils\non_essential_macros.h" />
-    <ClInclude Include="Utils\shorthand_functions.h" />
+    <ClInclude Include="Assets\shader.h" />
+    <ClInclude Include="Components\render_target_3d.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AssetManagement\byte_stream.cpp" />
-    <ClCompile Include="EntityComponentSystem\component_base.cpp" />
-    <ClCompile Include="EntityComponentSystem\component_controller.cpp" />
-    <ClCompile Include="Hosting\engine_host.cpp" />
-    <ClCompile Include="Memory\high_integrity_allocator.cpp" />
-    <ClCompile Include="Memory\homogeneous_storage.cpp" />
-    <ClCompile Include="Modularization\module_manager.cpp" />
-    <ClCompile Include="Platform\platform_access.cpp" />
-    <ClCompile Include="Reflection\component_table.cpp" />
-    <ClCompile Include="Rendering\renderer_service.cpp" />
-    <ClCompile Include="AssetManagement\asset_manager.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="RendererModule.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

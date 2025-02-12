@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,32 +21,32 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f05ef057-e8c8-4270-a874-53d34734a634}</ProjectGuid>
-    <RootNamespace>EngineCore</RootNamespace>
+    <ProjectGuid>{d056a939-6cc1-45d9-b114-a412a09e829b}</ProjectGuid>
+    <RootNamespace>Game</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -70,23 +70,15 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>..\CppDependencies\SDL2-2.30.11\include;..\CppDependencies\glm;..\CppDependencies\glew-2.1.0\include;$(SolutionDir)EngineCore;$(IncludePath)</IncludePath>
-    <LibraryPath>..\CppDependencies\glew-2.1.0\lib\Release\x64\;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -96,14 +88,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -113,16 +102,15 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <AdditionalIncludeDirectories>$(SolutionDir)EngineCore;$(SolutionDir)\CppDependencies\SDL2-2.30.11\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\CppDependencies\glew-2.1.0\lib\Release\x64\;..\CppDependencies\SDL2-2.30.11\lib\x64;..\CppDependencies\SDL2_image-2.8.4\lib\x64;$(SolutionDir)\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>EngineCore.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,56 +119,28 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AssetManagement\byte_stream.h" />
-    <ClInclude Include="DependencyInjection\configuration_provider.h" />
-    <ClInclude Include="DependencyInjection\service_provider.h" />
-    <ClInclude Include="Hosting\engine_host.h" />
-    <ClInclude Include="EntityComponentSystem\component_base.h" />
-    <ClInclude Include="EntityComponentSystem\component_controller.h" />
-    <ClInclude Include="EntityComponentSystem\component_store.h" />
-    <ClInclude Include="Logging\logger_service.h" />
-    <ClInclude Include="Math\vector_2d.h" />
-    <ClInclude Include="Memory\high_integrity_allocator.h" />
-    <ClInclude Include="Memory\homogeneous_storage.h" />
-    <ClInclude Include="Modularization\module_manager.h" />
-    <ClInclude Include="Platform\platform_access.h" />
-    <ClInclude Include="Reflection\component_descriptor.h" />
-    <ClInclude Include="Reflection\component_table.h" />
-    <ClInclude Include="Reflection\primitive_types.h" />
-    <ClInclude Include="Rendering\index_buffer.h" />
-    <ClInclude Include="Rendering\renderer_service.h" />
-    <ClInclude Include="Rendering\shader.h" />
-    <ClInclude Include="Rendering\vertex_buffer.h" />
-    <ClInclude Include="AssetManagement\asset_manager.h" />
-    <ClInclude Include="Utils\non_essential_macros.h" />
-    <ClInclude Include="Utils\shorthand_functions.h" />
+    <ClCompile Include="application.cpp" />
+    <ClCompile Include="DummySinkModule.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AssetManagement\byte_stream.cpp" />
-    <ClCompile Include="EntityComponentSystem\component_base.cpp" />
-    <ClCompile Include="EntityComponentSystem\component_controller.cpp" />
-    <ClCompile Include="Hosting\engine_host.cpp" />
-    <ClCompile Include="Memory\high_integrity_allocator.cpp" />
-    <ClCompile Include="Memory\homogeneous_storage.cpp" />
-    <ClCompile Include="Modularization\module_manager.cpp" />
-    <ClCompile Include="Platform\platform_access.cpp" />
-    <ClCompile Include="Reflection\component_table.cpp" />
-    <ClCompile Include="Rendering\renderer_service.cpp" />
-    <ClCompile Include="AssetManagement\asset_manager.cpp" />
+    <ClInclude Include="DummyAssetType.h" />
+    <ClInclude Include="DummySinkModule.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Meshes\unit_cube.mesh" />
+    <None Include="Assets\Shaders\basic.fragment.glsl" />
+    <None Include="Assets\Shaders\basic.vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

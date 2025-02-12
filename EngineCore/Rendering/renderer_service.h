@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Utils/non_essential_macros.h"
+
 struct SDL_Window;
 struct SDL_Renderer;
 
@@ -10,26 +12,14 @@ namespace Core
 namespace Rendering
 {
 
-enum class Shape
+class RendererResource
 {
-	Rectangle
+	Property(unsigned int, RendererID)
 };
 
-struct Geometry2DTarget
-{
-	Shape Shape;
-	
-	int DimensionX;
-	int DimensionY;
-	
-	int PositionX;
-	int PositionY;
-
-	unsigned char ColorR;
-	unsigned char ColorG;
-	unsigned char ColorB;
-	unsigned char ColorA;
-};
+class Shader;
+class IndexBuffer;
+class VertexArray;
 
 /// <summary>
 /// This iteration only uses small boxes;
@@ -54,7 +44,8 @@ public:
 public:
 	void ClearScreen();
 	void RefreshSceen();
-	void Render2DGeometry(const Geometry2DTarget& target);
+
+	void Draw(const VertexArray& vertexBuffer, const IndexBuffer& indexBuffer, const Shader& shader);
 };
 
 }
