@@ -66,6 +66,9 @@ public:
 	/// <returns></returns>
 	void RegisterAssetType(const std::string& type, void* provider, void* (*factory)(void* provider, ByteStream source), void (*disposal)(void* provider, void* asset));
 
+	// TODO: high-level asset types are similar to component definitions, so we need a struct definer first
+	// void RegisterHighLevelAssetType(const std::string& type, void* provider);
+
 	/// <summary>
 	/// Load an asset by its type name.
 	/// Said asset must have been registered before.

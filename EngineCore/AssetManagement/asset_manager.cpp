@@ -85,4 +85,3 @@ void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
 
     return newData;
 }
-

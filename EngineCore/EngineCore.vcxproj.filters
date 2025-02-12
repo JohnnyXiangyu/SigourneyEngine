@@ -23,13 +23,7 @@
     <ClInclude Include="AssetManagement\asset_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Reflection\component_table.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Reflection\component_descriptor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Reflection\primitive_types.h">
+    <ClInclude Include="Reflection\data_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utils\non_essential_macros.h">
@@ -80,6 +74,18 @@
     <ClInclude Include="AssetManagement\byte_stream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AssetManagement\data_compile_instruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Reflection\scriptable_type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Reflection\scriptable_property.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Reflection\reflection_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntityComponentSystem\component_base.cpp">
@@ -100,9 +106,6 @@
     <ClCompile Include="Modularization\module_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Reflection\component_table.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AssetManagement\asset_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -113,6 +116,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AssetManagement\byte_stream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Reflection\reflection_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Reflection\data_type.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2,37 +2,54 @@
 
 #include <nlohmann/json.hpp>
 
-struct Person
+#define SCRIPTABLE_PROPERTY(propertyType, propertyName) using __Typeof_##propertyName = propertyType;\
+static void __Set_##propertyName(__Typeof_This* target, const propertyType& value) \
+{ \
+	target->propertyName = value; \
+} \
+static std::string __Get_PropName_##propertyName() { return #propertyName; }
+
+enum class ValueType
 {
-	std::string Name;
-	std::string Address;
-	unsigned int Age;
+	INT,
+	BOOL
 };
 
-void to_json(nlohmann::json& j, const Person& p)
-{
-    j = nlohmann::json{ {"Name", p.Name}, {"Address", p.Address}, {"Age", p.Age} };
-}
 
-void from_json(const nlohmann::json& j, Person& p)
+struct PropertyDescriptor
 {
-    j.at("Name").get_to(p.Name);
-    j.at("Address").get_to(p.Address);
-    j.at("Age").get_to(p.Age);
-}
+	std::string Name;
+	ValueType Type;
+	unsigned int Offset;
+};
+
+
+struct Person
+{
+	bool Alive;
+	int Age;
+};
+
+
+struct BuilderContext
+{
+	std::vector<std::string> Messages;
+
+	BuilderContext& Add(const std::string& next)
+	{
+		Messages.push_back(next);
+		return *this;
+	}
+
+	void Finalize() const
+	{
+		std::cout << Messages.size() << std::endl;
+	}
+};
+
 
 int main()
 {
-	try
-	{
-		nlohmann::json j = nlohmann::json::parse("{\"Name\": 100, \"Address\": \"2\", \"Age\": 3, \"Misc\": 111}");
-		Person p = j.template get<Person>();
-		std::cout << p.Name << std::endl;
-	}
-	catch (std::exception& e)
-	{
-		std::cerr << "failed deserialziation: " << e.what() << std::endl;
-	}
 
 	return 0;
 }
