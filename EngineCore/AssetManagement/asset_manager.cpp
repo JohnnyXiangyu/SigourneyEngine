@@ -44,14 +44,14 @@ void AssetManager::RegisterAssetType(const std::string& type, void* provider, vo
         auto foundTypeInfo = m_AssetTypes.find(type);
         if (foundTypeInfo != m_AssetTypes.end())
         {
-            m_Logger->Warning(s_ChannelName, "Duplicate asset type registration: %s", type.c_str());
+            Logging::GetLogger()->Warning(s_ChannelName, "Duplicate asset type registration: %s", type.c_str());
         }
     }
 
     // create new asset type info
     AssetTypeInfo newTypeInfo{ type, provider, factory, disposal };
     m_AssetTypes.insert(std::make_pair(type, newTypeInfo));
-    m_Logger->Verbose(s_ChannelName, "Registered asset type: %s", type.c_str());
+    Logging::GetLogger()->Verbose(s_ChannelName, "Registered asset type: %s", type.c_str());
 }
 
 
@@ -60,7 +60,7 @@ void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
     auto foundType = m_AssetTypes.find(type);
     if (foundType == m_AssetTypes.end())
     {
-        m_Logger->Error(s_ChannelName, "Unrecognized asset type: %s", type.c_str());
+        Logging::GetLogger()->Error(s_ChannelName, "Unrecognized asset type: %s", type.c_str());
         return nullptr;
     }
 
@@ -80,12 +80,12 @@ void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
 
     // actually load a new piece of data
     // TODO: replace this when changing serialization system
-    m_Logger->Verbose(s_ChannelName, "Loading asset: %s", id.c_str());
+    Logging::GetLogger()->Verbose(s_ChannelName, "Loading asset: %s", id.c_str());
     std::ifstream fileStream("Assets/" + id);
 
     if (!fileStream.is_open())
     {
-        m_Logger->Error(s_ChannelName, "Failed to open asset file %s", id.c_str());
+        Logging::GetLogger()->Error(s_ChannelName, "Failed to open asset file %s", id.c_str());
         return nullptr;
     }
 
@@ -99,7 +99,7 @@ void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
     }
     catch (std::exception& ex)
     {
-        m_Logger->Error(s_ChannelName, "Asset file failed to deserialize %s, exception: %s, see log above for more information.", id.c_str(), ex.what());
+        Logging::GetLogger()->Error(s_ChannelName, "Asset file failed to deserialize %s, exception: %s, see log above for more information.", id.c_str(), ex.what());
         return nullptr;
     }
 

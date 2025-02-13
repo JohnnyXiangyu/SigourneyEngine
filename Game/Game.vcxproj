@@ -131,6 +131,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
+    <ClCompile Include="DummyAssetType.cpp" />
     <ClCompile Include="DummySinkModule.cpp" />
   </ItemGroup>
   <ItemGroup>

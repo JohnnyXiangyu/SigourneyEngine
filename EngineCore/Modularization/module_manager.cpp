@@ -21,7 +21,7 @@ void SigourneyEngine::Core::Modularization::ModuleManager::Update(DependencyInje
 	// condition check
 	if (!IsInitialized())
 	{
-		services->GetLoggerService()->Error("ModuleManager", "Module update before initialization!");
+		Logging::GetLogger()->Error("ModuleManager", "Module update before initialization!");
 		return;
 	}
 
@@ -39,7 +39,7 @@ void Modularization::ModuleManager::Finalize(DependencyInjection::ServiceProvide
 	// condition check
 	if (!IsInitialized())
 	{
-		services->GetLoggerService()->Error("ModuleManager", "Module finalization before initialization!");
+		Logging::GetLogger()->Error("ModuleManager", "Module finalization before initialization!");
 		return;
 	}
 

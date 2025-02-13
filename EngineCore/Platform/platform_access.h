@@ -21,7 +21,6 @@ namespace Platform
 	{
 		// injected
 	private:
-		Logging::LoggerService* m_Logger = nullptr;
 		const DependencyInjection::ConfigurationProvider* m_Configs = nullptr;
 
 		// initialized
@@ -39,7 +38,7 @@ namespace Platform
 		void Render();
 
 	public:
-		PlatformAccess(Logging::LoggerService* logger, const DependencyInjection::ConfigurationProvider* configs);
+		PlatformAccess(const DependencyInjection::ConfigurationProvider* configs);
 		~PlatformAccess();
 
 		// never should've been called, only for tests

@@ -50,6 +50,8 @@ public:
 	}
 };
 
+LoggerService* GetLogger();
+
 }
 }
 }

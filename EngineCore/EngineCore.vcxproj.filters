@@ -80,13 +80,13 @@
     <ClInclude Include="Reflection\scriptable_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Reflection\reflection_manager.h">
+    <ClInclude Include="Configuration\compile_time_flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AssetManagement\asset_reference.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Configuration\compile_time_flags.h">
+    <ClInclude Include="Reflection\type_info_registra.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -121,10 +121,13 @@
     <ClCompile Include="AssetManagement\byte_stream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Reflection\reflection_manager.cpp">
+    <ClCompile Include="Reflection\data_type.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Reflection\data_type.cpp">
+    <ClCompile Include="Reflection\type_info_registra.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Logging\logger_service.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -8,15 +8,9 @@ using namespace SigourneyEngine::Game;
 void* DummySinkModule::Create(Core::DependencyInjection::ServiceProvider* services)
 {
     DummySinkModule* newModule = new DummySinkModule;
-    newModule->Logger = services->GetLoggerService();
     newModule->Allocator = services->GetGlobalAllocator();
 
-    services->GetLoggerService()->Information("DummySinkModule", "initialized");
-
-    services->GetReflectionManager()->SE_REFLECTION_BeginTypeDefinition(DummyAssetType)
-        .SE_REFLECTION_AddProperty(PartA)
-        .SE_REFLECTION_AddProperty(PartB)
-        .SE_REFLECTION_Finalize();
+    Core::Logging::GetLogger()->Information("DummySinkModule", "initialized");
 
     services->GetAssetManager()->SE_ASSETS_RegisterAssetType(DummyAssetType);
     auto* asset = services->GetAssetManager()->SE_ASSETS_LoadAsset(DummyAssetType, "dummy.json");
@@ -28,7 +22,7 @@ void DummySinkModule::Update(void* moduleInstance, Core::DependencyInjection::Se
 
 void DummySinkModule::Finalize(void* moduleInstance, Core::DependencyInjection::ServiceProvider* services)
 {
-    services->GetLoggerService()->Information("DummySinkModule", "finalized");
+    Core::Logging::GetLogger()->Information("DummySinkModule", "finalized");
 }
 
 std::string DummySinkModule::Name = "DummySinkModule";

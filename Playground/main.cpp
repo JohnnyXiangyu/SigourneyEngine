@@ -2,13 +2,22 @@
 
 #include <nlohmann/json.hpp>
 
+
+int Bar()
+{
+	static int i = 0;
+	static int v = i + 10;
+	return v;
+}
+
 int main()
 {
-	auto jsonObj = nlohmann::json::parse("{ \"key\": 2000 }");
-
-	auto pair = jsonObj.find("key");
-	
-	std::cout << pair->get<float>() << std::endl;
-
+	std::cout << Bar() << std::endl;
+	std::cout << Bar() << std::endl;
+	std::cout << Bar() << std::endl;
+	std::cout << Bar() << std::endl;
+	std::cout << Bar() << std::endl;
+	std::cout << Bar() << std::endl;
+	std::cout << Bar() << std::endl;
 	return 0;
 }

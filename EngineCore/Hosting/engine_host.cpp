@@ -17,7 +17,7 @@ int EngineHost::Run()
 	}
 	catch (const std::runtime_error& e)
 	{
-		m_ServiceProvider.GetLoggerService()->Error("Engine", "Hosting failed to start: %s", e.what());
+		Logging::GetLogger()->Error("Engine", "Hosting failed to start: %s", e.what());
 		return -1;
 	}
 

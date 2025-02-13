@@ -4,7 +4,7 @@
 #include "Memory/high_integrity_allocator.h"
 #include "byte_stream.h"
 #include "Reflection/scriptable_type.h"
-#include "Reflection/reflection_manager.h"
+#include "Reflection/type_info_registra.h"
 #include "nlohmann/json.hpp"
 #include "Configuration/compile_time_flags.h"
 #include "Reflection/data_type.h"
@@ -39,9 +39,7 @@ class AssetManager
 
 	// dependency injection
 private:
-	Logging::LoggerService* m_Logger = nullptr;
 	Memory::HighIntegrityAllocator* m_Allocator = nullptr;
-	Reflection::ReflectionManager* m_ReflectionManager = nullptr;
 
 
 	// binary asset definition
@@ -64,49 +62,51 @@ private:
 
 	void LoadJsonString(ByteStream source);
 
-	template <typename TAsset>
-	struct HighLevelAssetDefinition
+	static void Disposal(void* provider, void* asset)
 	{
-		static const Reflection::ScriptableType* Reflector;
+		AssetManager* manager = (AssetManager*)provider;
+		manager->m_Allocator->Free(asset);
+	}
 
-		static void* Factory(void* provider, ByteStream source)
+	template <typename TAsset>
+	static void* AutomaticAssetFactory(void* provider, ByteStream source)
+	{
+		AssetManager* manager = (AssetManager*)provider;
+		manager->LoadJsonString(source);
+		auto jsonObject = nlohmann::json::parse(manager->m_JsonLoadingBuffer);
+
+		TAsset* newAsset = manager->m_Allocator->New<TAsset>();
+
+		char* assignerPtr = (char*)newAsset;
+
+		// let exception bubble up, don't handle it here
+		for (const auto& propertyIterator : Reflection::GetType<TAsset>()->Properties)
 		{
-			AssetManager* manager = (AssetManager*)provider;
-			manager->LoadJsonString(source);
-			auto jsonObject = nlohmann::json::parse(manager->m_JsonLoadingBuffer);
+			auto value = jsonObject.find(propertyIterator.Name);
 
-			TAsset* newAsset = manager->m_Allocator->New<TAsset>();
-
-			char* assignerPtr = (char*)newAsset;
-
-			// let exception bubble up, don't handle it here
-			for (auto& propertyIterator : Reflector->Properties)
+			switch (propertyIterator.Type)
 			{
-				auto value = jsonObject.find(propertyIterator.Name);
-			
-				switch (propertyIterator.Type)
-				{
-				case Reflection::DataType::BOOL:
-					*((bool*)(assignerPtr + propertyIterator.Offset)) = value->get<bool>();
-					break;
-				case Reflection::DataType::INT32:
-					*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
-					break;
-				case Reflection::DataType::UINT32:
-					*((unsigned int*)(assignerPtr + propertyIterator.Offset)) = value->get<unsigned int>();
-					break;
-				case Reflection::DataType::INT64:
-					*((long long*)(assignerPtr + propertyIterator.Offset)) = value->get<long long>();
-					break;
-				case Reflection::DataType::UINT64:
-					*((unsigned long long*)(assignerPtr + propertyIterator.Offset)) = value->get<unsigned long long>();
-					break;
-				case Reflection::DataType::FLOAT:
-					*((float*)(assignerPtr + propertyIterator.Offset)) = value->get<float>();
-					break;
-				case Reflection::DataType::DOUBLE:
-					*((double*)(assignerPtr + propertyIterator.Offset)) = value->get<double>();
-					break;
+			case Reflection::DataType::BOOL:
+				*((bool*)(assignerPtr + propertyIterator.Offset)) = value->get<bool>();
+				break;
+			case Reflection::DataType::INT32:
+				*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+				break;
+			case Reflection::DataType::UINT32:
+				*((unsigned int*)(assignerPtr + propertyIterator.Offset)) = value->get<unsigned int>();
+				break;
+			case Reflection::DataType::INT64:
+				*((long long*)(assignerPtr + propertyIterator.Offset)) = value->get<long long>();
+				break;
+			case Reflection::DataType::UINT64:
+				*((unsigned long long*)(assignerPtr + propertyIterator.Offset)) = value->get<unsigned long long>();
+				break;
+			case Reflection::DataType::FLOAT:
+				*((float*)(assignerPtr + propertyIterator.Offset)) = value->get<float>();
+				break;
+			case Reflection::DataType::DOUBLE:
+				*((double*)(assignerPtr + propertyIterator.Offset)) = value->get<double>();
+				break;
 				// TODO: serialization for these types
 				//case Reflection::DataType::VEC2:
 				//	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
@@ -126,22 +126,15 @@ private:
 				//case Reflection::DataType::MAT4:
 				//	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
 				//	break;
-				default:
-					manager->m_Logger->Error(s_ChannelName, "Unsupported data type %d registered for type %s", (int)propertyIterator.Type, propertyIterator.Name.c_str());
+			default:
+				Logging::GetLogger()->Error(s_ChannelName, "Unsupported data type %d registered for type %s", (int)propertyIterator.Type, propertyIterator.Name.c_str());
 
-					throw std::runtime_error("Unsupported data type in reflection.");
-				}
+				throw std::runtime_error("Unsupported data type in reflection.");
 			}
-
-			return newAsset;
 		}
 
-		static void Disposal(void* provider, void* asset)
-		{
-			AssetManager* manager = (AssetManager*)provider;
-			manager->m_Allocator->Free(asset);
-		}
-	};
+		return newAsset;
+	}
 
 
 	// dynamic states
@@ -158,8 +151,8 @@ private:
 
 
 public:
-	AssetManager(Logging::LoggerService* logger, Memory::HighIntegrityAllocator* allocator, Reflection::ReflectionManager* reflectionManager)
-		: m_Logger(logger), m_Allocator(allocator), m_ReflectionManager(reflectionManager)
+	AssetManager(Memory::HighIntegrityAllocator* allocator)
+		: m_Allocator(allocator)
 	{
 	}
 
@@ -181,21 +174,7 @@ public:
 	template <typename TAsset>
 	void RegisterAssetType(const std::string& type)
 	{
-		if (HighLevelAssetDefinition<TAsset>::Reflector != nullptr)
-		{
-			m_Logger->Error(s_ChannelName, "Trying to associate reflection of %s while the templated type has already been associated with a reflection type (%s)", type.c_str(), HighLevelAssetDefinition<TAsset>::Reflector->Name.c_str());
-			return;
-		}
-
-		const Reflection::ScriptableType* typeInfo = m_ReflectionManager->GetType(type);
-		if (typeInfo == nullptr)
-		{
-			m_Logger->Error(s_ChannelName, "Reflection for type %s not found", type.c_str());
-			return;
-		}
-
-		HighLevelAssetDefinition<TAsset>::Reflector = typeInfo;
-		RegisterAssetType(type, this, HighLevelAssetDefinition<TAsset>::Factory, HighLevelAssetDefinition<TAsset>::Disposal);
+		RegisterAssetType(type, this, AutomaticAssetFactory<TAsset>, Disposal);
 	}
 
 	// TODO: high-level asset types are similar to component definitions, so we need a struct definer first
@@ -216,9 +195,6 @@ public:
 		return (TAsset*)LoadAsset(type, id);
 	}
 };
-
-template <typename T>
-const Reflection::ScriptableType* AssetManager::HighLevelAssetDefinition<T>::Reflector = nullptr;
 
 }
 }
