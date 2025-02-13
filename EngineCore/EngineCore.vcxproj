@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>..\CppDependencies\SDL2-2.30.11\include;..\CppDependencies\glm;..\CppDependencies\glew-2.1.0\include;$(SolutionDir)EngineCore;$(IncludePath)</IncludePath>
+    <IncludePath>..\CppDependencies\SDL2-2.30.11\include;..\CppDependencies\glm;..\CppDependencies\glew-2.1.0\include;$(SolutionDir)EngineCore;..\CppDependencies\json-3.11.3;$(IncludePath)</IncludePath>
     <LibraryPath>..\CppDependencies\glew-2.1.0\lib\Release\x64\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -145,8 +145,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AssetManagement\asset_reference.h" />
     <ClInclude Include="AssetManagement\byte_stream.h" />
     <ClInclude Include="AssetManagement\data_compile_instruction.h" />
+    <ClInclude Include="Configuration\compile_time_flags.h" />
     <ClInclude Include="DependencyInjection\configuration_provider.h" />
     <ClInclude Include="DependencyInjection\service_provider.h" />
     <ClInclude Include="Hosting\engine_host.h" />
@@ -161,7 +163,6 @@
     <ClInclude Include="Platform\platform_access.h" />
     <ClInclude Include="Reflection\data_type.h" />
     <ClInclude Include="Reflection\reflection_manager.h" />
-    <ClInclude Include="Reflection\scriptable_property.h" />
     <ClInclude Include="Reflection\scriptable_type.h" />
     <ClInclude Include="Rendering\index_buffer.h" />
     <ClInclude Include="Rendering\renderer_service.h" />

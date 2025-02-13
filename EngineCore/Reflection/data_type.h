@@ -16,6 +16,7 @@ namespace Reflection {
 
 enum class DataType
 {
+	BOOL,
 	INT32,
 	UINT32,
 	INT64,

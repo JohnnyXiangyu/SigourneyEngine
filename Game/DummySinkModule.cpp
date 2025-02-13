@@ -18,7 +18,8 @@ void* DummySinkModule::Create(Core::DependencyInjection::ServiceProvider* servic
         .SE_REFLECTION_AddProperty(PartB)
         .SE_REFLECTION_Finalize();
 
-    const Core::Reflection::ScriptableType* typeInfo = services->GetReflectionManager()->GetType("DummyAssetType");
+    services->GetAssetManager()->SE_ASSETS_RegisterAssetType(DummyAssetType);
+    auto* asset = services->GetAssetManager()->SE_ASSETS_LoadAsset(DummyAssetType, "dummy.json");
 
     return newModule;
 }

@@ -4,19 +4,29 @@
 
 using namespace SigourneyEngine::Core::AssetManagement;
 
-static const char s_ChannelName[] = "AssetManager";
+const char AssetManager::s_ChannelName[] = "AssetManager";
 
 // TODO: we need an asset table, module and engine code voluntarily provide methods to create objects from asset data that can be stored in the HIA.
 // TODO: need a way to clear loaded assets (e.g. loading a entity), and/or smooth transitions
 
-AssetManager::AssetManager(Logging::LoggerService* logger, Memory::HighIntegrityAllocator* allocator)
-    : m_Logger(logger), m_Allocator(allocator)
+void AssetManager::LoadJsonString(ByteStream source)
 {
+    m_JsonLoadingBuffer.clear();
+
+    char readBuffer[Configuration::STRING_LOAD_BUFFER_SIZE];
+    long long newReads = 0;
+
+    while ((newReads = source.Read(readBuffer, Configuration::STRING_LOAD_BUFFER_SIZE - 1)) > 0)
+    {
+        readBuffer[newReads] = 0;
+        m_JsonLoadingBuffer.append(readBuffer);
+    }
 }
+
 
 SigourneyEngine::Core::AssetManagement::AssetManager::~AssetManager()
 {
-    for (auto& outerPair : m_LoadTable)
+    for (auto& outerPair : m_Cache)
     {
         for (auto& innerPair : outerPair.second)
         {
@@ -54,12 +64,12 @@ void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
         return nullptr;
     }
 
-    auto foundCache = m_LoadTable.find(type);
+    auto foundCache = m_Cache.find(type);
 
-    if (foundCache == m_LoadTable.end())
+    if (foundCache == m_Cache.end())
     {
-        m_LoadTable.insert(std::make_pair(type, std::unordered_map<AssetID, AssetTableEntry>()));
-        foundCache = m_LoadTable.find(type);
+        m_Cache.insert(std::make_pair(type, std::unordered_map<AssetID, AssetTableEntry>()));
+        foundCache = m_Cache.find(type);
     }
     else
     {
@@ -80,8 +90,18 @@ void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
     }
 
     ByteStream bytes(fileStream);
-    void* newData = foundType->second.Create(foundType->second.Provider, bytes);
-    foundCache->second.insert(std::make_pair(id, AssetTableEntry{newData, true}));
 
-    return newData;
+    try
+    {
+        void* newData = foundType->second.Create(foundType->second.Provider, bytes);
+        foundCache->second.insert(std::make_pair(id, AssetTableEntry{ newData, true }));
+        return newData;
+    }
+    catch (std::exception& ex)
+    {
+        m_Logger->Error(s_ChannelName, "Asset file failed to deserialize %s, exception: %s, see log above for more information.", id.c_str(), ex.what());
+        return nullptr;
+    }
+
+
 }

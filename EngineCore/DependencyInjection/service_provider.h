@@ -30,12 +30,15 @@ public:
 	//Rendering::RendererService* GetRenderer() { return &m_RendererService; }
 	inline Memory::HighIntegrityAllocator* GetGlobalAllocator() { return &m_GlobalAllocator; }
 	inline Logging::LoggerService* GetLoggerService() { return &m_LoggerService; }
+
+	inline Reflection::ReflectionManager* GetReflectionManager() { return &m_ReflectionManager; }
+
 	inline const ConfigurationProvider* GetConfigurations() { return &m_Configurations; }
 	inline Platform::PlatformAccess* GetPlatformAccess() { return &m_PlatformAccess; }
 	inline AssetManagement::AssetManager* GetAssetManager() { return &m_AssetManager; }
-	inline Reflection::ReflectionManager* GetReflectionManager() { return &m_ReflectionManager; }
 	
-	ServiceProvider() : m_GlobalAllocator(16), m_LoggerService(), m_Configurations(), m_PlatformAccess(&m_LoggerService, &m_Configurations), m_AssetManager(&m_LoggerService, &m_GlobalAllocator), m_ReflectionManager(&m_LoggerService) {}
+	
+	ServiceProvider() : m_GlobalAllocator(16), m_LoggerService(), m_ReflectionManager(&m_LoggerService), m_Configurations(), m_PlatformAccess(&m_LoggerService, &m_Configurations), m_AssetManager(&m_LoggerService, &m_GlobalAllocator, &m_ReflectionManager) {}
 	~ServiceProvider() = default;
 };
 

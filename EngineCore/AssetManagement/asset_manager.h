@@ -3,9 +3,21 @@
 #include "Logging/logger_service.h"
 #include "Memory/high_integrity_allocator.h"
 #include "byte_stream.h"
+#include "Reflection/scriptable_type.h"
+#include "Reflection/reflection_manager.h"
+#include "nlohmann/json.hpp"
+#include "Configuration/compile_time_flags.h"
+#include "Reflection/data_type.h"
 
 #include <string>
 #include <unordered_map>
+
+
+// helper of AssetManager::RegisterAssetType to avoid writing an invalid name for a type
+#define SE_ASSETS_RegisterAssetType(type) RegisterAssetType<type>(#type)
+
+// helper of AssetManager::LoadAsset to avoid writing an invalid name for a type 
+#define SE_ASSETS_LoadAsset(type, id) LoadAsset<type>(#type, id)
 
 namespace SigourneyEngine {
 namespace Core {
@@ -23,7 +35,16 @@ typedef std::string AssetID;
 /// </summary>
 class AssetManager
 {
-	// asset reflection
+	static const char s_ChannelName[];
+
+	// dependency injection
+private:
+	Logging::LoggerService* m_Logger = nullptr;
+	Memory::HighIntegrityAllocator* m_Allocator = nullptr;
+	Reflection::ReflectionManager* m_ReflectionManager = nullptr;
+
+
+	// binary asset definition
 private:
 	struct AssetTypeInfo
 	{
@@ -35,36 +56,147 @@ private:
 	std::unordered_map<std::string, AssetTypeInfo> m_AssetTypes;
 
 
-	// caching mechanism
+	// high-level asset definition
 private:
+	// TODO: once we get to data builder, take out the json-based implementation
+	// TODO: if we keep json, at least make a stream-buffer solution instead of loadin the whole thing in memory
+	std::string m_JsonLoadingBuffer;
+
+	void LoadJsonString(ByteStream source);
+
+	template <typename TAsset>
+	struct HighLevelAssetDefinition
+	{
+		static const Reflection::ScriptableType* Reflector;
+
+		static void* Factory(void* provider, ByteStream source)
+		{
+			AssetManager* manager = (AssetManager*)provider;
+			manager->LoadJsonString(source);
+			auto jsonObject = nlohmann::json::parse(manager->m_JsonLoadingBuffer);
+
+			TAsset* newAsset = manager->m_Allocator->New<TAsset>();
+
+			char* assignerPtr = (char*)newAsset;
+
+			// let exception bubble up, don't handle it here
+			for (auto& propertyIterator : Reflector->Properties)
+			{
+				auto value = jsonObject.find(propertyIterator.Name);
+			
+				switch (propertyIterator.Type)
+				{
+				case Reflection::DataType::BOOL:
+					*((bool*)(assignerPtr + propertyIterator.Offset)) = value->get<bool>();
+					break;
+				case Reflection::DataType::INT32:
+					*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+					break;
+				case Reflection::DataType::UINT32:
+					*((unsigned int*)(assignerPtr + propertyIterator.Offset)) = value->get<unsigned int>();
+					break;
+				case Reflection::DataType::INT64:
+					*((long long*)(assignerPtr + propertyIterator.Offset)) = value->get<long long>();
+					break;
+				case Reflection::DataType::UINT64:
+					*((unsigned long long*)(assignerPtr + propertyIterator.Offset)) = value->get<unsigned long long>();
+					break;
+				case Reflection::DataType::FLOAT:
+					*((float*)(assignerPtr + propertyIterator.Offset)) = value->get<float>();
+					break;
+				case Reflection::DataType::DOUBLE:
+					*((double*)(assignerPtr + propertyIterator.Offset)) = value->get<double>();
+					break;
+				// TODO: serialization for these types
+				//case Reflection::DataType::VEC2:
+				//	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+				//	break;
+				//case Reflection::DataType::VEC3:
+				//	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+				//	break;
+				//case Reflection::DataType::VEC4:
+				//	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+				//	break;
+				//case Reflection::DataType::MAT2:
+				//	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+				//	break;
+				//case Reflection::DataType::MAT3:
+				//	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+				//	break;
+				//case Reflection::DataType::MAT4:
+				//	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+				//	break;
+				default:
+					manager->m_Logger->Error(s_ChannelName, "Unsupported data type %d registered for type %s", (int)propertyIterator.Type, propertyIterator.Name.c_str());
+
+					throw std::runtime_error("Unsupported data type in reflection.");
+				}
+			}
+
+			return newAsset;
+		}
+
+		static void Disposal(void* provider, void* asset)
+		{
+			AssetManager* manager = (AssetManager*)provider;
+			manager->m_Allocator->Free(asset);
+		}
+	};
+
+
+	// dynamic states
+private:
+	template <typename TAsset>
+	friend struct HighLevelAssetDefinition;
+
 	struct AssetTableEntry
 	{
 		void* Data = nullptr;
 		bool Validated = true;
 	};
-
-	// AssetType ID -> { AssetID -> AssetTableEntry }
-	std::unordered_map<std::string, std::unordered_map<AssetID, AssetTableEntry>> m_LoadTable;
-
-
-	// dependency injection
-private:
-	Logging::LoggerService* m_Logger = nullptr;
-	Memory::HighIntegrityAllocator* m_Allocator = nullptr;
+	std::unordered_map<std::string, std::unordered_map<AssetID, AssetTableEntry>> m_Cache;
 
 
 public:
-	AssetManager(Logging::LoggerService* logger, Memory::HighIntegrityAllocator* allocator);
+	AssetManager(Logging::LoggerService* logger, Memory::HighIntegrityAllocator* allocator, Reflection::ReflectionManager* reflectionManager)
+		: m_Logger(logger), m_Allocator(allocator), m_ReflectionManager(reflectionManager)
+	{
+	}
+
 	~AssetManager();
 
 	/// <summary>
-	/// Register a type of asset.
+	/// Register a type of asset with explicit binary deserializer and disposer.
 	/// </summary>
 	/// <param name="type">name of the type</param>
 	/// <param name="provider">an state object that will be given to the factory method along side data</param>
-	/// <param name="factory">factory method</param>
-	/// <returns></returns>
+	/// <param name="factory">factory function</param>
+	/// <param name="disposal">disposal function</param>
 	void RegisterAssetType(const std::string& type, void* provider, void* (*factory)(void* provider, ByteStream source), void (*disposal)(void* provider, void* asset));
+
+	/// <summary>
+	/// Register an asset type using reflection, so assets of this type will be deserialized based on properties registered in reflection manager.
+	/// </summary>
+	/// <param name="type">both the name that the asset type is registered with *AND* the name to search reflection with</param>
+	template <typename TAsset>
+	void RegisterAssetType(const std::string& type)
+	{
+		if (HighLevelAssetDefinition<TAsset>::Reflector != nullptr)
+		{
+			m_Logger->Error(s_ChannelName, "Trying to associate reflection of %s while the templated type has already been associated with a reflection type (%s)", type.c_str(), HighLevelAssetDefinition<TAsset>::Reflector->Name.c_str());
+			return;
+		}
+
+		const Reflection::ScriptableType* typeInfo = m_ReflectionManager->GetType(type);
+		if (typeInfo == nullptr)
+		{
+			m_Logger->Error(s_ChannelName, "Reflection for type %s not found", type.c_str());
+			return;
+		}
+
+		HighLevelAssetDefinition<TAsset>::Reflector = typeInfo;
+		RegisterAssetType(type, this, HighLevelAssetDefinition<TAsset>::Factory, HighLevelAssetDefinition<TAsset>::Disposal);
+	}
 
 	// TODO: high-level asset types are similar to component definitions, so we need a struct definer first
 	// void RegisterHighLevelAssetType(const std::string& type, void* provider);
@@ -77,7 +209,16 @@ public:
 	/// <param name="id"></param>
 	/// <returns></returns>
 	void* LoadAsset(const std::string& type, const AssetID& id);
+
+	template <typename TAsset>
+	TAsset* LoadAsset(const std::string& type, const AssetID& id)
+	{
+		return (TAsset*)LoadAsset(type, id);
+	}
 };
+
+template <typename T>
+const Reflection::ScriptableType* AssetManager::HighLevelAssetDefinition<T>::Reflector = nullptr;
 
 }
 }

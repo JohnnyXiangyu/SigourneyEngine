@@ -80,10 +80,13 @@
     <ClInclude Include="Reflection\scriptable_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Reflection\scriptable_property.h">
+    <ClInclude Include="Reflection\reflection_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Reflection\reflection_manager.h">
+    <ClInclude Include="AssetManagement\asset_reference.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration\compile_time_flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

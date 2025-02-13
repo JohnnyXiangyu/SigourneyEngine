@@ -2,6 +2,7 @@
 
 using namespace SigourneyEngine::Core::Reflection;
 
+static const char BOOL_NAME[] = "BOOL";
 static const char INT32_NAME[] = "INT32";
 static const char UINT32_NAME[] = "UINT32";
 static const char INT64_NAME[] = "INT64";
@@ -20,6 +21,8 @@ const char* SigourneyEngine::Core::Reflection::PrintType(DataType type)
 {
 	switch (type)
 	{
+	case DataType::BOOL:
+		return BOOL_NAME;
 	case DataType::INT32:
 		return INT32_NAME;
 	case DataType::UINT32:
@@ -47,6 +50,12 @@ const char* SigourneyEngine::Core::Reflection::PrintType(DataType type)
 	default:
 		return ERROR_NAME;
 	}
+}
+
+template <>
+DataType SigourneyEngine::Core::Reflection::GetTypeInner<bool>()
+{
+	return DataType::BOOL;
 }
 
 template <>

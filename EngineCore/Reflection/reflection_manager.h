@@ -1,6 +1,5 @@
 #pragma once
 
-#include "scriptable_property.h"
 #include "scriptable_type.h"
 #include "data_type.h"
 
@@ -9,8 +8,13 @@
 #include <unordered_map>
 #include <string>
 
+// pretend this is a member function of ReflectionManager, starts a registration that needs to be terminated by a SE_REFLECTION_Finalize
 #define SE_REFLECTION_BeginTypeDefinition(type) __RegisterReflection(#type, [](SigourneyEngine::Core::Reflection::ScriptableType* result) { using __Current_Reflected = type; SigourneyEngine::Core::Reflection::ReflectionBuildingContext{result}
+
+// pretend this is a member function of ReflectionManager, adds a named property to the current registration
 #define SE_REFLECTION_AddProperty(member) Add({ #member, SigourneyEngine::Core::Reflection::GetMemberType(&__Current_Reflected::member), offsetof(__Current_Reflected, member) })
+
+// finishes the current registration
 #define SE_REFLECTION_Finalize() __Finalize(); })
 
 namespace SigourneyEngine {
@@ -51,7 +55,7 @@ public:
 		factory(&m_ReflectionTypes[name]);
 	}
 
-	const ScriptableType* GetType(std::string name);
+	const ScriptableType* GetType(const std::string& name);
 };
 
 

@@ -9,7 +9,7 @@ namespace Game {
 struct DummyAssetType
 {
 	int PartA;
-	int PartB;
+	bool PartB;
 };
 
 }
