@@ -33,6 +33,9 @@ const Engine::Core::Reflection::ScriptableType* Engine::Core::Reflection::GetTyp
 // Override the default key-value based serializer; this allows you to freely ma
 #define SE_REFLECTION_OVERRIDE_SERIALIZER(factory, disposal) OverrideSerializer( { factory, disposal } )
 
+// Override the default CDO creation function
+#define SE_REFLECTION_OVERRIDE_CDO(newCDO) OverrideCDO(newCDO)
+
 // Wrap up a reflection type definition.
 #define SE_REFLECTION_END \
 		Finalize();\
@@ -61,6 +64,12 @@ struct ReflectionBuildingContext
 	inline ReflectionBuildingContext& OverrideSerializer(const Engine::Core::Reflection::Serializer&& newSerializer)
 	{
 		Type.SerializerOverride = newSerializer;
+		return *this;
+	}
+
+	inline ReflectionBuildingContext& OverrideCDO(void* (*newCDO)(void* buffer))
+	{
+		Type.GetCDO = newCDO;
 		return *this;
 	}
 
