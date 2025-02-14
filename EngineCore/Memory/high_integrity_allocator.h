@@ -3,7 +3,7 @@
 #include <utility>
 #include <unordered_map>
 
-namespace SigourneyEngine {
+namespace Engine {
 namespace Core {
 namespace Memory {
 
@@ -34,6 +34,16 @@ public:
     {
         void* newPayload = AllocateCore(sizeof(T));
         return new (newPayload) T(std::forward<TArgs>(args)...);
+    }
+
+    /// <summary>
+    /// Allocate an empty space in memory with a set size.
+    /// </summary>
+    /// <param name="size"></param>
+    /// <returns></returns>
+    void* Malloc(size_t size)
+    {
+        return AllocateCore(size);
     }
 
     /// <summary>

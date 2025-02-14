@@ -7,7 +7,7 @@
 namespace EngineCodeTests
 {
 
-struct TestLambda : SigourneyEngine::FunctionalLayer::ILambda<bool, int>
+struct TestLambda : Engine::FunctionalLayer::ILambda<bool, int>
 {
     bool Run(int input) override
     {

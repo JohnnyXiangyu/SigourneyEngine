@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SigourneyEngine {
+namespace Engine {
 namespace Core {
 namespace Configuration {
 

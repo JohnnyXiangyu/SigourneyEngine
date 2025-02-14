@@ -2,7 +2,7 @@
 
 #include "Utils/non_essential_macros.h"
 
-namespace SigourneyEngine {
+namespace Engine {
 namespace Core {
 namespace DependencyInjection {
 struct ConfigurationProvider

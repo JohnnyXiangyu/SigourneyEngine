@@ -4,14 +4,14 @@
 #include <SDL_opengl.h>
 #include <stdexcept>
 
-using namespace SigourneyEngine::Core;
-using namespace SigourneyEngine::Core::Platform;
+using namespace Engine::Core;
+using namespace Engine::Core::Platform;
 
 static const char s_ServiceName[] = "PlatformAccess";
 static const char s_SDLInitializationError[] = "SDL initialization failed, see logs for details.";
 static const char s_GLInitializationError[] = "OpenGL initialization failed, see logs for details.";
 
-bool SigourneyEngine::Core::Platform::PlatformAccess::InitializeSDL()
+bool Engine::Core::Platform::PlatformAccess::InitializeSDL()
 {
 	// initialize sdl
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -167,7 +167,7 @@ bool PlatformAccess::InitializeGL()
 	return true;
 }
 
-void SigourneyEngine::Core::Platform::PlatformAccess::Render()
+void Engine::Core::Platform::PlatformAccess::Render()
 {
 	//Clear color buffer
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -207,7 +207,7 @@ PlatformAccess::PlatformAccess(const DependencyInjection::ConfigurationProvider*
 		throw std::runtime_error(s_GLInitializationError);
 }
 
-SigourneyEngine::Core::Platform::PlatformAccess::~PlatformAccess()
+Engine::Core::Platform::PlatformAccess::~PlatformAccess()
 {
 	//Deallocate program
 	glDeleteProgram(m_ShaderProgram);
@@ -220,7 +220,7 @@ SigourneyEngine::Core::Platform::PlatformAccess::~PlatformAccess()
 	SDL_Quit();
 }
 
-void SigourneyEngine::Core::Platform::PlatformAccess::TempUpdate()
+void Engine::Core::Platform::PlatformAccess::TempUpdate()
 {
 	Render();
 }

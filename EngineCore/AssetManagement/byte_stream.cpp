@@ -1,12 +1,25 @@
 #include "byte_stream.h"
 
-SigourneyEngine::Core::AssetManagement::ByteStream::ByteStream(std::ifstream& backend)
+using namespace Engine::Core::AssetManagement;
+
+InFileStream::InFileStream(std::ifstream& backend)
+	: m_Backend(backend)
+{
+	m_CanRead = true;
+}
+
+long long InFileStream::Read(char* buffer, long long count)
+{
+	m_Backend.read(buffer, count);
+	return m_Backend.gcount();
+}
+
+OutFileStream::OutFileStream(std::ofstream& backend)
 	: m_Backend(backend)
 {
 }
 
-long long SigourneyEngine::Core::AssetManagement::ByteStream::Read(char* buffer, long long count)
+void OutFileStream::Write(char* buffer, long long count)
 {
-	m_Backend.read(buffer, count);
-	return m_Backend.gcount();
+	m_Backend.write(buffer, count);
 }

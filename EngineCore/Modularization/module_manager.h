@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-namespace SigourneyEngine
+namespace Engine
 {
 namespace Core
 {

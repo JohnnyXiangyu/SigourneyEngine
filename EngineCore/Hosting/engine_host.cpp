@@ -1,7 +1,7 @@
 #include "engine_host.h"
 #include <SDL.h>
 
-using namespace SigourneyEngine::Core::Hosting;
+using namespace Engine::Core::Hosting;
 
 void EngineHost::AddSinkModule(void* (*create)(DependencyInjection::ServiceProvider* services), void(*update)(void* moduleInstance, DependencyInjection::ServiceProvider* services), void(*finalize)(void* moduleInstance, DependencyInjection::ServiceProvider* services), const std::string& name)
 {

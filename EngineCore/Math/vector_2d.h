@@ -3,7 +3,7 @@
 #include <glm/vec2.hpp>
 #include <glm/mat2x2.hpp>
 
-namespace SigourneyEngine
+namespace Engine
 {
 namespace Core
 {

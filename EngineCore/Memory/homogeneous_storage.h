@@ -2,7 +2,7 @@
 #include "Utils/shorthand_functions.h"
 #include <memory>
 
-namespace SigourneyEngine {
+namespace Engine {
 namespace Core {
 namespace Memory {
 

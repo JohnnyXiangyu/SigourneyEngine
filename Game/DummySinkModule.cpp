@@ -1,8 +1,8 @@
 #include "DummySinkModule.h"
 #include "DummyAssetType.h"
 
-using namespace SigourneyEngine;
-using namespace SigourneyEngine::Game;
+using namespace Engine;
+using namespace Game;
 
 
 void* DummySinkModule::Create(Core::DependencyInjection::ServiceProvider* services)
@@ -12,8 +12,7 @@ void* DummySinkModule::Create(Core::DependencyInjection::ServiceProvider* servic
 
     Core::Logging::GetLogger()->Information("DummySinkModule", "initialized");
 
-    services->GetAssetManager()->SE_ASSETS_RegisterAssetType(DummyAssetType);
-    auto* asset = services->GetAssetManager()->SE_ASSETS_LoadAsset(DummyAssetType, "dummy.json");
+    auto* asset = services->GetAssetManager()->LoadAsset<DummyAssetType>("dummy.json");
 
     return newModule;
 }

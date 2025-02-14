@@ -6,7 +6,7 @@
 
 struct SDL_Window;
 
-namespace SigourneyEngine
+namespace Engine
 {
 namespace Core
 {

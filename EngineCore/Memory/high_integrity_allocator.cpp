@@ -3,8 +3,8 @@
 #include "Utils/shorthand_functions.h"
 #include <memory>
 
-using namespace SigourneyEngine::Core::Memory;
-using namespace SigourneyEngine::Core::Utils;
+using namespace Engine::Core::Memory;
+using namespace Engine::Core::Utils;
 
 // implement H.I.A data structure
 
@@ -35,13 +35,13 @@ void* HighIntegrityAllocator::AllocateCore(size_t size)
 }
 
 
-SigourneyEngine::Core::Memory::HighIntegrityAllocator::HighIntegrityAllocator(unsigned int initialSize)
+Engine::Core::Memory::HighIntegrityAllocator::HighIntegrityAllocator(unsigned int initialSize)
     : m_InitialBufferItemCount(initialSize)
 {
 }
 
 
-SigourneyEngine::Core::Memory::HighIntegrityAllocator::~HighIntegrityAllocator()
+Engine::Core::Memory::HighIntegrityAllocator::~HighIntegrityAllocator()
 {
     for (auto& pair : m_BufferTable)
     {
@@ -50,7 +50,7 @@ SigourneyEngine::Core::Memory::HighIntegrityAllocator::~HighIntegrityAllocator()
 }
 
 
-void SigourneyEngine::Core::Memory::HighIntegrityAllocator::Free(void* pointer)
+void Engine::Core::Memory::HighIntegrityAllocator::Free(void* pointer)
 {
     OwnerPrependedPayload* header = GetHeader<OwnerPrependedPayload>(pointer);
     header->Owner->Put(header);

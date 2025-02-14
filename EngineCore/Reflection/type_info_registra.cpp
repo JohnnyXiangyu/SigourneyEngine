@@ -2,12 +2,12 @@
 
 #include "Logging/logger_service.h"
 
-using namespace SigourneyEngine::Core;
-using namespace SigourneyEngine::Core::Reflection;
+using namespace Engine::Core;
+using namespace Engine::Core::Reflection;
 
-static std::unordered_map<std::string, SigourneyEngine::Core::Reflection::ScriptableType*> s_ReflectionMap;
+static std::unordered_map<std::string, Engine::Core::Reflection::ScriptableType*> s_ReflectionMap;
 
-SigourneyEngine::Core::Reflection::ScriptableType* SE_REFLECTION_SUBSPACE::ReflectionBuildingContext::Finalize()
+Engine::Core::Reflection::ScriptableType* SE_REFLECTION_SUBSPACE::ReflectionBuildingContext::Finalize()
 {
 	auto found = s_ReflectionMap.find(Type.Name);
 	if (found != s_ReflectionMap.end())
@@ -20,10 +20,88 @@ SigourneyEngine::Core::Reflection::ScriptableType* SE_REFLECTION_SUBSPACE::Refle
 	return &Type;
 }
 
-const ScriptableType* SigourneyEngine::Core::Reflection::GetType(std::string name)
+const ScriptableType* Engine::Core::Reflection::GetType(std::string name)
 {
 	auto found = s_ReflectionMap.find(name);
 	if (found == s_ReflectionMap.end())
 		return nullptr;
 	return found->second;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<bool>()
+{
+	return DataType::BOOL;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<int>()
+{
+	return DataType::INT32;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<unsigned int>()
+{
+	return DataType::UINT32;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<long long>()
+{
+	return DataType::INT64;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<unsigned long long>()
+{
+	return DataType::UINT64;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<float>()
+{
+	return DataType::FLOAT;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<double>()
+{
+	return DataType::DOUBLE;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<glm::vec2>()
+{
+	return DataType::VEC2;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<glm::vec3>()
+{
+	return DataType::VEC3;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<glm::vec4>()
+{
+	return DataType::VEC4;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<glm::mat2>()
+{
+	return DataType::MAT2;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<glm::mat3>()
+{
+	return DataType::MAT3;
+}
+
+template <>
+DataType SE_REFLECTION_SUBSPACE::GetTypeInner<glm::mat4>()
+{
+	return DataType::MAT4;
 }

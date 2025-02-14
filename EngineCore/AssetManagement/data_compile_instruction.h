@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace SigourneyEngine {
+namespace Engine {
 namespace Core {
 namespace AssetManagement {
 

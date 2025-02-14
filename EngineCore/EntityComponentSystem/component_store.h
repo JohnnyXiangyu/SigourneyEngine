@@ -3,7 +3,7 @@
 #include "Memory/high_integrity_allocator.h"
 #include "Utils/shorthand_functions.h"
 
-namespace SigourneyEngine
+namespace Engine
 {
 namespace Core
 {

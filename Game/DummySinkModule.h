@@ -3,23 +3,19 @@
 #include <DependencyInjection/service_provider.h>
 #include <string>
 
-namespace SigourneyEngine
-{
-namespace Game
-{
+namespace Game {
 
 class DummySinkModule
 {
 public:
-	static void* Create(Core::DependencyInjection::ServiceProvider* services);
-	static void Update(void* moduleInstance, Core::DependencyInjection::ServiceProvider* services);
-	static void Finalize(void* moduleInstance, Core::DependencyInjection::ServiceProvider* services);
+	static void* Create(Engine::Core::DependencyInjection::ServiceProvider* services);
+	static void Update(void* moduleInstance, Engine::Core::DependencyInjection::ServiceProvider* services);
+	static void Finalize(void* moduleInstance, Engine::Core::DependencyInjection::ServiceProvider* services);
 	static std::string Name;
 
 public:
-	Core::Logging::LoggerService* Logger = nullptr;
-	Core::Memory::HighIntegrityAllocator* Allocator = nullptr;
+	Engine::Core::Logging::LoggerService* Logger = nullptr;
+	Engine::Core::Memory::HighIntegrityAllocator* Allocator = nullptr;
 };
 
-}
 }

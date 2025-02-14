@@ -1,8 +1,18 @@
 #pragma once
 
-namespace SigourneyEngine {
+namespace Engine {
 namespace Core {
 namespace AssetManagement {
+
+
+/// <summary>
+/// For internal use only, keep this in sync with template AssetReference
+/// </summary>
+struct UntypedAssetReference
+{
+	void* Data;
+};
+
 
 /// <summary>
 /// A reference to an asset type.

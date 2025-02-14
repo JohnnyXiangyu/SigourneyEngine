@@ -3,7 +3,7 @@
 #include "component_store.h"
 #include "Memory/high_integrity_allocator.h"
 
-namespace SigourneyEngine
+namespace Engine
 {
 namespace Core
 {

@@ -3,7 +3,7 @@
 #include "Modularization/module_manager.h"
 #include "DependencyInjection/service_provider.h"
 
-namespace SigourneyEngine
+namespace Engine
 {
 namespace Core
 {

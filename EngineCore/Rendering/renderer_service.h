@@ -5,7 +5,7 @@
 struct SDL_Window;
 struct SDL_Renderer;
 
-namespace SigourneyEngine
+namespace Engine
 {
 namespace Core
 {

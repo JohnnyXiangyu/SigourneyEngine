@@ -151,6 +151,7 @@
     <ClInclude Include="Configuration\compile_time_flags.h" />
     <ClInclude Include="DependencyInjection\configuration_provider.h" />
     <ClInclude Include="DependencyInjection\service_provider.h" />
+    <ClInclude Include="ErrorHandling\exceptions.h" />
     <ClInclude Include="Hosting\engine_host.h" />
     <ClInclude Include="EntityComponentSystem\component_base.h" />
     <ClInclude Include="EntityComponentSystem\component_controller.h" />
@@ -162,6 +163,8 @@
     <ClInclude Include="Modularization\module_manager.h" />
     <ClInclude Include="Platform\platform_access.h" />
     <ClInclude Include="Reflection\data_type.h" />
+    <ClInclude Include="Reflection\reference_type.h" />
+    <ClInclude Include="Reflection\reflection.h" />
     <ClInclude Include="Reflection\scriptable_type.h" />
     <ClInclude Include="Reflection\type_info_registra.h" />
     <ClInclude Include="Rendering\index_buffer.h" />

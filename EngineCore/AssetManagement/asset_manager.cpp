@@ -1,22 +1,28 @@
 #include "asset_manager.h"
+#include "Logging/logger_service.h"
+#include "Configuration/compile_time_flags.h"
+#include "Reflection/data_type.h"
+#include "Reflection/type_info_registra.h"
+#include "asset_reference.h"
 
+#include <nlohmann/json.hpp>
 #include <fstream>
 
-using namespace SigourneyEngine::Core::AssetManagement;
+using namespace Engine::Core::AssetManagement;
 
 const char AssetManager::s_ChannelName[] = "AssetManager";
 
 // TODO: we need an asset table, module and engine code voluntarily provide methods to create objects from asset data that can be stored in the HIA.
 // TODO: need a way to clear loaded assets (e.g. loading a entity), and/or smooth transitions
 
-void AssetManager::LoadJsonString(ByteStream source)
+void AssetManager::LoadJsonString(IByteStream* source)
 {
     m_JsonLoadingBuffer.clear();
 
     char readBuffer[Configuration::STRING_LOAD_BUFFER_SIZE];
     long long newReads = 0;
 
-    while ((newReads = source.Read(readBuffer, Configuration::STRING_LOAD_BUFFER_SIZE - 1)) > 0)
+    while ((newReads = source->Read(readBuffer, Configuration::STRING_LOAD_BUFFER_SIZE - 1)) > 0)
     {
         readBuffer[newReads] = 0;
         m_JsonLoadingBuffer.append(readBuffer);
@@ -24,52 +30,30 @@ void AssetManager::LoadJsonString(ByteStream source)
 }
 
 
-SigourneyEngine::Core::AssetManagement::AssetManager::~AssetManager()
+Engine::Core::AssetManagement::AssetManager::~AssetManager()
 {
     for (auto& outerPair : m_Cache)
     {
         for (auto& innerPair : outerPair.second)
         {
-            auto assetInfo = m_AssetTypes.find(outerPair.first);
-            assetInfo->second.Destroy(assetInfo->second.Provider, innerPair.second.Data);
+            if (outerPair.first->SerializerOverride.IsValid())
+            {
+                outerPair.first->SerializerOverride.Disposal(m_ServiceProvider, innerPair.second.Data);
+            }
+
+            Disposal(this, innerPair.second.Data);
         }
     }
 }
 
 
-void AssetManager::RegisterAssetType(const std::string& type, void* provider, void* (*factory)(void* provider, ByteStream source), void (*disposal)(void* provider, void* asset))
+void* AssetManager::LoadAssetCore(const Reflection::ScriptableType* typeKey, const AssetID& id)
 {
-    // avoid duplication
-    {
-        auto foundTypeInfo = m_AssetTypes.find(type);
-        if (foundTypeInfo != m_AssetTypes.end())
-        {
-            Logging::GetLogger()->Warning(s_ChannelName, "Duplicate asset type registration: %s", type.c_str());
-        }
-    }
-
-    // create new asset type info
-    AssetTypeInfo newTypeInfo{ type, provider, factory, disposal };
-    m_AssetTypes.insert(std::make_pair(type, newTypeInfo));
-    Logging::GetLogger()->Verbose(s_ChannelName, "Registered asset type: %s", type.c_str());
-}
-
-
-void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
-{
-    auto foundType = m_AssetTypes.find(type);
-    if (foundType == m_AssetTypes.end())
-    {
-        Logging::GetLogger()->Error(s_ChannelName, "Unrecognized asset type: %s", type.c_str());
-        return nullptr;
-    }
-
-    auto foundCache = m_Cache.find(type);
-
+    auto foundCache = m_Cache.find(typeKey);
     if (foundCache == m_Cache.end())
     {
-        m_Cache.insert(std::make_pair(type, std::unordered_map<AssetID, AssetTableEntry>()));
-        foundCache = m_Cache.find(type);
+        m_Cache.insert(std::make_pair(typeKey, std::unordered_map<AssetID, AssetTableEntry>()));
+        foundCache = m_Cache.find(typeKey);
     }
     else
     {
@@ -89,11 +73,21 @@ void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
         return nullptr;
     }
 
-    ByteStream bytes(fileStream);
+    InFileStream bytes(fileStream);
 
     try
     {
-        void* newData = foundType->second.Create(foundType->second.Provider, bytes);
+        void* newData = nullptr;
+
+        if (typeKey->SerializerOverride.IsValid())
+        {
+            newData = typeKey->SerializerOverride.Deserialize(m_ServiceProvider, (IByteStream*)&bytes);
+        }
+        else
+        {
+            newData = AutomaticAssetFactory(typeKey, (IByteStream*)&bytes);
+        }
+
         foundCache->second.insert(std::make_pair(id, AssetTableEntry{ newData, true }));
         return newData;
     }
@@ -102,6 +96,92 @@ void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
         Logging::GetLogger()->Error(s_ChannelName, "Asset file failed to deserialize %s, exception: %s, see log above for more information.", id.c_str(), ex.what());
         return nullptr;
     }
+}
 
 
+void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
+{
+    const Reflection::ScriptableType* typeKey = Reflection::GetType(type);
+    if (typeKey == nullptr)
+    {
+        Logging::GetLogger()->Error(s_ChannelName, "Asset type not found: %s", type.c_str());
+        return nullptr;
+    }
+
+    return LoadAssetCore(typeKey, id);
+}
+
+
+void* AssetManager::AutomaticAssetFactory(const Reflection::ScriptableType* typeInfo, IByteStream* source)
+{
+    void* newAsset = typeInfo->GetCDO(m_Allocator->Malloc(typeInfo->Size));
+
+    LoadJsonString(source);
+    auto jsonObject = nlohmann::json::parse(m_JsonLoadingBuffer);
+
+    char* assignerPtr = (char*)newAsset;
+
+    // let exception bubble up, don't handle it here
+    for (const Reflection::ScriptableProperty& propertyIterator : typeInfo->Properties)
+    {
+        auto value = jsonObject.find(propertyIterator.Name);
+
+        switch (propertyIterator.Type)
+        {
+        case Reflection::DataType::BOOL:
+            *((bool*)(assignerPtr + propertyIterator.Offset)) = value->get<bool>();
+            break;
+        case Reflection::DataType::INT32:
+            *((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+            break;
+        case Reflection::DataType::UINT32:
+            *((unsigned int*)(assignerPtr + propertyIterator.Offset)) = value->get<unsigned int>();
+            break;
+        case Reflection::DataType::INT64:
+            *((long long*)(assignerPtr + propertyIterator.Offset)) = value->get<long long>();
+            break;
+        case Reflection::DataType::UINT64:
+            *((unsigned long long*)(assignerPtr + propertyIterator.Offset)) = value->get<unsigned long long>();
+            break;
+        case Reflection::DataType::FLOAT:
+            *((float*)(assignerPtr + propertyIterator.Offset)) = value->get<float>();
+            break;
+        case Reflection::DataType::DOUBLE:
+            *((double*)(assignerPtr + propertyIterator.Offset)) = value->get<double>();
+            break;
+            // TODO: serialization for these types
+            //case Reflection::DataType::VEC2:
+            //	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+            //	break;
+            //case Reflection::DataType::VEC3:
+            //	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+            //	break;
+            //case Reflection::DataType::VEC4:
+            //	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+            //	break;
+            //case Reflection::DataType::MAT2:
+            //	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+            //	break;
+            //case Reflection::DataType::MAT3:
+            //	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+            //	break;
+            //case Reflection::DataType::MAT4:
+            //	*((int*)(assignerPtr + propertyIterator.Offset)) = value->get<int>();
+            //	break;
+        default:
+            Logging::GetLogger()->Error(s_ChannelName, "Unsupported data type %d registered for type %s", (int)propertyIterator.Type, propertyIterator.Name.c_str());
+
+            throw std::runtime_error("Unsupported data type in reflection.");
+        }
+    }
+
+    for (const Reflection::ReferenceProperty& referenceIterator : typeInfo->References)
+    {
+        auto value = jsonObject.find(referenceIterator.Name);
+        AssetID referencedID = value->get<AssetID>();
+        void* referencedAsset = LoadAssetCore(referenceIterator.TargetType, referencedID);
+        *((UntypedAssetReference*)(assignerPtr + referenceIterator.Offset)) = { referencedAsset };
+    }
+
+    return newAsset;
 }

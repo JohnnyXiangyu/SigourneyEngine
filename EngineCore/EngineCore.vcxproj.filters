@@ -89,6 +89,15 @@
     <ClInclude Include="Reflection\type_info_registra.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Reflection\reference_type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Reflection\reflection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorHandling\exceptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntityComponentSystem\component_base.cpp">

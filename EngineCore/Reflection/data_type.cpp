@@ -1,6 +1,6 @@
 #include "data_type.h"
 
-using namespace SigourneyEngine::Core::Reflection;
+using namespace Engine::Core::Reflection;
 
 static const char BOOL_NAME[] = "BOOL";
 static const char INT32_NAME[] = "INT32";
@@ -17,7 +17,7 @@ static const char MAT3_NAME[] = "MAT3";
 static const char MAT4_NAME[] = "MAT4";
 static const char ERROR_NAME[] = "???";
 
-const char* SigourneyEngine::Core::Reflection::PrintType(DataType type)
+const char* Engine::Core::Reflection::PrintType(DataType type)
 {
 	switch (type)
 	{
@@ -50,82 +50,4 @@ const char* SigourneyEngine::Core::Reflection::PrintType(DataType type)
 	default:
 		return ERROR_NAME;
 	}
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<bool>()
-{
-	return DataType::BOOL;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<int>()
-{
-	return DataType::INT32;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<unsigned int>()
-{
-	return DataType::UINT32;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<long long>()
-{
-	return DataType::INT64;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<unsigned long long>()
-{
-	return DataType::UINT64;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<float>()
-{
-	return DataType::FLOAT;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<double>()
-{
-	return DataType::DOUBLE;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<glm::vec2>()
-{
-	return DataType::VEC2;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<glm::vec3>()
-{
-	return DataType::VEC3;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<glm::vec4>()
-{
-	return DataType::VEC4;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<glm::mat2>()
-{
-	return DataType::MAT2;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<glm::mat3>()
-{
-	return DataType::MAT3;
-}
-
-template <>
-DataType SigourneyEngine::Core::Reflection::GetTypeInner<glm::mat4>()
-{
-	return DataType::MAT4;
 }

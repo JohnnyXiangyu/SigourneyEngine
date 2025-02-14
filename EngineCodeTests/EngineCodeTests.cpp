@@ -5,10 +5,10 @@
 using namespace std;
 using namespace EngineCodeTests;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using namespace SigourneyEngine::FunctionalLayer;
-using namespace SigourneyEngine::Utils;
-using namespace SigourneyEngine::Memory;
-using namespace SigourneyEngine::Enumeration;
+using namespace Engine::FunctionalLayer;
+using namespace Engine::Utils;
+using namespace Engine::Memory;
+using namespace Engine::Enumeration;
 
 namespace EngineCodeTests
 {

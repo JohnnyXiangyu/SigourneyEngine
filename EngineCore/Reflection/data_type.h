@@ -10,7 +10,7 @@
 #include <string>
 
 
-namespace SigourneyEngine {
+namespace Engine {
 namespace Core {
 namespace Reflection {
 
@@ -33,9 +33,6 @@ enum class DataType
 };
 
 const char* PrintType(DataType type);
-
-template <typename T>
-DataType GetTypeInner();
 
 }
 }

@@ -1,4 +1,4 @@
 {
 	"PartA": 100,
-	"PartB": false
+	"PartB": "dummy_res.json"
 }

@@ -139,6 +139,7 @@
     <ClInclude Include="DummySinkModule.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\dummy_res.json" />
     <None Include="Assets\Meshes\unit_cube.mesh" />
     <None Include="Assets\Shaders\basic.fragment.glsl" />
     <None Include="Assets\Shaders\basic.vertex.glsl" />

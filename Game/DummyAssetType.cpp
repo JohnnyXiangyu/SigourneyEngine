@@ -2,9 +2,11 @@
 
 #include <Reflection/type_info_registra.h>
 
-using namespace SigourneyEngine::Game;
+SE_REFLECTION_BEGIN(Game::DummyResType)
+.SE_REFLECTION_ADD_PROPERTY(Number)
+.SE_REFLECTION_END
 
-SE_REFLECTION_Begin(DummyAssetType)
-.SE_REFLECTION_AddProperty(PartA)
-.SE_REFLECTION_AddProperty(PartB)
-.SE_REFLECTION_End
+SE_REFLECTION_BEGIN(Game::DummyAssetType)
+.SE_REFLECTION_ADD_PROPERTY(PartA)
+.SE_REFLECTION_ADD_REFERENCE(PartB)
+.SE_REFLECTION_END

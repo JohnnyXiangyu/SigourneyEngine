@@ -1,7 +1,7 @@
 #include "module_manager.h"
 #include "Utils/non_essential_macros.h"
 
-using namespace SigourneyEngine::Core;
+using namespace Engine::Core;
 
 void Modularization::ModuleManager::InitializeModules(DependencyInjection::ServiceProvider* services)
 {
@@ -16,7 +16,7 @@ void Modularization::ModuleManager::InitializeModules(DependencyInjection::Servi
 	}
 }
 
-void SigourneyEngine::Core::Modularization::ModuleManager::Update(DependencyInjection::ServiceProvider* services)
+void Engine::Core::Modularization::ModuleManager::Update(DependencyInjection::ServiceProvider* services)
 {
 	// condition check
 	if (!IsInitialized())

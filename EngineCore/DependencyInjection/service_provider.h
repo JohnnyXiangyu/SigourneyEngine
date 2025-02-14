@@ -7,12 +7,9 @@
 #include "Platform/platform_access.h"
 #include "AssetManagement/asset_manager.h"
 
-namespace SigourneyEngine
-{
-namespace Core
-{
-namespace DependencyInjection
-{
+namespace Engine {
+namespace Core {
+namespace DependencyInjection {
 
 class ServiceProvider
 {
@@ -30,9 +27,9 @@ public:
 	inline const ConfigurationProvider* GetConfigurations() { return &m_Configurations; }
 	inline Platform::PlatformAccess* GetPlatformAccess() { return &m_PlatformAccess; }
 	inline AssetManagement::AssetManager* GetAssetManager() { return &m_AssetManager; }
-	
-	
-	ServiceProvider() : m_GlobalAllocator(16), m_Configurations(), m_PlatformAccess(&m_Configurations), m_AssetManager(&m_GlobalAllocator) {}
+
+
+	ServiceProvider() : m_GlobalAllocator(16), m_Configurations(), m_PlatformAccess(&m_Configurations), m_AssetManager(this, &m_GlobalAllocator) {}
 	~ServiceProvider() = default;
 };
 

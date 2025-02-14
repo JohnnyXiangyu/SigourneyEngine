@@ -2,7 +2,7 @@
 
 // creates a chain segment data structure, and a buffer immediately after it
 
-using namespace SigourneyEngine::Core::Memory;
+using namespace Engine::Core::Memory;
 
 HomogeneousStorage::Segment* HomogeneousStorage::CreateNewSegment(unsigned int count, size_t payloadSize)
 {
@@ -87,9 +87,9 @@ void* HomogeneousStorage::Take()
 }
 
 
-void SigourneyEngine::Core::Memory::HomogeneousStorage::Put(void* pointer)
+void Engine::Core::Memory::HomogeneousStorage::Put(void* pointer)
 {
-    Node* header = SigourneyEngine::Core::Utils::GetHeader<Node>(pointer);
+    Node* header = Engine::Core::Utils::GetHeader<Node>(pointer);
     header->NextFree = m_headNode;
     m_headNode = header;
 }

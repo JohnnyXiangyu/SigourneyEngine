@@ -2,7 +2,7 @@
 
 #include "renderer_service.h"
 
-namespace SigourneyEngine
+namespace Engine
 {
 namespace Core
 {

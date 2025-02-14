@@ -1,10 +1,10 @@
 #include "logger_service.h"
 
-using namespace SigourneyEngine::Core::Logging;
+using namespace Engine::Core::Logging;
 
 static LoggerService s_GlobalLogger;
 
-LoggerService* SigourneyEngine::Core::Logging::GetLogger()
+LoggerService* Engine::Core::Logging::GetLogger()
 {
     return &s_GlobalLogger;
 }

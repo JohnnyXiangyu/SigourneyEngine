@@ -2,7 +2,7 @@
 #include <ctime>
 #include <iostream>
 
-namespace SigourneyEngine
+namespace Engine
 {
 namespace Core
 {

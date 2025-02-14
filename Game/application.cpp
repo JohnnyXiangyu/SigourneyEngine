@@ -2,8 +2,8 @@
 
 #include <Hosting/engine_host.h>
 
-using namespace SigourneyEngine::Core;
-using namespace SigourneyEngine::Game;
+using namespace Engine::Core;
+using namespace Game;
 
 int main()
 {
