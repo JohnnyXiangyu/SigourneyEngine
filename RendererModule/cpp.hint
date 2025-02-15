@@ -1,0 +1,5 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+#define SE_REFLECTION_BEGIN(type) template <>const Engine::Core::Reflection::ScriptableType* Engine::Core::Reflection::GetType<type>() { using OwnerType = type; struct __Local_Method_Holder { static void* __GetCDO(void* ptr) { return new (ptr) OwnerType(); } }; static SE_REFLECTION_SUBSPACE::ReflectionBuildingContext context{{ #type, sizeof(type), __Local_Method_Holder::__GetCDO }}; static Engine::Core::Reflection::ScriptableType* ptr = context
+#define Property(Type, Name) private:	Type m_##Name;protected:	inline void Set##Name(Type value)	{		m_##Name = value; 	}public:	inline Type Get##Name()	{		return m_##Name;	}

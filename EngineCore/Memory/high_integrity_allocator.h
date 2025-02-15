@@ -21,6 +21,20 @@ private:
 public:
     HighIntegrityAllocator(unsigned int initialCount);
     ~HighIntegrityAllocator();
+    
+    template <typename T>
+    T* New(const T&& copy)
+    {
+        void* newPayload = AllocateCore(sizeof(T));
+        return new (newPayload) T(copy);
+    }
+    
+    template <typename T>
+    T* New(const T& copy)
+    {
+        void* newPayload = AllocateCore(sizeof(T));
+        return new (newPayload) T(copy);
+    }
 
     /// <summary>
     /// Finds a new buffer for at least size T and initialize it.
@@ -35,6 +49,8 @@ public:
         void* newPayload = AllocateCore(sizeof(T));
         return new (newPayload) T(std::forward<TArgs>(args)...);
     }
+
+
 
     /// <summary>
     /// Allocate an empty space in memory with a set size.

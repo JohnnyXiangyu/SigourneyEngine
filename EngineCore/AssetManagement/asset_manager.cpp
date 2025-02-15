@@ -36,12 +36,14 @@ Engine::Core::AssetManagement::AssetManager::~AssetManager()
     {
         for (auto& innerPair : outerPair.second)
         {
-            if (outerPair.first->SerializerOverride.IsValid())
+            if (outerPair.first->SerializerOverride.Disposal != nullptr)
             {
                 outerPair.first->SerializerOverride.Disposal(m_ServiceProvider, innerPair.second.Data);
             }
-
-            Disposal(this, innerPair.second.Data);
+            else
+            {
+                Disposal(innerPair.second.Data);
+            }
         }
     }
 }
@@ -79,13 +81,20 @@ void* AssetManager::LoadAssetCore(const Reflection::ScriptableType* typeKey, con
     {
         void* newData = nullptr;
 
-        if (typeKey->SerializerOverride.IsValid())
+        // deserialize
+        if (typeKey->SerializerOverride.Deserialize != nullptr)
         {
             newData = typeKey->SerializerOverride.Deserialize(m_ServiceProvider, (IByteStream*)&bytes);
         }
         else
         {
             newData = AutomaticAssetFactory(typeKey, (IByteStream*)&bytes);
+        }
+
+        // optional initialize
+        if (typeKey->SerializerOverride.Initialize != nullptr)
+        {
+            typeKey->SerializerOverride.Initialize(m_ServiceProvider, newData);
         }
 
         foundCache->second.insert(std::make_pair(id, AssetTableEntry{ newData, true }));

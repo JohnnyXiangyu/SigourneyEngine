@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{661BDB43-D91F-4D20-B909-E9596E4F95D1}"
+	ProjectSection(SolutionItems) = preProject
+		EngineProps.props = EngineProps.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemanticMachine", "SemanticMachine\SemanticMachine.csproj", "{C2F05187-76B4-4139-955F-62C435697438}"
 EndProject
@@ -30,6 +33,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{CCE9FEB1-EC60-4E8C-A7A1-E6784BA4CFE1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RendererModule", "RendererModule\RendererModule.vcxproj", "{9BC24D12-2877-426F-B468-7677C9B0820C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F05EF057-E8C8-4270-A874-53D34734A634} = {F05EF057-E8C8-4270-A874-53D34734A634}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj", "{D056A939-6CC1-45D9-B114-A412A09E829B}"
 	ProjectSection(ProjectDependencies) = postProject

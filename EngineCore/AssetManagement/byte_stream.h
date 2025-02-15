@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ErrorHandling/exceptions.h"
+#include "Configuration/compile_time_flags.h"
 
 #include <fstream>
 
@@ -32,6 +33,23 @@ public:
 	{
 		SE_THROW_NOT_IMPLEMENTED;
 	}
+
+	inline long long ReadAllAsString(std::string& dest)
+	{
+		char readBuffer[Configuration::STRING_LOAD_BUFFER_SIZE];
+
+		long long totalReads = 0;
+		long long newReads = 0;
+
+		while ((newReads = Read(readBuffer, Core::Configuration::STRING_LOAD_BUFFER_SIZE)) > 0)
+		{
+			readBuffer[newReads] = 0;
+			dest.append(readBuffer);
+			totalReads += newReads;
+		}
+
+		return totalReads;
+	}
 };
 
 
@@ -44,6 +62,7 @@ public:
 	InFileStream(std::ifstream& backend);
 	long long Read(char* buffer, long long count) override;
 };
+
 
 class OutFileStream : IByteStream
 {

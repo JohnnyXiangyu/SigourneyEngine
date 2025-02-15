@@ -41,10 +41,9 @@ private:
 
 	void LoadJsonString(IByteStream* source);
 
-	static void Disposal(void* provider, void* asset)
+	void Disposal(void* asset)
 	{
-		AssetManager* manager = (AssetManager*)provider;
-		manager->m_Allocator->Free(asset);
+		m_Allocator->Free(asset);
 	}
 
 	

@@ -2,10 +2,9 @@
 
 using namespace Engine::Core::AssetManagement;
 
-InFileStream::InFileStream(std::ifstream& backend)
+Engine::Core::AssetManagement::InFileStream::InFileStream(std::ifstream& backend)
 	: m_Backend(backend)
 {
-	m_CanRead = true;
 }
 
 long long InFileStream::Read(char* buffer, long long count)
@@ -23,3 +22,4 @@ void OutFileStream::Write(char* buffer, long long count)
 {
 	m_Backend.write(buffer, count);
 }
+

@@ -8,6 +8,11 @@
 #define PCH_H
 
 // add headers that you want to pre-compile here
-#include "framework.h"
+#include <AssetManagement/asset_manager.h>
+#include <Reflection/type_info_registra.h>
+#include <Configuration/compile_time_flags.h>
+#include <DependencyInjection/service_provider.h>
+#include <ErrorHandling/exceptions.h>
+#include <string>
 
 #endif //PCH_H

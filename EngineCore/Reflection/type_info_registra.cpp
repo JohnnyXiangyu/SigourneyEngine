@@ -2,6 +2,8 @@
 
 #include "Logging/logger_service.h"
 
+#include <unordered_map>
+
 using namespace Engine::Core;
 using namespace Engine::Core::Reflection;
 
@@ -104,4 +106,24 @@ template <>
 DataType SE_REFLECTION_SUBSPACE::GetTypeInner<glm::mat4>()
 {
 	return DataType::MAT4;
+}
+
+void* SE_REFLECTION_SUBSPACE::DeleteDeserializer(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::IByteStream* source)
+{
+	SE_THROW_NOT_IMPLEMENTED;
+}
+
+void SE_REFLECTION_SUBSPACE::DeleteIntializer(Engine::Core::DependencyInjection::ServiceProvider* services, void* asset)
+{
+	SE_THROW_NOT_IMPLEMENTED;
+}
+
+void SE_REFLECTION_SUBSPACE::DeleteSerialize(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::IByteStream* destination)
+{
+	SE_THROW_NOT_IMPLEMENTED;
+}
+
+void SE_REFLECTION_SUBSPACE::DeleteDisposal(Engine::Core::DependencyInjection::ServiceProvider* services, void* data)
+{
+	SE_THROW_NOT_IMPLEMENTED;
 }

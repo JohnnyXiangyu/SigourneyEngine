@@ -19,6 +19,11 @@ namespace Reflection {
 
 struct ScriptableType;
 
+
+/// <summary>
+/// A property with a simple data type (defined by the engine).
+/// Data types are always directly serialized and deserialized locally without consulting other data structures.
+/// </summary>
 struct ScriptableProperty
 {
 	std::string Name;
@@ -26,6 +31,10 @@ struct ScriptableProperty
 	unsigned int Offset;
 };
 
+
+/// <summary>
+/// A property that refrences another reflected type. 
+/// </summary>
 struct ReferenceProperty
 {
 	std::string Name;
@@ -33,15 +42,23 @@ struct ReferenceProperty
 	unsigned int Offset;
 };
 
+
+/// <summary>
+/// A serializer is a set of functions that allow the engine to dynamically deserialize and serialize the data *represented by* the reflected type.
+/// Most commonly it'll be used for asset types such as shaders or meshes.
+/// </summary>
 struct Serializer
 {
 	void* (*Deserialize)(DependencyInjection::ServiceProvider* services, AssetManagement::IByteStream* source) = nullptr;
+	void (*Initialize)(DependencyInjection::ServiceProvider* services, void* asset) = nullptr;
 	void (*Serialize)(DependencyInjection::ServiceProvider* services, AssetManagement::IByteStream* destination) = nullptr;
 	void (*Disposal)(DependencyInjection::ServiceProvider* services, void* data) = nullptr;
-
-	inline bool IsValid() const { return Deserialize && Serialize && Disposal; }
 };
 
+
+/// <summary>
+/// Scriptable types are reflected types that allow the engine to dynamically create and destruct; they are meant for simple struct types such as components and asset types.
+/// </summary>
 struct ScriptableType
 {
 	std::string Name;
