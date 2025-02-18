@@ -49,9 +49,9 @@ struct ReferenceProperty
 /// </summary>
 struct Serializer
 {
-	void* (*Deserialize)(DependencyInjection::ServiceProvider* services, AssetManagement::IByteStream* source) = nullptr;
+	void* (*Deserialize)(DependencyInjection::ServiceProvider* services, AssetManagement::ByteStream* source) = nullptr;
 	void (*Initialize)(DependencyInjection::ServiceProvider* services, void* asset) = nullptr;
-	void (*Serialize)(DependencyInjection::ServiceProvider* services, AssetManagement::IByteStream* destination) = nullptr;
+	void (*Serialize)(DependencyInjection::ServiceProvider* services, AssetManagement::ByteStream* destination) = nullptr;
 	void (*Disposal)(DependencyInjection::ServiceProvider* services, void* data) = nullptr;
 };
 

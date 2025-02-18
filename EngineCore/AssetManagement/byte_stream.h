@@ -14,7 +14,7 @@ namespace AssetManagement {
 /// Hides away the implementation for asset storage.
 /// Not using the libstd streaming infrastructure in favor of the c# style OOP approach.
 /// </summary>
-class IByteStream
+class ByteStream
 {
 protected:
 	bool m_CanRead = false;
@@ -41,7 +41,7 @@ public:
 		long long totalReads = 0;
 		long long newReads = 0;
 
-		while ((newReads = Read(readBuffer, Core::Configuration::STRING_LOAD_BUFFER_SIZE)) > 0)
+		while ((newReads = Read(readBuffer, Core::Configuration::STRING_LOAD_BUFFER_SIZE - 1)) > 0)
 		{
 			readBuffer[newReads] = 0;
 			dest.append(readBuffer);
@@ -50,10 +50,24 @@ public:
 
 		return totalReads;
 	}
+
+	bool FillBuffer(void* dest, size_t length);
+
+	template <typename T>
+	inline bool FillStruct(T* dest)
+	{
+		return FillBuffer(dest, sizeof(T));
+	}
+
+	template <typename T>
+	inline bool FillArray(T* dest, size_t length)
+	{
+		return FillBuffer(dest, length * sizeof(T));
+	}
 };
 
 
-class InFileStream : IByteStream
+class InFileStream : ByteStream
 {
 private:
 	std::ifstream& m_Backend;
@@ -64,7 +78,7 @@ public:
 };
 
 
-class OutFileStream : IByteStream
+class OutFileStream : ByteStream
 {
 private:
 	std::ofstream& m_Backend;

@@ -5,27 +5,27 @@
 #include <DependencyInjection/service_provider.h>
 
 using namespace Engine;
-using namespace Engine::RendererModule;
+using namespace Extension::RendererModule;
 
 
 void Assets::Material::Initialize(Core::DependencyInjection::ServiceProvider* services, void* asset)
 {
 	Assets::Material* material = (Assets::Material*)asset;
-	if (!services->GetRenderer()->LinkShaderProgram(material->VertexShader.Data->RendererID, material->FragmentShader.Data->RendererID, material->m_RendererID))
+	if (!services->GetRenderer()->CreateMaterial(material->VertexShader.Data->RendererID, material->FragmentShader.Data->RendererID, material->m_RendererID))
 	{
 		SE_THROW_GRAPHICS_EXCEPTION;
 	}
 }
 
 
-void Engine::RendererModule::Assets::Material::Dispose(Core::DependencyInjection::ServiceProvider* services, void* asset)
+void Assets::Material::Dispose(Core::DependencyInjection::ServiceProvider* services, void* asset)
 {
 	Assets::Material* material = (Assets::Material*)asset;
-	services->GetRenderer()->DeleteProgram(material->m_RendererID);
+	services->GetRenderer()->DeleteMaterial(material->m_RendererID);
 }
 
 
-SE_REFLECTION_BEGIN(Assets::Material)
+SE_REFLECTION_BEGIN(Extension::RendererModule::Assets::Material)
 .SE_REFLECTION_ADD_REFERENCE(VertexShader)
 .SE_REFLECTION_ADD_REFERENCE(FragmentShader)
 .SE_REFLECTION_DELETE_SERIALIZER()

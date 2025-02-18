@@ -2,27 +2,26 @@
 #include "shader.h"
 
 using namespace Engine;
-using namespace Engine::RendererModule;
+using namespace Extension::RendererModule;
 
-static void* DeserializeVertexShader(Core::DependencyInjection::ServiceProvider* services, Core::AssetManagement::IByteStream* source)
+static void* DeserializeVertexShader(Core::DependencyInjection::ServiceProvider* services, Core::AssetManagement::ByteStream* source)
 {
 	// load the entire string in
 	char readBuffer[Core::Configuration::STRING_LOAD_BUFFER_SIZE];
 	std::string rawData;
 	rawData.reserve(Core::Configuration::STRING_LOAD_BUFFER_SIZE);
 	long long newReads = 0;
-	while ((newReads = source->Read(readBuffer, Core::Configuration::STRING_LOAD_BUFFER_SIZE)) > 0)
+	while ((newReads = source->Read(readBuffer, Core::Configuration::STRING_LOAD_BUFFER_SIZE - 1)) > 0)
 	{
 		readBuffer[newReads] = 0;
 		rawData.append(readBuffer);
 	}
 
 	// submit shader code to the rendering service
-	unsigned int rendererID;
-	if (!services->GetRenderer()->CompileShader(rawData, rendererID, Core::Rendering::ShaderType::VERTEX_SHADER))
+	Core::Rendering::RendererShader rendererID;
+	if (!services->GetRenderer()->CompileShader(rawData, Core::Rendering::ShaderType::VERTEX_SHADER, rendererID))
 	{
-		// TODO: this will crash the game on scene load, might not be the best solution?
-		SE_THROW_GRAPHICS_EXCEPTION;
+		return nullptr;
 	}
 
 	// allocate new shader data structure and return it
@@ -38,16 +37,14 @@ static void DisposeVertexShader(Core::DependencyInjection::ServiceProvider* serv
 }
 
 
-// note: not serializable
-SE_REFLECTION_BEGIN(Engine::RendererModule::Assets::VertexShader)
-.SE_REFLECTION_ADD_PROPERTY(RendererID)
+SE_REFLECTION_BEGIN(Extension::RendererModule::Assets::VertexShader)
 .SE_REFLECTION_OVERRIDE_DESERIALIZER(DeserializeVertexShader)
 .SE_REFLECTION_DELETE_SERIALIZER()
 .SE_REFLECTION_OVERRIDE_DISPOSER(DisposeVertexShader)
 .SE_REFLECTION_END
 
 
-static void* DeserializeFragmentShader(Core::DependencyInjection::ServiceProvider* services, Core::AssetManagement::IByteStream* source)
+static void* DeserializeFragmentShader(Core::DependencyInjection::ServiceProvider* services, Core::AssetManagement::ByteStream* source)
 {
 	// load the entire string in
 	std::string rawData;
@@ -55,8 +52,8 @@ static void* DeserializeFragmentShader(Core::DependencyInjection::ServiceProvide
 	source->ReadAllAsString(rawData);
 
 	// TODO: submit this to the rendering engine
-	unsigned int rendererID;
-	if (!services->GetRenderer()->CompileShader(rawData, rendererID, Core::Rendering::ShaderType::FRAGMENT_SHADER))
+	Core::Rendering::RendererShader rendererID;
+	if (!services->GetRenderer()->CompileShader(rawData, Core::Rendering::ShaderType::FRAGMENT_SHADER, rendererID))
 	{
 		// TODO: this will crash the game on scene load, might not be the best solution?
 		SE_THROW_GRAPHICS_EXCEPTION;
@@ -75,9 +72,7 @@ static void DisposeFragmentShader(Core::DependencyInjection::ServiceProvider* se
 }
 
 
-// note: not serializable
-SE_REFLECTION_BEGIN(Engine::RendererModule::Assets::FragmentShader)
-.SE_REFLECTION_ADD_PROPERTY(RendererID)
+SE_REFLECTION_BEGIN(Extension::RendererModule::Assets::FragmentShader)
 .SE_REFLECTION_OVERRIDE_DESERIALIZER(DeserializeFragmentShader)
 .SE_REFLECTION_DELETE_SERIALIZER()
 .SE_REFLECTION_OVERRIDE_DISPOSER(DisposeFragmentShader)

@@ -2,30 +2,58 @@
 
 #include "Utils/non_essential_macros.h"
 #include "Logging/logger_service.h"
+#include "renderer_data.h"
 
 #include <string>
+#include <vector>
+#include <unordered_map>
+#include <GL/glew.h>
 
-struct SDL_Window;
-struct SDL_Renderer;
 
 namespace Engine {
 namespace Core {
 namespace Rendering {
 
-enum class ShaderType
+
+class RendererShader
 {
-	FRAGMENT_SHADER,
-	VERTEX_SHADER
+private:
+	friend class RendererService;
+	unsigned int m_ShaderID = 0;
 };
 
-class RendererResource
+
+class RendererMaterial
 {
-	Property(unsigned int, RendererID)
+private:
+	friend class RendererService;
+	unsigned int m_ProgramID = 0;
+	std::unordered_map<std::string, int> m_UniformLocationCache;
 };
 
-class Shader;
-class IndexBuffer;
-class VertexArray;
+
+/// <summary>
+/// Encapsulates an internal representation of data structures and contracts between the renderer service and graphics backend.
+/// Currently it's just VB, VA and IB tokens from OpenGL.
+/// </summary>
+class RendererMesh
+{
+private:
+	friend class RendererService;
+
+	// these are buffers
+	unsigned int m_VertexBuffer = 0;
+	unsigned int m_IndexBuffer = 0;
+
+	// metadata
+	unsigned int m_IndexCount = 0;
+
+	// this is not a buffer
+	unsigned int m_VertexArray = 0;
+
+	bool Bail();
+};
+
 
 /// <summary>
 /// This iteration only uses small boxes;
@@ -35,35 +63,39 @@ class VertexArray;
 class RendererService
 {
 private:
-	bool m_Initialized = false;
-
-	int m_WindowHeight = 0;
-	int m_WindowWidth = 0;
-
-	SDL_Window* m_Window = nullptr;
-	SDL_Renderer* m_Renderer = nullptr;
+	// TODO: if we are not running multi-threaded rendering there's no need for a queue; if it is multithreaded we'll use a concurrent queue for that
+	//// generic form command that client code submit to the queue; all data is owned by the client and the queue doesn't check for validity
+	//struct RenderCommand
+	//{
+	//	const RendererMesh* Mesh; 
+	//	const RendererMaterial* Material;
+	//	const DynamicShaderParameter* ShaderParams;
+	//	unsigned int ShaderParamCount;
+	//};
+	//std::vector<RenderCommand> m_RenderCommandQueue;
 
 private:
 	Logging::LoggerService* m_Logger = Logging::GetLogger();
 
 private:
 	bool CheckGLError(const char* function, const char* file, int line);
+	bool ApplyDynamicShaderParameter(const Rendering::DynamicShaderParameter* shaderParam, Rendering::RendererMaterial* material);
 
 public:
 	RendererService();
 	~RendererService();
 
 public:
-	void ClearScreen();
-	void RefreshSceen();
+	bool CompileShader(const std::string& code, ShaderType type, RendererShader& outID);
+	bool DeleteShader(RendererShader& shader);
 
-	void Draw(const VertexArray& vertexBuffer, const IndexBuffer& indexBuffer, const Shader& shader);
+	bool CreateMaterial(const RendererShader& vertexShader, const RendererShader& fragmentShader, RendererMaterial& outID);
+	bool DeleteMaterial(RendererMaterial& material);
 
-	bool CompileShader(const std::string& code, unsigned int& outID, ShaderType type);
-	bool LinkShaderProgram(unsigned int vertexShader, unsigned int fragmentShader, unsigned int& outID);
+	bool RegisterMesh(const VertexCollection& vertices, const VertexLayout& vertexLayout, const IndexCollection& indices, RendererMesh& outID);
+	bool DeleteMesh(RendererMesh& inID);
 
-	bool DeleteShader(unsigned int shader);
-	bool DeleteProgram(unsigned int program);
+	bool QueueRender(RendererMesh* mesh, RendererMaterial* material, const DynamicShaderParameter* shaderParams, unsigned int shaderParamCount);
 };
 
 }

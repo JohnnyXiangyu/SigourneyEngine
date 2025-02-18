@@ -40,10 +40,9 @@
     <None Include="Assets\Shaders\basic.vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Assets\Meshes\unit_cube.mesh">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Assets\dummy_res.json" />
+    <None Include="Assets\Materials\dummy.se_material" />
+    <None Include="Assets\Meshes\cube.se_mesh" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\dummy.json" />

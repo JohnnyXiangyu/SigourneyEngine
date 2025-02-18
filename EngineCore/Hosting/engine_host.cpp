@@ -25,15 +25,17 @@ int EngineHost::Run()
 	SDL_Event e;
 	while (!quit)
 	{
-		//Handle events on queue
+		// Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
 		{
 			//User requests quit
 			quit = e.type == SDL_QUIT;
 		}
 
-		//Render quad
-		m_ServiceProvider.GetPlatformAccess()->TempUpdate();
+		// begin update loop
+		m_ServiceProvider.GetPlatformAccess()->BeginFrame();
+		m_ModuleManager.Update(&m_ServiceProvider);
+		m_ServiceProvider.GetPlatformAccess()->EndFrame();
 	}
 
 	// finalize all game states

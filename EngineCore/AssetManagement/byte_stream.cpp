@@ -23,3 +23,17 @@ void OutFileStream::Write(char* buffer, long long count)
 	m_Backend.write(buffer, count);
 }
 
+bool ByteStream::FillBuffer(void* dest, size_t length)
+{
+	char* destBuffer = (char*)dest;
+
+	size_t totalReads = 0;
+	size_t newReads = 0;
+
+	while (totalReads < length && (newReads = Read(destBuffer + totalReads, length)) > 0)
+	{
+		totalReads += newReads;
+	}
+
+	return totalReads == length;
+}

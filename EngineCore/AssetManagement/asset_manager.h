@@ -39,7 +39,7 @@ private:
 	// TODO: if we keep json, at least make a stream-buffer solution instead of loadin the whole thing in memory
 	std::string m_JsonLoadingBuffer;
 
-	void LoadJsonString(IByteStream* source);
+	void LoadJsonString(ByteStream* source);
 
 	void Disposal(void* asset)
 	{
@@ -47,7 +47,7 @@ private:
 	}
 
 	
-	void* AutomaticAssetFactory(const Reflection::ScriptableType* typeInfo, IByteStream* source);
+	void* AutomaticAssetFactory(const Reflection::ScriptableType* typeInfo, ByteStream* source);
 
 
 	// dynamic states
@@ -73,6 +73,8 @@ public:
 	}
 
 	~AssetManager();
+
+	// TODO: need asset lifetime annotation: right now everything is static scope, eventually there needs to be at least "entity scope" and "module scope"
 
 	/// <summary>
 	/// Load an asset by its type name.

@@ -4,3 +4,4 @@
 #define SE_REFLECTION_BEGIN(type) template <>const Engine::Core::Reflection::ScriptableType* Engine::Core::Reflection::GetType<type>() { using OwnerType = type; struct __Local_Method_Holder { static void* __GetCDO(void* ptr) { return new (ptr) OwnerType(); } }; static SE_REFLECTION_SUBSPACE::ReflectionBuildingContext context{{ #type, sizeof(type), __Local_Method_Holder::__GetCDO }}; static Engine::Core::Reflection::ScriptableType* ptr = context
 #define Property(Type, Name) private: Type m_##Name;protected: inline void Set##Name(Type value) { m_##Name = value; }public: inline Type Get##Name() { return m_##Name; }
 #define SE_THROW_NOT_IMPLEMENTED throw std::runtime_error(AT " Method not implemented!")
+#define GLCall(routine) ClearGLErrors(); routine; if (!CheckGLError(#routine, __FILE__, __LINE__)) goto OnError

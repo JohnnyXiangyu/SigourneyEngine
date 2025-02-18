@@ -7,8 +7,8 @@ namespace Core {
 namespace DependencyInjection {
 struct ConfigurationProvider
 {
-	int WindowHeight = 480;
-	int WindowWidth = 640;
+	int WindowHeight = 720;
+	int WindowWidth = 960;
 };
 }
 }

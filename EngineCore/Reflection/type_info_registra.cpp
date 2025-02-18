@@ -108,7 +108,7 @@ DataType SE_REFLECTION_SUBSPACE::GetTypeInner<glm::mat4>()
 	return DataType::MAT4;
 }
 
-void* SE_REFLECTION_SUBSPACE::DeleteDeserializer(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::IByteStream* source)
+void* SE_REFLECTION_SUBSPACE::DeleteDeserializer(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::ByteStream* source)
 {
 	SE_THROW_NOT_IMPLEMENTED;
 }
@@ -118,7 +118,7 @@ void SE_REFLECTION_SUBSPACE::DeleteIntializer(Engine::Core::DependencyInjection:
 	SE_THROW_NOT_IMPLEMENTED;
 }
 
-void SE_REFLECTION_SUBSPACE::DeleteSerialize(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::IByteStream* destination)
+void SE_REFLECTION_SUBSPACE::DeleteSerialize(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::ByteStream* destination)
 {
 	SE_THROW_NOT_IMPLEMENTED;
 }

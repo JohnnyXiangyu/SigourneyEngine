@@ -46,6 +46,8 @@ AddProperty({ #member, SE_REFLECTION_SUBSPACE::GetDataMemberType(&OwnerType::mem
 #define SE_REFLECTION_ADD_REFERENCE(member) \
 AddReference( { #member, SE_REFLECTION_SUBSPACE::GetRefMemberType(&OwnerType::member), offsetof(OwnerType, member) } )
 
+// TODO: support adding data types that are other reflected types??
+
 #define SE_REFLECTION_OVERRIDE_DESERIALIZER(deserialize) \
 OverrideDeserializer(deserialize)
 
@@ -79,9 +81,9 @@ OverrideDisposer(SE_REFLECTION_SUBSPACE::DeleteDisposal)
 
 namespace SE_REFLECTION_SUBSPACE {
 
-void* DeleteDeserializer(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::IByteStream* source);
+void* DeleteDeserializer(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::ByteStream* source);
 void DeleteIntializer(Engine::Core::DependencyInjection::ServiceProvider* services, void* asset);
-void DeleteSerialize(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::IByteStream* destination);
+void DeleteSerialize(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::ByteStream* destination);
 void DeleteDisposal(Engine::Core::DependencyInjection::ServiceProvider* services, void* data);
 
 struct ReflectionBuildingContext
@@ -100,7 +102,7 @@ struct ReflectionBuildingContext
 		return *this;
 	}
 
-	inline ReflectionBuildingContext& OverrideDeserializer(void* (*deserialize)(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::IByteStream* source))
+	inline ReflectionBuildingContext& OverrideDeserializer(void* (*deserialize)(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::ByteStream* source))
 	{
 		Type.SerializerOverride.Deserialize = deserialize;
 		return *this;
@@ -112,7 +114,7 @@ struct ReflectionBuildingContext
 		return *this;
 	}
 
-	inline ReflectionBuildingContext& OverrideSerializer(void (*serialize)(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::IByteStream* destination))
+	inline ReflectionBuildingContext& OverrideSerializer(void (*serialize)(Engine::Core::DependencyInjection::ServiceProvider* services, Engine::Core::AssetManagement::ByteStream* destination))
 	{
 		Type.SerializerOverride.Serialize = serialize;
 		return *this;

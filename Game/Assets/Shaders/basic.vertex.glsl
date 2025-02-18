@@ -1,17 +1,19 @@
 #version 330 core
 
-layout(location = 0) in vec4 position;
-layout(location = 1) in vec4 vertColor;
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 uv;
 
-out vec4 v_VertColor;
+out vec3 v_Normal;
+out vec2 v_Uv;
 
 uniform mat4 u_MVP;
 
 void main()
 {
-   gl_Position = u_MVP * position;
+	gl_Position = u_MVP * vec4(position, 1.0);
 
-   // the color is directly copied to the fragment shader;
-   // TODO: need to add a shading algorithm
-   v_VertColor = vertColor;
+	// forward the attributes into fragment shader 
+	v_Normal = normal;
+	v_Uv = uv;
 };

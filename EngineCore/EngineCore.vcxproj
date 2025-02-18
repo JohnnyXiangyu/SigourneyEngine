@@ -171,10 +171,8 @@
     <ClInclude Include="Reflection\reflection.h" />
     <ClInclude Include="Reflection\scriptable_type.h" />
     <ClInclude Include="Reflection\type_info_registra.h" />
-    <ClInclude Include="Rendering\index_buffer.h" />
+    <ClInclude Include="Rendering\renderer_data.h" />
     <ClInclude Include="Rendering\renderer_service.h" />
-    <ClInclude Include="Rendering\shader.h" />
-    <ClInclude Include="Rendering\vertex_buffer.h" />
     <ClInclude Include="AssetManagement\asset_manager.h" />
     <ClInclude Include="Utils\non_essential_macros.h" />
     <ClInclude Include="Utils\shorthand_functions.h" />

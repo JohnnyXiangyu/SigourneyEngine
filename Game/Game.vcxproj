@@ -108,13 +108,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)RendererModule;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\CppDependencies\glew-2.1.0\lib\Release\x64\;..\CppDependencies\SDL2-2.30.11\lib\x64;..\CppDependencies\SDL2_image-2.8.4\lib\x64;$(SolutionDir)\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>EngineCore.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>EngineCore.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32s.lib;RendererModule.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,7 +144,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\dummy_res.json" />
-    <None Include="Assets\Meshes\unit_cube.mesh" />
+    <None Include="Assets\Materials\dummy.se_material" />
+    <None Include="Assets\Meshes\cube.se_mesh" />
     <None Include="Assets\Shaders\basic.fragment.glsl" />
     <None Include="Assets\Shaders\basic.vertex.glsl" />
   </ItemGroup>

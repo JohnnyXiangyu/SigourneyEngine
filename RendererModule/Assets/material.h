@@ -2,23 +2,28 @@
 
 #include "shader.h"
 
+#include <Rendering/renderer_data.h>
 #include <Reflection/reference_type.h>
 
-namespace Engine {
+namespace Extension {
 namespace RendererModule {
+
+class RendererModule;
+
 namespace Assets {
 
 class Material
 {
 private:
-	unsigned int m_RendererID = 0;
+	friend class Extension::RendererModule::RendererModule;
+	Engine::Core::Rendering::RendererMaterial m_RendererID;
 
 public:
-	Core::Reflection::Ref<VertexShader> VertexShader;
-	Core::Reflection::Ref<FragmentShader> FragmentShader;
+	Engine::Core::Reflection::Ref<VertexShader> VertexShader;
+	Engine::Core::Reflection::Ref<FragmentShader> FragmentShader;
 
-	static void Initialize(Core::DependencyInjection::ServiceProvider* services, void* asset);
-	static void Dispose(Core::DependencyInjection::ServiceProvider* services, void* asset);
+	static void Initialize(Engine::Core::DependencyInjection::ServiceProvider* services, void* asset);
+	static void Dispose(Engine::Core::DependencyInjection::ServiceProvider* services, void* asset);
 };
 
 }

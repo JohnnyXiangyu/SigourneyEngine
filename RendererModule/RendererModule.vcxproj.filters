@@ -24,6 +24,12 @@
     <ClInclude Include="Assets\material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Assets\mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer_module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -33,6 +39,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Assets\material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Assets\mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer_module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

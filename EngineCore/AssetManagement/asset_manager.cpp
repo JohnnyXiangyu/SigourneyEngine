@@ -15,7 +15,7 @@ const char AssetManager::s_ChannelName[] = "AssetManager";
 // TODO: we need an asset table, module and engine code voluntarily provide methods to create objects from asset data that can be stored in the HIA.
 // TODO: need a way to clear loaded assets (e.g. loading a entity), and/or smooth transitions
 
-void AssetManager::LoadJsonString(IByteStream* source)
+void AssetManager::LoadJsonString(ByteStream* source)
 {
     m_JsonLoadingBuffer.clear();
 
@@ -84,11 +84,11 @@ void* AssetManager::LoadAssetCore(const Reflection::ScriptableType* typeKey, con
         // deserialize
         if (typeKey->SerializerOverride.Deserialize != nullptr)
         {
-            newData = typeKey->SerializerOverride.Deserialize(m_ServiceProvider, (IByteStream*)&bytes);
+            newData = typeKey->SerializerOverride.Deserialize(m_ServiceProvider, (ByteStream*)&bytes);
         }
         else
         {
-            newData = AutomaticAssetFactory(typeKey, (IByteStream*)&bytes);
+            newData = AutomaticAssetFactory(typeKey, (ByteStream*)&bytes);
         }
 
         // optional initialize
@@ -121,7 +121,7 @@ void* AssetManager::LoadAsset(const std::string& type, const AssetID& id)
 }
 
 
-void* AssetManager::AutomaticAssetFactory(const Reflection::ScriptableType* typeInfo, IByteStream* source)
+void* AssetManager::AutomaticAssetFactory(const Reflection::ScriptableType* typeInfo, ByteStream* source)
 {
     void* newAsset = typeInfo->GetCDO(m_Allocator->Malloc(typeInfo->Size));
 
